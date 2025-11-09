@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
                 'category' => 'blend',
                 'product_type' => 'finished_goods',
                 'unit_price' => 25.50,
-                'unit_of_measure' => 'kg',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
@@ -32,7 +32,7 @@ class ProductSeeder extends Seeder
                 'category' => 'blend',
                 'product_type' => 'finished_goods',
                 'unit_price' => 18.75,
-                'unit_of_measure' => 'kg',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
 
@@ -44,7 +44,7 @@ class ProductSeeder extends Seeder
                 'category' => 'raw_material',
                 'product_type' => 'raw_material',
                 'unit_price' => 15.00,
-                'unit_of_measure' => 'kg',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
@@ -54,7 +54,7 @@ class ProductSeeder extends Seeder
                 'category' => 'raw_material',
                 'product_type' => 'raw_material',
                 'unit_price' => 12.50,
-                'unit_of_measure' => 'kg',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
@@ -64,7 +64,7 @@ class ProductSeeder extends Seeder
                 'category' => 'raw_material',
                 'product_type' => 'raw_material',
                 'unit_price' => 8.25,
-                'unit_of_measure' => 'kg',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
 
@@ -76,7 +76,8 @@ class ProductSeeder extends Seeder
                 'category' => 'packaging',
                 'product_type' => 'packaging',
                 'unit_price' => 0.85,
-                'unit_of_measure' => 'pcs',
+                'volume'=> 10,
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
@@ -86,7 +87,8 @@ class ProductSeeder extends Seeder
                 'category' => 'packaging',
                 'product_type' => 'packaging',
                 'unit_price' => 0.15,
-                'unit_of_measure' => 'pcs',
+                'volume'=> 10,
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
@@ -96,7 +98,8 @@ class ProductSeeder extends Seeder
                 'category' => 'packaging',
                 'product_type' => 'packaging',
                 'unit_price' => 2.50,
-                'unit_of_measure' => 'pcs',
+                'volume'=> 10,
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
 
@@ -108,7 +111,7 @@ class ProductSeeder extends Seeder
                 'category' => 'final_product',
                 'product_type' => 'finished_goods',
                 'unit_price' => 32.00,
-                'unit_of_measure' => 'pcs',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
@@ -118,17 +121,17 @@ class ProductSeeder extends Seeder
                 'category' => 'final_product',
                 'product_type' => 'finished_goods',
                 'unit_price' => 22.50,
-                'unit_of_measure' => 'pcs',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
             [
                 'product_code' => 'FP-003',
-                'name' => 'Coffee Gift Set',
-                'description' => 'Premium coffee gift set with accessories',
+                'name' => 'Coffee Gift mg',
+                'description' => 'Premium coffee gift mg with accessories',
                 'category' => 'final_product',
                 'product_type' => 'finished_goods',
                 'unit_price' => 89.99,
-                'unit_of_measure' => 'set',
+                'unit_of_measure' => 'mg',
                 'status' => 'active',
             ],
         ];
