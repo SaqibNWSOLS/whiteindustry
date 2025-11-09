@@ -1,0 +1,516 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Quote;
+use App\Models\QuoteProduct;
+use App\Models\QuoteItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Models\Product;
+use App\Models\Customer;
+use Session;
+class QuotationController extends Controller
+{
+    public function create(Request $request)
+    {
+        $customers = Customer::all();
+        $rawMaterials = Product::where('category', 'raw_material')->get();
+        $packagingMaterials = Product::where('category', 'packaging')->get();
+        $blends = Product::where('category', 'blend')->get();
+/*        Session::put('current_quote_id',null);
+*/        
+        $quoteId = session('current_quote_id');
+        $quote = $quoteId ? Quote::with(['products.items'])->find($quoteId) : null;
+        $step = $request->step ?? 'basic';
+        
+        return view('quotes.create', compact('step', 'customers', 'rawMaterials', 'packagingMaterials', 'blends', 'quote'));
+    }
+
+    public function storeBasic(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Create the main quote
+        $quote = Quote::create([
+            'quotation_number' => 'QT-' . Str::random(8),
+            'customer_id' => $request->customer_id,
+            'notes' => $request->notes,
+            'status' => 'draft'
+        ]);
+
+        // Store quote ID in session for next steps
+        session(['current_quote_id' => $quote->id]);
+
+        return redirect()->route('quotes.create', ['step' => 'products'])
+            ->with('success', 'Basic information saved successfully');
+    }
+
+
+     public function updateBasic(Request $request,$id)
+    {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'notes' => 'nullable|string',
+        ]);
+
+
+        $quote=Quote::where('id',$id)->first();
+
+        // Create the main quote
+        $quote = $quote->update([
+            'quotation_number' => 'QT-' . Str::random(8),
+            'customer_id' => $request->customer_id,
+            'notes' => $request->notes,
+            'status' => 'draft'
+        ]);
+
+
+
+        // Store quote ID in session for next steps
+        session(['current_quote_id' => $id]);
+
+        return redirect()->route('quotes.edit', ['quote' => $id, 'step' => 'products'])
+            ->with('success', 'Basic information saved successfully');
+    }
+
+   public function addProducts(Request $request, Quote $quote)
+{
+    $request->validate([
+        'products' => 'required|array',
+        'products.*.product_name' => 'required|string|max:255',
+        'products.*.product_type' => 'required|in:cosmetic,food_supplement',
+    ]);
+
+    $existingProductIds = $quote->products->pluck('id')->toArray();
+    $newProductIds = [];
+
+    foreach ($request->products as $productData) {
+        if (isset($productData['id'])) {
+            // ✅ Update existing product
+            $quoteProduct = $quote->products()->find($productData['id']);
+            if ($quoteProduct) {
+                $quoteProduct->update([
+                    'product_name' => $productData['product_name'],
+                    'product_type' => $productData['product_type'],
+                    'tax_rate' => 19.00,
+                ]);
+                $newProductIds[] = $quoteProduct->id;
+                continue;
+            }
+        }
+
+        // ✅ Create new product
+        $newProduct = $quote->products()->create([
+            'product_name' => $productData['product_name'],
+            'product_type' => $productData['product_type'],
+            'tax_rate' => 19.00,
+        ]);
+        $newProductIds[] = $newProduct->id;
+    }
+
+    // ❌ Optional: Remove products not included in the request
+    // $quote->products()->whereNotIn('id', $newProductIds)->delete();
+
+    return redirect()->route('quotes.edit', [
+        'quote' => $quote->id,
+        'step' => 'raw_materials'
+    ])->with('success', 'Products synced successfully');
+}
+
+ public function addRawMaterials(Request $request, $id)
+{
+    $request->validate([
+        'raw_materials' => 'required|array',
+        'raw_materials.*.materials' => 'required|array',
+        'raw_materials.*.materials.*.item_id' => 'required|exists:products,id',
+        'raw_materials.*.materials.*.percentage' => 'required|numeric|min:0|max:100'
+    ]);
+
+    $quote = Quote::findOrFail($id);
+
+    foreach ($request->raw_materials as $quoteProductId => $productMaterials) {
+        $quoteProduct = QuoteProduct::find($quoteProductId);
+        if (!$quoteProduct) {
+            continue;
+        }
+
+        $existingItemIds = $quoteProduct->rawMaterialItems->pluck('id')->toArray();
+        $newItemIds = [];
+        $totalPercentage = 0;
+
+        foreach ($productMaterials['materials'] as $materialData) {
+            $material = Product::find($materialData['item_id']);
+            $totalPercentage += $materialData['percentage'];
+
+            if (isset($materialData['id'])) {
+                // Update existing raw material
+                $quoteItem = $quoteProduct->rawMaterialItems()->find($materialData['id']);
+                if ($quoteItem) {
+                    $quoteItem->update([
+                        'item_id' => $material->id,
+                        'item_name' => $material->name,
+                        'unit' => $material->unit_of_measure,
+                        'unit_cost' => $material->unit_price,
+                        'percentage' => $materialData['percentage'],
+                        'quantity' => 0,
+                        'total_cost' => $material->unit_price/100*$materialData['percentage'],
+                    ]);
+                    $newItemIds[] = $quoteItem->id;
+                    continue;
+                }
+            }
+
+            // Create new raw material
+            $newItem = $quoteProduct->rawMaterialItems()->create([
+                'item_type' => 'raw_material',
+                'item_id' => $material->id,
+                'item_name' => $material->name,
+                'quantity' => 0,
+                'unit' => $material->unit_of_measure,
+                'percentage' => $materialData['percentage'],
+                'unit_cost' => $material->unit_price,
+                'total_cost' => $material->unit_price/100*$materialData['percentage'],
+            ]);
+            $newItemIds[] = $newItem->id;
+        }
+
+        // Optional: delete items not included in request
+        $quoteProduct->rawMaterialItems()->whereNotIn('id', $newItemIds)->delete();
+
+        // Validate total percentage
+        if ($totalPercentage != 100) {
+            return redirect()->back()->with('error', "Total percentage for product '{$quoteProduct->product_name}' must be exactly 100%. Current: {$totalPercentage}%");
+        }
+    }
+
+    return redirect()->route('quotes.create', ['step' => 'blend'])
+        ->with('success', 'Raw materials synced successfully');
+}
+
+ public function addBlend(Request $request, Quote $quote)
+{
+    $request->validate([
+        'blends' => 'required|array',
+        'blends.*.blend_id' => 'required|exists:products,id',
+    ]);
+
+    foreach ($request->blends as $quoteProductId => $blendData) {
+        $quoteProduct = QuoteProduct::find($quoteProductId);
+        if (!$quoteProduct) {
+            continue;
+        }
+
+        $existingBlendIds = $quoteProduct->items()
+            ->where('item_type', 'blend')
+            ->pluck('id')
+            ->toArray();
+        $newBlendIds = [];
+
+        // If blend_id exists in request, check for existing and update/create
+        $blend = Product::find($blendData['blend_id']);
+
+        // Check if blend already exists for this product
+        $existingItem = $quoteProduct->items()
+            ->where('item_type', 'blend')
+            ->where('item_id', $blend->id)
+            ->first();
+
+        if ($existingItem) {
+            // Update existing blend
+            $existingItem->update([
+                'item_name' => $blend->name,
+                'unit' => $blend->unit_of_measure,
+                'unit_cost' => $blend->unit_price,
+                'quantity' => 0,
+                'total_cost' => 0
+            ]);
+            $newBlendIds[] = $existingItem->id;
+        } else {
+            // Create new blend
+            $newItem = $quoteProduct->items()->create([
+                'item_type' => 'blend',
+                'item_id' => $blend->id,
+                'item_name' => $blend->name,
+                'quantity' => 0,
+                'unit' => $blend->unit_of_measure,
+                'unit_cost' => $blend->unit_price,
+                'total_cost' => 0
+            ]);
+            $newBlendIds[] = $newItem->id;
+        }
+
+        // Remove any blend items not in the current request
+        $quoteProduct->items()
+            ->where('item_type', 'blend')
+            ->whereNotIn('id', $newBlendIds)
+            ->delete();
+    }
+
+    return redirect()->route('quotes.create', ['step' => 'packaging'])
+        ->with('success', 'Blends synced successfully');
+}
+
+
+
+public function addPackaging(Request $request, Quote $quote)
+{
+    $request->validate([
+        'packaging' => 'required|array',
+        'packaging.*.packaging' => 'required|array',
+        'packaging.*.packaging.*.item_id' => 'required|exists:products,id',
+    ]);
+
+    foreach ($request->packaging as $quoteProductId => $packagingData) {
+        $quoteProduct = QuoteProduct::find($quoteProductId);
+
+        if (!$quoteProduct) {
+            continue; // Skip if quote product not found
+        }
+
+        $existingItemIds = $quoteProduct->packagingItems()->pluck('id')->toArray();
+        $newItemIds = [];
+
+        foreach ($packagingData['packaging'] as $item) {
+            $product = Product::find($item['item_id']);
+            if (!$product) continue;
+
+            // Check if this packaging already exists for the product
+            $existingItem = $quoteProduct->packagingItems()
+                ->where('item_id', $product->id)
+                ->first();
+
+            if ($existingItem) {
+                // Update existing packaging
+                $existingItem->update([
+                    'item_name' => $product->name,
+                    'unit' => $product->unit_of_measure,
+                    'unit_cost' => $product->unit_price,
+                    'percentage' => 0,
+                    'total_cost' => $product->unit_price,
+                ]);
+                $newItemIds[] = $existingItem->id;
+            } else {
+                // Create new packaging
+                $newItem = $quoteProduct->packagingItems()->create([
+                    'item_type' => 'packaging',
+                    'item_id' => $product->id,
+                    'item_name' => $product->name,
+                    'unit' => $product->unit_of_measure,
+                    'percentage' => 0,
+                    'unit_cost' => $product->unit_price,
+                    'total_cost' => $product->unit_price,
+                ]);
+                $newItemIds[] = $newItem->id;
+            }
+        }
+
+        // Remove any packaging items not in the current request
+        $quoteProduct->packagingItems()
+            ->whereNotIn('id', $newItemIds)
+            ->delete();
+    }
+
+    return redirect()
+        ->route('quotes.create', ['step' => 'calculation'])
+        ->with('success', 'Packaging synced successfully.');
+}
+
+
+
+public function calculate(Request $request, Quote $quote)
+{
+    $request->validate([
+        'manufacturing_cost_percent' => 'nullable|numeric|min:0|max:100',
+        'risk_cost_percent' => 'nullable|numeric|min:0|max:100',
+        'profit_margin_percent' => 'nullable|numeric|min:0|max:100',
+        'tax_rate' => 'nullable|numeric|min:0|max:100'
+    ]);
+
+    $manufacturingPercent = $request->manufacturing_cost_percent ?? 30;
+    $riskPercent = $request->risk_cost_percent ?? 5;
+    $profitPercent = $request->profit_margin_percent ?? 30;
+    $taxRate = $request->tax_rate ?? 19;
+
+    $quoteTotals = [
+        'raw' => 0,
+        'packaging' => 0,
+        'manufacturing' => 0,
+        'risk' => 0,
+        'subtotal' => 0,
+        'tax' => 0,
+        'total' => 0
+    ];
+
+    foreach ($quote->products as $quoteProduct) {
+                    ;
+
+        // Use packaging volume as the final product volume
+        $productVolume = $quoteProduct->packaging->itemDetail->volume ?? $quoteProduct->final_product_volume;
+
+        // ----- Calculate raw materials -----
+        $rawMaterialCost = 0;
+/*        foreach ($quoteProduct->rawMaterialItems as $item) {
+            $quantity = ($item->percentage / 100) * $productVolume;
+            $cost = $quantity * $item->unit_cost;
+
+            $item->update([
+                'quantity' => $quantity,
+                'total_cost' => $cost
+            ]);
+
+            $rawMaterialCost += $cost;
+        }
+*/
+        // ----- Calculate blend -----
+        $blendItem = $quoteProduct->items()->where('item_type', 'blend')->first();
+        $blendCost = 0;
+        if ($blendItem) {
+            $blendQuantity = $blendItem->itemDetail->unit_price * $productVolume;
+            $blendCost = $blendItem->itemDetail->unit_price * $productVolume;
+            $blendItem->update([
+                'quantity' => 1,
+                'total_cost' => $blendCost
+            ]);
+
+            $rawMaterialCost += $blendCost;
+        }
+
+        // ----- Packaging cost -----
+        $packagingCost = $quoteProduct->packagingItems()->sum('total_cost');
+
+        $productCost=$rawMaterialCost+ $packagingCost;
+
+        // ----- Manufacturing & Risk -----
+        $manufacturingCost = ($manufacturingPercent / 100) * $productCost;
+        $riskCost = ($riskPercent / 100) * $productCost;
+
+        // ----- Subtotal & Tax -----
+        $subtotal = $productCost  + $manufacturingCost + $riskCost;
+        $profitAmount = ($profitPercent / 100) * $subtotal;
+        $totalBeforeTax = $subtotal + $profitAmount;
+        $taxAmount = ($taxRate / 100) * $totalBeforeTax;
+        $totalAmount = $totalBeforeTax + $taxAmount;
+
+        // ----- Update quote product -----
+        $quoteProduct->update([
+            'total_raw_material_cost' => $rawMaterialCost,
+            'total_packaging_cost' => $packagingCost,
+            'manufacturing_cost' => $manufacturingCost,
+            'risk_cost' => $riskCost,
+            'profit_margin' => $profitPercent,
+            'subtotal' => $subtotal,
+            'tax_rate' => $taxRate,
+            'tax_amount' => $taxAmount,
+            'total_amount' => $totalAmount
+        ]);
+
+        // ----- Accumulate totals -----
+        $quoteTotals['raw'] += $rawMaterialCost;
+        $quoteTotals['packaging'] += $packagingCost;
+        $quoteTotals['manufacturing'] += $manufacturingCost;
+        $quoteTotals['risk'] += $riskCost;
+        $quoteTotals['subtotal'] += $subtotal;
+        $quoteTotals['tax'] += $taxAmount;
+        $quoteTotals['total'] += $totalAmount;
+    }
+
+    // ----- Update main quote -----
+    $quote->update([
+        'total_raw_material_cost' => $quoteTotals['raw'],
+        'total_packaging_cost' => $quoteTotals['packaging'],
+        'manufacturing_cost' => $quoteTotals['manufacturing'],
+        'risk_cost' => $quoteTotals['risk'],
+        'total_profit' => $profitPercent,
+        'subtotal' => $quoteTotals['subtotal'],
+        'tax_amount' => $quoteTotals['tax'],
+        'total_amount' => $quoteTotals['total']
+    ]);
+
+    session()->forget('current_quote_id');
+
+    return redirect()->route('quotes.show', $quote->id)
+        ->with('success', 'Quotation calculated and saved successfully');
+}
+
+
+    public function index()
+    {
+        $quotes = Quote::with(['customer', 'products.items'])->latest()->get();
+        return response()->json($quotes);
+    }
+
+    public function editModal(Request $request,$id)
+    {
+        $customers = Customer::get();
+        $quote = Quote::with(['products'])->findOrFail($id);
+                $step = $request->step ?? 'basic';
+
+                $rawMaterials = Product::where('category', 'raw_material')->get();
+        $packagingMaterials = Product::where('category', 'packaging')->get();
+        $blends = Product::where('category', 'blend')->get();
+
+        return view('quotes.edit', compact('customers', 'quote','step','rawMaterials','packagingMaterials','blends'));
+    }
+
+
+public function show(Quote $quote)
+{
+    $quote->load([
+        'customer',
+        'products.rawMaterialItems.item',
+        'products.packagingItems.item',
+        'products.blendItems.item'
+    ]);
+
+    return view('quotes.show', compact('quote'));
+}
+    public function update(Request $request, Quote $quote)
+    {
+        $request->validate([
+            'notes' => 'nullable|string',
+            'status' => 'sometimes|in:draft,sent,accepted,rejected'
+        ]);
+
+        $quote->update($request->only(['notes', 'status']));
+
+        return response()->json($quote->load(['customer', 'products.items']));
+    }
+
+    public function destroy(Quote $quote)
+    {
+        $quote->delete();
+        return response()->json(null, 204);
+    }
+
+    public function removeItem($itemId)
+    {
+        $item = QuoteItem::findOrFail($itemId);
+        $quoteProduct = $item->quoteProduct;
+        
+        $item->delete();
+
+        // Recalculate costs if needed
+        if (in_array($item->item_type, ['packaging', 'raw_material', 'blend'])) {
+            // You might want to trigger a recalculation here
+            // or let the user recalculate manually
+        }
+
+        return response()->json(['message' => 'Item removed successfully']);
+    }
+
+    // Helper method to get product details for AJAX requests
+    public function getProductDetails($id)
+    {
+        $product = Product::findOrFail($id);
+        return response()->json([
+            'id' => $product->id,
+            'name' => $product->name,
+            'unit_price' => $product->unit_price,
+            'unit_of_measure' => $product->unit_of_measure
+        ]);
+    }
+}
