@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('category', ['raw_material', 'packaging', 'final_product','blend']);
             $table->string('product_type')->nullable();
             $table->decimal('unit_price', 15, 2);
-            $table->decimal('volume', 15, 2);
+            $table->decimal('volume', 15, 2)->nullable();
             $table->string('unit_of_measure');
             $table->enum('status', ['active', 'inactive', 'discontinued'])->default('active');
             $table->timestamps();
