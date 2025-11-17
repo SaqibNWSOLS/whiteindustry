@@ -19,12 +19,12 @@
             </a>
         </div>
 
-        {{-- <div class="nav-item {{ request()->is('production*') ? 'active' : '' }}" data-module="production">
+        <div class="nav-item {{ request()->is('production*') ? 'active' : '' }}" data-module="production">
             <a href="{{ url('/production') }}" class="nav-button" aria-expanded="false">
                 <i class="uil uil-cube nav-icon"></i>
                 <span class="nav-label">Production</span>
             </a>
-        </div> --}}
+        </div>
 
         <div class="nav-item {{ request()->is('inventory*') ? 'active' : '' }}" data-module="inventory">
             <a href="{{ url('/inventory') }}" class="nav-button" aria-expanded="false">
