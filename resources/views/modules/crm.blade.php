@@ -81,6 +81,7 @@
                         <th>Products</th>
                         <th>Total Value</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="crm-quotes-tbody">

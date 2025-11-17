@@ -33,7 +33,7 @@ Route::prefix('quotes')->group(function () {
         Route::put('/update-basic/{id}', [QuotationController::class, 'updateBasic'])->name('quotes.update-basic');
 
     Route::put('/{quote}/add-products', [QuotationController::class, 'addProducts'])->name('quotes.update-products');
-    Route::put('/{quote}/add-raw-materials', [QuotationController::class, 'addRawMaterials'])->name('quotes.update-raw-materials');
+    Route::put('/{quote}/add-raw-materials', [QuotationController::class, 'addRawMaterialsAndBlends'])->name('quotes.update-raw-materials');
     Route::put('/{quote}/update-blend', [QuotationController::class, 'addBlend'])->name('quotes.update-blend');
     Route::put('/{quote}/update-packaging', [QuotationController::class, 'addPackaging'])->name('quotes.update-packaging');
     Route::post('/{quote}/calculate', [QuotationController::class, 'calculate'])->name('quotes.calculate');

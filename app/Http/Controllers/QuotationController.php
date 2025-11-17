@@ -121,137 +121,146 @@ class QuotationController extends Controller
     ])->with('success', 'Products synced successfully');
 }
 
- public function addRawMaterials(Request $request, $id)
+ public function addRawMaterialsAndBlends(Request $request, $id)
 {
-    $request->validate([
-        'raw_materials' => 'required|array',
-        'raw_materials.*.materials' => 'required|array',
-        'raw_materials.*.materials.*.item_id' => 'required|exists:products,id',
-        'raw_materials.*.materials.*.percentage' => 'required|numeric|min:0|max:100'
-    ]);
+
+/*    echo json_encode($request->all()); exit;
+*/    $request->validate([
+    // Raw materials required if blends not submitted
+    'raw_materials' => 'required_without:blends|array',
+    'raw_materials.*.materials' => 'required_with:raw_materials|array',
+    'raw_materials.*.materials.*.item_id' => 'required_with:raw_materials|exists:products,id',
+    'raw_materials.*.materials.*.percentage' => 'required_with:raw_materials|numeric|min:0|max:100',
+
+    // Blends required if raw materials not submitted
+    'blends' => 'required_without:raw_materials|array',
+
+    // Blend ID is only required if blends is not empty and raw_materials is NOT used
+    'blends.*.blend_id' => 'required_without:raw_materials|nullable|exists:products,id',
+]);
+
+
 
     $quote = Quote::findOrFail($id);
 
-    foreach ($request->raw_materials as $quoteProductId => $productMaterials) {
-        $quoteProduct = QuoteProduct::find($quoteProductId);
-        if (!$quoteProduct) {
-            continue;
-        }
-
-        $existingItemIds = $quoteProduct->rawMaterialItems->pluck('id')->toArray();
-        $newItemIds = [];
-        $totalPercentage = 0;
-
-        foreach ($productMaterials['materials'] as $materialData) {
-            $material = Product::find($materialData['item_id']);
-            $totalPercentage += $materialData['percentage'];
-
-            if (isset($materialData['id'])) {
-                // Update existing raw material
-                $quoteItem = $quoteProduct->rawMaterialItems()->find($materialData['id']);
-                if ($quoteItem) {
-                    $quoteItem->update([
-                        'item_id' => $material->id,
-                        'item_name' => $material->name,
-                        'unit' => $material->unit_of_measure,
-                        'unit_cost' => $material->unit_price,
-                        'percentage' => $materialData['percentage'],
-                        'quantity' => 0,
-                        'total_cost' => $material->unit_price/100*$materialData['percentage'],
-                    ]);
-                    $newItemIds[] = $quoteItem->id;
-                    continue;
-                }
+    // Process Raw Materials (if provided)
+    if (!empty($request->raw_materials)) {
+        foreach ($request->raw_materials as $quoteProductId => $productMaterials) {
+            $quoteProduct = QuoteProduct::find($quoteProductId);
+            if (!$quoteProduct) {
+                continue;
             }
 
-            // Create new raw material
-            $newItem = $quoteProduct->rawMaterialItems()->create([
-                'item_type' => 'raw_material',
-                'item_id' => $material->id,
-                'item_name' => $material->name,
-                'quantity' => 0,
-                'unit' => $material->unit_of_measure,
-                'percentage' => $materialData['percentage'],
-                'unit_cost' => $material->unit_price,
-                'total_cost' => $material->unit_price/100*$materialData['percentage'],
-            ]);
-            $newItemIds[] = $newItem->id;
-        }
+            $existingItemIds = $quoteProduct->rawMaterialItems->pluck('id')->toArray();
+            $newItemIds = [];
+            $totalPercentage = 0;
 
-        // Optional: delete items not included in request
-        $quoteProduct->rawMaterialItems()->whereNotIn('id', $newItemIds)->delete();
+            foreach ($productMaterials['materials'] as $materialData) {
+                $material = Product::find($materialData['item_id']);
+                $totalPercentage += $materialData['percentage'];
 
-        // Validate total percentage
-        if ($totalPercentage != 100) {
-            return redirect()->back()->with('error', "Total percentage for product '{$quoteProduct->product_name}' must be exactly 100%. Current: {$totalPercentage}%");
+                if (isset($materialData['id'])) {
+                    // Update existing raw material
+                    $quoteItem = $quoteProduct->rawMaterialItems()->find($materialData['id']);
+                    if ($quoteItem) {
+                        $quoteItem->update([
+                            'item_id' => $material->id,
+                            'item_name' => $material->name,
+                            'unit' => $material->unit_of_measure,
+                            'unit_cost' => $material->unit_price,
+                            'percentage' => $materialData['percentage'],
+                            'quantity' => 0,
+                            'total_cost' => $material->unit_price/100*$materialData['percentage'],
+                        ]);
+                        $newItemIds[] = $quoteItem->id;
+                        continue;
+                    }
+                }
+
+                // Create new raw material
+                $newItem = $quoteProduct->rawMaterialItems()->create([
+                    'item_type' => 'raw_material',
+                    'item_id' => $material->id,
+                    'item_name' => $material->name,
+                    'quantity' => 0,
+                    'unit' => $material->unit_of_measure,
+                    'percentage' => $materialData['percentage'],
+                    'unit_cost' => $material->unit_price,
+                    'total_cost' => $material->unit_price/100*$materialData['percentage'],
+                ]);
+                $newItemIds[] = $newItem->id;
+            }
+
+            // Optional: delete items not included in request
+            $quoteProduct->rawMaterialItems()->whereNotIn('id', $newItemIds)->delete();
+
+            // Validate total percentage
+            if ($totalPercentage != 100) {
+                return redirect()->back()->with('error', "Total percentage for product '{$quoteProduct->product_name}' must be exactly 100%. Current: {$totalPercentage}%");
+            }
         }
     }
 
-    return redirect()->route('quotes.create', ['step' => 'blend'])
-        ->with('success', 'Raw materials synced successfully');
-}
+    // Process Blends (if provided)
+    if (!empty($request->blends)) {
+        foreach ($request->blends as $quoteProductId => $blendData) {
+            $quoteProduct = QuoteProduct::find($quoteProductId);
+            if (!$quoteProduct) {
+                continue;
+            }
 
- public function addBlend(Request $request, Quote $quote)
-{
-    $request->validate([
-        'blends' => 'required|array',
-        'blends.*.blend_id' => 'required|exists:products,id',
-    ]);
+            $existingBlendIds = $quoteProduct->items()
+                ->where('item_type', 'blend')
+                ->pluck('id')
+                ->toArray();
+            $newBlendIds = [];
 
-    foreach ($request->blends as $quoteProductId => $blendData) {
-        $quoteProduct = QuoteProduct::find($quoteProductId);
-        if (!$quoteProduct) {
-            continue;
+          if (!empty($blendData['blend_id'])) {
+           
+            // If blend_id exists in request, check for existing and update/create
+            $blend = Product::find($blendData['blend_id']);
+
+            // Check if blend already exists for this product
+            $existingItem = $quoteProduct->items()
+                ->where('item_type', 'blend')
+                ->where('item_id', $blend->id)
+                ->first();
+
+            if ($existingItem) {
+                // Update existing blend
+                $existingItem->update([
+                    'item_name' => $blend->name,
+                    'unit' => $blend->unit_of_measure,
+                    'unit_cost' => $blend->unit_price,
+                    'quantity' => 0,
+                    'total_cost' => 0
+                ]);
+                $newBlendIds[] = $existingItem->id;
+            } else {
+                // Create new blend
+                $newItem = $quoteProduct->items()->create([
+                    'item_type' => 'blend',
+                    'item_id' => $blend->id,
+                    'item_name' => $blend->name,
+                    'quantity' => 0,
+                    'unit' => $blend->unit_of_measure,
+                    'unit_cost' => $blend->unit_price,
+                    'total_cost' => 0
+                ]);
+                $newBlendIds[] = $newItem->id;
+            }
+
+            // Remove any blend items not in the current request
+            $quoteProduct->items()
+                ->where('item_type', 'blend')
+                ->whereNotIn('id', $newBlendIds)
+                ->delete();
+            }
         }
-
-        $existingBlendIds = $quoteProduct->items()
-            ->where('item_type', 'blend')
-            ->pluck('id')
-            ->toArray();
-        $newBlendIds = [];
-
-        // If blend_id exists in request, check for existing and update/create
-        $blend = Product::find($blendData['blend_id']);
-
-        // Check if blend already exists for this product
-        $existingItem = $quoteProduct->items()
-            ->where('item_type', 'blend')
-            ->where('item_id', $blend->id)
-            ->first();
-
-        if ($existingItem) {
-            // Update existing blend
-            $existingItem->update([
-                'item_name' => $blend->name,
-                'unit' => $blend->unit_of_measure,
-                'unit_cost' => $blend->unit_price,
-                'quantity' => 0,
-                'total_cost' => 0
-            ]);
-            $newBlendIds[] = $existingItem->id;
-        } else {
-            // Create new blend
-            $newItem = $quoteProduct->items()->create([
-                'item_type' => 'blend',
-                'item_id' => $blend->id,
-                'item_name' => $blend->name,
-                'quantity' => 0,
-                'unit' => $blend->unit_of_measure,
-                'unit_cost' => $blend->unit_price,
-                'total_cost' => 0
-            ]);
-            $newBlendIds[] = $newItem->id;
-        }
-
-        // Remove any blend items not in the current request
-        $quoteProduct->items()
-            ->where('item_type', 'blend')
-            ->whereNotIn('id', $newBlendIds)
-            ->delete();
     }
 
     return redirect()->route('quotes.create', ['step' => 'packaging'])
-        ->with('success', 'Blends synced successfully');
+        ->with('success', 'Data synced successfully');
 }
 
 
@@ -346,50 +355,50 @@ public function calculate(Request $request, Quote $quote)
     ];
 
     foreach ($quote->products as $quoteProduct) {
-                    ;
 
-        // Use packaging volume as the final product volume
-        $productVolume = $quoteProduct->packaging->itemDetail->volume ?? $quoteProduct->final_product_volume;
+        // Use packaging volume as final product volume
+        $productVolume = $quoteProduct->packagingItems()->first()->itemDetail->volume ?? $quoteProduct->final_product_volume;
 
         // ----- Calculate raw materials -----
         $rawMaterialCost = 0;
-/*        foreach ($quoteProduct->rawMaterialItems as $item) {
-            $quantity = ($item->percentage / 100) * $productVolume;
-            $cost = $quantity * $item->unit_cost;
+        $rawMaterialItems = $quoteProduct->rawMaterialItems ?? collect();
 
-            $item->update([
-                'quantity' => $quantity,
-                'total_cost' => $cost
-            ]);
+        if ($rawMaterialItems->count() > 0) {
+            foreach ($rawMaterialItems as $item) {
+                $quantity = ($item->percentage / 100) * $productVolume; // take percentage of product volume
+                $cost = $quantity * $item->unit_cost; // unit price * percentage * volume
 
-            $rawMaterialCost += $cost;
+                $item->update([
+                    'quantity' => $quantity,
+                    'total_cost' => $cost
+                ]);
+
+                $rawMaterialCost += $cost;
+            }
         }
-*/
+
         // ----- Calculate blend -----
         $blendItem = $quoteProduct->items()->where('item_type', 'blend')->first();
-        $blendCost = 0;
         if ($blendItem) {
-            $blendQuantity = $blendItem->itemDetail->unit_price * $productVolume;
             $blendCost = $blendItem->itemDetail->unit_price * $productVolume;
             $blendItem->update([
                 'quantity' => 1,
                 'total_cost' => $blendCost
             ]);
-
-            $rawMaterialCost += $blendCost;
+            $rawMaterialCost = $blendCost; // override raw material if blend exists
         }
 
         // ----- Packaging cost -----
         $packagingCost = $quoteProduct->packagingItems()->sum('total_cost');
 
-        $productCost=$rawMaterialCost+ $packagingCost;
+        $productCost = $rawMaterialCost + $packagingCost;
 
         // ----- Manufacturing & Risk -----
         $manufacturingCost = ($manufacturingPercent / 100) * $productCost;
         $riskCost = ($riskPercent / 100) * $productCost;
 
         // ----- Subtotal & Tax -----
-        $subtotal = $productCost  + $manufacturingCost + $riskCost;
+        $subtotal = $productCost + $manufacturingCost + $riskCost;
         $profitAmount = ($profitPercent / 100) * $subtotal;
         $totalBeforeTax = $subtotal + $profitAmount;
         $taxAmount = ($taxRate / 100) * $totalBeforeTax;

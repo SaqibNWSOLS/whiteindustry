@@ -298,6 +298,17 @@
             <div id="body" class="body"></div>
         </div>
     </div>
+
+     <div id="modal-overlay" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title">Modal Title</h3>
+                <button class="close" onclick="hideModel()">&times;</button>
+            </div>
+            <div id="modal-body" class="body"></div>
+        </div>
+    </div>
+   
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
     <script>

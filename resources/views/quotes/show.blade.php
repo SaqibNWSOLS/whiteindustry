@@ -1,304 +1,437 @@
-<!DOCTYPE html>
-<html lang="zxx">
-<head>
-    <title>Quotation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8">
+@extends('layouts.app')
 
-    <!-- External CSS libraries -->
-    <link type="text/css" rel="stylesheet" href="{{ asset('css/manage.css') }}">
+@section('title', isset($quote) ? 'Show Quotation' : 'Show Quotation')
+@section('page_title', isset($quote) ? 'Show Quotation' : 'Show Quotation')
 
-    <link type="text/css" rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.min.css">
-    
-    <!-- Bootstrap Icons for the new design -->
+@section('content')
+
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
-    <!-- Favicon icon -->
-    <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" >
 
     <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900">
-
-    <!-- Custom Stylesheet -->
-    <link type="text/css" rel="stylesheet" href="{{ asset('css/invoice.css') }}">
     
-    <style>
-        /* Additional styles for the new sections */
-        .info-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            height: 100%;
+   
+<div class="col-12" style="margin-bottom: 10px;">
+    <div class="invoice-actions">
+            <a href="javascript:window.print()" class="btn btn-print">
+                <i class="bi bi-printer"></i> Print
+            </a>
+            <a id="invoice_download_btn" class="btn btn-download">
+                <i class="bi bi-download"></i> Download PDF
+            </a>
+        </div>
+</div>
+<div class="invoice-container">
+     <style>
+        :root {
+            --primary: #143619;
+            --primary-dark: #1a252f;
+            --secondary: #7f8c8d;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --border: #e9ecef;
+            --radius: 5px;
+            --font-size-sm: 0.9rem;
+            --font-size-base: 0.8rem;
+            --font-size-md: 0.9rem;
+            --font-size-lg: 1rem;
         }
         
-        .info-card h5 {
-            color: #2c3e50;
-            font-weight: 600;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 10px;
+        
+        .invoice-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
         
-        .info-card address {
-            font-style: normal;
-            line-height: 1.6;
+        .invoice-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            position: relative;
         }
         
-        .info-card i {
-            width: 20px;
-            text-align: center;
-        }
-        
-        .cost-breakdown {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 25px;
-            margin-top: 10px;
-        }
-        
-        .cost-breakdown h5 {
-            color: #2c3e50;
-            font-weight: 600;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 15px;
-        }
-        
-        .cost-breakdown table {
-            margin-bottom: 0;
-        }
-        
-        .cost-breakdown .table-borderless tr:not(:last-child) {
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .cost-breakdown .border-top {
-            border-top: 2px solid #dee2e6 !important;
-        }
-        
-        .cost-breakdown .border-2 {
-            border-width: 2px !important;
-        }
-        
-        .cost-breakdown .total-amount {
-            font-size: 1.25rem;
+        .company-name {
+            font-size: var(--font-size-lg);
             font-weight: 700;
-            color: #2c3e50;
+            margin-bottom: 5px;
         }
         
-        .cost-breakdown .fs-4 {
-            font-size: 1.25rem !important;
+        .company-tagline {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-title {
+            text-align: center;
+            margin: 0px 0;
+        }
+        
+        .invoice-title h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        .invoice-meta {
+            justify-content: space-between;
+            margin-bottom: 0px;
+            font-size: var(--font-size-sm);
+        }
+        
+        .invoice-meta div {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .invoice-meta span {
+            font-weight: 600;
+        }
+        
+        .client-info {
+            background: var(--light);
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .client-info h3 {
+            margin: 0 0 10px 0;
+            font-size: var(--font-size-md);
+            color: var(--primary);
+        }
+        
+        .invoice-body {
+            padding: 0 25px;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size-sm);
+        }
+        
+        .invoice-table th {
+            background: var(--primary);
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid var(--primary-dark);
+        }
+        
+        .invoice-table td {
+            padding: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .invoice-table tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .section-title {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            color: var(--primary);
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .totals-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--light);
+            border-radius: var(--radius);
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 8px 5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .totals-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .totals-table .total-row {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+        }
+        
+        .totals-table .grand-total {
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            color: var(--primary);
+        }
+        
+        .amount-in-words {
+            font-style: italic;
+            margin: 10px 0;
+            font-size: var(--font-size-sm);
+        }
+        
+        .terms-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: var(--font-size-sm);
+        }
+        
+        .terms-section h4 {
+            margin: 0 0 10px 0;
+            font-size: var(--font-size-md);
+            color: var(--primary);
+        }
+        
+        .company-details {
+            background: var(--light);
+            padding: 15px 25px;
+            border-top: 1px solid var(--border);
+            font-size: var(--font-size-sm);
+        }
+        
+        .company-details p {
+            margin: 5px 0;
+        }
+        
+        .invoice-footer {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-sm);
+        }
+        
+        .btn-print {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-print:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-download {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-download:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn i {
+            margin-right: 5px;
         }
         
         @media (max-width: 768px) {
-            .mb-4 {
-                margin-bottom: 1.5rem !important;
+            body {
+                padding: 10px;
             }
             
-            .cost-breakdown {
-                padding: 15px;
+            .invoice-meta {
+                flex-direction: column;
+                gap: 10px;
             }
             
-            .cost-breakdown .col-lg-8 {
-                padding: 0;
+            .invoice-footer {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .invoice-footer .btn {
+                width: 100%;
             }
         }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-bold {
+            font-weight: 600;
+        }
     </style>
-</head>
-<body>
 
-<!-- Invoice 1 start -->
-<div class="invoice-1 invoice-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="invoice-inner clearfix">
-                    <div class="invoice-info clearfix" id="invoice_wrapper">
-                        <div class="invoice-headar">
-                            <div class="row g-0" style="display: flex;">
-                                <div class="col-sm-6">
-                                    <div class="invoice-logo  invoice-id">
-                                        <!-- logo started -->
-                                        <div class="logo">
-                                            <img src="{{ asset('logo.png') }}" alt="logo">
-                                        </div>
-                                        <!-- logo ended -->
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="info">
-                                        <h1 class=" inv-header-1">Quotation</h1>
-                                        <p class=" mb-1">Quotation Number <span>#{{ $quote->quote_number ?? $quote->id }}</span></p>
-                                        <p class=" mb-0"> Date <span>{{ $quote->created_at->format('M d, Y') }}</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- New From and Bill To sections -->
-                        <div class="invoice-top">
-                            <div class="row mb-5">
-                                <div class="col-md-6 mb-4">
-                                    <div class="info-card">
-                                        <h5 class="d-flex align-items-center mb-3">
-                                            <i class="bi bi-building me-2"></i> From
-                                        </h5>
-                                        <address class="mb-0">
-                                            <strong>{{ $company->name ?? config('app.name') }}</strong><br>
-                                            {{ $company->address ?? '123 Business Street' }}<br>
-                                            {{ $company->city ?? 'City' }}, {{ $company->state ?? 'State' }} {{ $company->zip_code ?? 'ZIP' }}<br>
-                                            {{ $company->country ?? 'Country' }}<br>
-                                            <i class="bi bi-telephone me-1"></i> {{ $company->phone ?? '+1 (555) 123-4567' }}<br>
-                                            <i class="bi bi-envelope me-1"></i> {{ $company->email ?? 'info@company.com' }}<br>
-                                            @if($company->website ?? false)
-                                            <i class="bi bi-globe me-1"></i> {{ $company->website }}<br>
-                                            @endif
-                                            @if($company->tax_id ?? false)
-                                            <i class="bi bi-card-text me-1"></i> Tax ID: {{ $company->tax_id }}
-                                            @endif
-                                        </address>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="info-card">
-                                        <h5 class="d-flex align-items-center mb-3">
-                                            <i class="bi bi-person me-2"></i> Bill To
-                                        </h5>
-                                        <address class="mb-0">
-                                            <strong>{{ $quote->customer->company_name ?? $quote->customer->contact_person }}</strong><br>
-                                            @if($quote->customer->contact_person && $quote->customer->company_name)
-                                            Attn: {{ $quote->customer->contact_person }}<br>
-                                            @endif
-                                            {{ $quote->customer->address ?? '' }}<br>
-                                            @if($quote->customer->city)
-                                            {{ $quote->customer->city }}, 
-                                            {{ $quote->customer->state ?? '' }} {{ $quote->customer->postal_code ?? '' }}<br>
-                                            @endif
-                                            {{ $quote->customer->country ?? '' }}<br>
-                                            @if($quote->customer->phone)
-                                            <i class="bi bi-telephone me-1"></i> {{ $quote->customer->phone }}<br>
-                                            @endif
-                                            @if($quote->customer->email)
-                                            <i class="bi bi-envelope me-1"></i> {{ $quote->customer->email }}<br>
-                                            @endif
-                                            @if($quote->customer->tax_id)
-                                            <i class="bi bi-card-text me-1"></i> Tax ID: {{ $quote->customer->tax_id }}
-                                            @endif
-                                        </address>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="invoice-center">
-                            <div class="table-responsive">
-                                <table class="table mb-0 table-striped invoice-table">
-                                    <thead class="bg-active">
-                                    <tr class="tr">
-                                        <th>No.</th>
-                                        <th class="pl0 text-start">Item Description</th>
-                                        <th class="text-center">Price</th>
-                                        <th class="text-center">Quantity</th>
-                                        <th class="text-end">Amount</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if($quote->products->count() > 0)
+    <div class="invoice-header">
+        <table style="width:100%">
+            <tr>
+                <td><div class="company-name">EURL BUSINESS CHALLENGE</div>
+        <div class="company-tagline">Dietary Supplements • Cosmetic Products • Hotel Amenities • Para-Pharmaceuticals</div></td>
+        <td style="text-align: right"><img src="{{ asset('logo.png') }}"></td>
+            </tr>
+            
+        </table>
+        <table style="width: 100%;">
+            <tr>
+                <td><div class="invoice-title">
+            <h1>Quotation</h1>
+        </div>
+        </td>
+            </tr>
+        </table>
+        <table class="invoice-meta" style="width:100%">
+           <tr>
+               <td><div>
+                Quotation Number: <span>{{ $quote->quote_number ?? $quote->id }}</span>
+            </div>
+           </td>
+               <td><div>
+                Quotation Date: <span>{{ $quote->created_at->format('M d, Y') }}</span>
+            </div></td>
+           </tr>
+        </table>
+        
+        
+        <div >
+             
+        </div>
+    </div>
+    
+    <div class="client-info">
+        <h3>CLIENT: {{ $quote->customer->company_name ?? $quote->customer->contact_person }}</h3>
+    </div>
+    
+    <div class="invoice-body">
+        <div class="section-title">Products List</div>
+        
+        <div class="table-responsive">
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Product Name</th>
+                        <th>Unit, Measure</th>
+                        <th>Product Quantity</th>
+                        <th>Unit Price (Excl. Tax)</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     @if($quote->products->count() > 0)
                                         @foreach($quote->products as $key=>$product)
-                                    <tr class="tr">
-                                        <td>
+                    <tr>
+                       <td>
                                             <div class="item-desc-1">
                                                 <span>{{ ++$key }}</span>
                                             </div>
                                         </td>
-                                        <td class="pl0">{{ $product->product_name }}</td>
-                                        <td class="text-center">{{ $product->total_amount }}</td>
-                                        <td class="text-center">1</td>
-                                        <td class="text-end">{{ $product->total_amount }}</td>
-                                    </tr>
-                                    @endforeach
-                                    @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                                                                <td class="pl0">{{ $product->product_name }}</td>
 
-                        <!-- Cost Breakdown Section -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    
-                                    <div class="cost-breakdown rounded">
-                                        <div class="row justify-content-center">
-                                            <div class="col-lg-12">
-                                                <div class="table-responsive">
-                                                    <table class="table table-borderless">
-                                                        <tr>
-                                                            <td class="ps-0">Raw Materials Cost:</td>
-                                                            <td class="text-end pe-0">€{{ number_format($quote->total_raw_material_cost, 2) }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="ps-0">Packaging Cost:</td>
-                                                            <td class="text-end pe-0">€{{ number_format($quote->total_packaging_cost, 2) }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="ps-0">Manufacturing Cost ({{ $quote->manufacturing_cost_percent ?? 30 }}%):</td>
-                                                            <td class="text-end pe-0">€{{ number_format($quote->manufacturing_cost, 2) }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="ps-0">Risk Cost ({{ $quote->risk_cost_percent ?? 5 }}%):</td>
-                                                            <td class="text-end pe-0">€{{ number_format($quote->risk_cost, 2) }}</td>
-                                                        </tr>
-                                                        <tr class="border-top">
-                                                            <td class="ps-0"><strong>Subtotal:</strong></td>
-                                                            <td class="text-end pe-0"><strong>€{{ number_format($quote->subtotal, 2) }}</strong></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="ps-0">Profit Margin ({{ $quote->profit_margin_percent ?? 30 }}%):</td>
-                                                            <td class="text-end pe-0">€{{ number_format($quote->total_profit, 2) }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="ps-0"><strong>Total without Tax:</strong></td>
-                                                            <td class="text-end pe-0"><strong>€{{ number_format($quote->total_without_tax, 2) }}</strong></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="ps-0">Tax ({{ $quote->tax_rate ?? 19 }}%):</td>
-                                                            <td class="text-end pe-0">€{{ number_format($quote->tax_amount, 2) }}</td>
-                                                        </tr>
-                                                        <tr class="border-top border-2">
-                                                            <td class="ps-0"><strong class="fs-4">Total Amount:</strong></td>
-                                                            <td class="text-end pe-0 total-amount">€{{ number_format($quote->total_amount, 2) }}</td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
-                       
-                        
-                    </div>
-                    <div class="invoice-btn-section clearfix d-print-none">
-                        <a href="javascript:window.print()" class="btn btn-lg btn-print">
-                            <i class="fa fa-print"></i> Print Invoice
-                        </a>
-                        <a id="invoice_download_btn" class="btn btn-lg btn-download btn-theme">
-                            <i class="fa fa-download"></i> Download Invoice
-                        </a>
-                    </div>
-                </div>
-            </div>
+                                        <td>{{ $product->packaging->volume??'' }} {{ $product->packaging->unit??'' }}</td>
+                                                                                <td class="text-center">1</td>
+
+                                        <td class="text-center">{{ $product->total_amount }} DA</td>
+                                        <td class="text-end">{{ $product->total_amount }} DA</td>
+                    </tr>
+                    @endforeach
+                                                        @endif
+
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td>Total Excluding Tax:</td>
+                    <td class="text-right">{{ number_format($quote->total_amount-$quote->tax_amount, 2) }} DA</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="amount-in-words">
+                        Forty-six million one hundred eighty-three thousand six hundred fifty dinars and ten centimes
+                    </td>
+                </tr>
+                <tr>
+                    <td>VAT {{ $quote->tax_rate ?? 19 }}%:</td>
+                    <td class="text-right">{{ number_format($quote->tax_amount, 2) }} DA</td>
+                </tr>
+                <tr class="grand-total">
+                    <td>Total Including Tax:</td>
+                    <td class="text-right">{{ number_format($quote->total_amount, 2) }} DA</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="terms-section">
+            <h4>Terms and Deadlines</h4>
+            <p>Product completion time is 120 days from order confirmation.</p>
+            <p>Payment terms: 50% upon order, 50% upon delivery.</p>
+            <p>This proforma invoice is valid for one week. Terms may be modified after this date.</p>
         </div>
     </div>
+    
+    <div class="company-details">
+        <p><strong>EURL BUSINESS CHALLENGE</strong></p>
+        <p>Main headquarters: Hai OS juillet group n° 17 lot n°13 rdc Bab Ezzouar – Algiers</p>
+        <p>RC : 16/00–0050650 B 17 – NIF : 00171500505049 – NIS:001715100038165 – ART : 16296007124</p>
+        <p>Phone : 020 199 828 – Email : businesschallengegroup@gmail.com</p>
+    </div>
+    
+    <div class="invoice-footer">
+        <div>
+            <p class="mb-0">Thank you for your trust!</p>
+        </div>
+        
+    </div>
 </div>
-<!-- Invoice 1 end -->
+<script>
+document.querySelector('.btn-print').addEventListener('click', function() {
+    // Select the invoice content
+    const invoiceContent = document.querySelector('.invoice-container').innerHTML;
 
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/jspdf.min.js"></script>
-<script src="assets/js/html2canvas.js"></script>
-<script src="assets/js/app.js"></script>
-</body>
-</html>
+    // Save the current body content
+    const originalContent = document.body.innerHTML;
+
+    // Replace body with invoice content
+    document.body.innerHTML = invoiceContent;
+
+    // Trigger print
+    window.print();
+
+    // Restore original body content
+    document.body.innerHTML = originalContent;
+
+    // Optional: reload JS if needed (for event listeners)
+    location.reload();
+});
+</script>
+
+@endsection

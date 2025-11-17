@@ -24,12 +24,7 @@
                 <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'raw_materials']) : '#' }}" 
                    class="step {{ $step == 'raw_materials' ? 'active' : '' }} {{ in_array($step, ['blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
                     <div class="step-number">3</div>
-                    <div class="step-label">Raw Materials</div>
-                </a>
-                <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'blend']) : '#' }}" 
-                   class="step {{ $step == 'blend' ? 'active' : '' }} {{ in_array($step, ['packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
-                    <div class="step-number">4</div>
-                    <div class="step-label">Blend</div>
+                    <div class="step-label">Raw Materials & Blend</div>
                 </a>
                 <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'packaging']) : '#' }}" 
                    class="step {{ $step == 'packaging' ? 'active' : '' }} {{ $step == 'calculation' ? 'completed' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
@@ -266,9 +261,43 @@
 
                 <!-- Step 3: Raw Materials -->
                 @if($step == 'raw_materials' && isset($quote))
+                
                 <form method="POST" action="{{ route('quotes.update-raw-materials', $quote->id) }}">
                     @csrf
                     @method('PUT')
+
+                    @foreach($quote->products as $product)
+                    <div class="product-section">
+                        <div class="product-header">
+                            <h3 class="product-title">{{ $product->product_name }}</h3>
+                                                    </div>
+
+                        @php
+                            $existingBlend = $product->items()->where('item_type', 'blend')->first();
+                        @endphp
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Blend *</label>
+                                <select name="blends[{{ $product->id }}][blend_id]" class="form-control" >
+                                    <option value="">Select Blend</option>
+                                    @foreach($blends as $blend)
+                                        <option value="{{ $blend->id }}" 
+                                            {{ $existingBlend && $existingBlend->item_id == $blend->id ? 'selected' : '' }}
+                                            data-price="{{ $blend->unit_price }}"
+                                            data-unit="{{ $blend->unit_of_measure }}">
+                                            {{ $blend->name }} (€{{ $blend->unit_price }}/{{ $blend->unit_of_measure }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if($existingBlend)
+                                    <input type="hidden" name="blends[{{ $product->id }}][id]" value="{{ $existingBlend->id }}">
+                                @endif
+                            </div>
+                            
+                        </div>
+                    </div>
+                    @endforeach
                     
                     @foreach($quote->products as $product)
                     <div class="product-section">
@@ -301,7 +330,7 @@
                                 <div class="dynamic-fields">
                                     <div class="form-group">
                                         <select name="raw_materials[{{ $product->id }}][materials][{{ $materialIndex }}][item_id]" 
-                                                class="form-control" required>
+                                                class="form-control" >
                                             <option value="">Select Material</option>
                                             @foreach($rawMaterials as $materialItem)
                                                 <option value="{{ $materialItem->id }}" 
@@ -319,7 +348,7 @@
                                         <input type="number" name="raw_materials[{{ $product->id }}][materials][{{ $materialIndex }}][percentage]" 
                                                class="form-control percentage-input" 
                                                value="{{ $material->percentage }}" 
-                                               step="0.01" min="0" max="100" required>
+                                               step="0.01" min="0" max="100" >
                                     </div>
                                 </div>
                                 <div>
@@ -382,7 +411,7 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary" id="submit-materials">
-                            Next: Add Blend
+                            Next: Add Packaging
                         </button>
                         <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'products']) }}" class="btn btn-secondary">Back</a>
                     </div>

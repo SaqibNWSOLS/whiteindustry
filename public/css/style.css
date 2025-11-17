@@ -329,10 +329,10 @@
 
         th,
         td {
-            padding: 10px 19px;
+            padding: 4px 19px;
             text-align: left;
-            border-bottom: 1px solid #f0f0f0;
-        }
+/*            border-bottom: 1px solid #f0f0f0;
+*/        }
 
         th {
             background: #fafafa;
@@ -343,9 +343,6 @@
             letter-spacing: 0.05em;
         }
 
-        tr:hover {
-            background: #f6f4f0;
-        }
 
         .badge {
             padding: 3px 10px;
