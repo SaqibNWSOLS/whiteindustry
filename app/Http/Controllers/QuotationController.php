@@ -73,8 +73,7 @@ class QuotationController extends Controller
         // Store quote ID in session for next steps
         session(['current_quote_id' => $id]);
 
-        return redirect()->route('quotes.edit', ['quote' => $id, 'step' => 'products'])
-            ->with('success', 'Basic information saved successfully');
+        return redirect()->route('quotes.edit', ['quote' => $id, 'step' => 'products']);
     }
 
    public function addProducts(Request $request, Quote $quote)
@@ -118,7 +117,7 @@ class QuotationController extends Controller
     return redirect()->route('quotes.edit', [
         'quote' => $quote->id,
         'step' => 'raw_materials'
-    ])->with('success', 'Products synced successfully');
+    ]);
 }
 
  public function addRawMaterialsAndBlends(Request $request, $id)
@@ -259,8 +258,7 @@ class QuotationController extends Controller
         }
     }
 
-    return redirect()->route('quotes.create', ['step' => 'packaging'])
-        ->with('success', 'Data synced successfully');
+    return redirect()->route('quotes.create', ['step' => 'packaging']);
 }
 
 
@@ -324,8 +322,7 @@ public function addPackaging(Request $request, Quote $quote)
     }
 
     return redirect()
-        ->route('quotes.create', ['step' => 'calculation'])
-        ->with('success', 'Packaging synced successfully.');
+        ->route('quotes.create', ['step' => 'calculation']);
 }
 
 
