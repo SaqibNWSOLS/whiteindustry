@@ -1047,21 +1047,7 @@
                     <input type="text" class="search-input" placeholder="Search actions..." id="quickSearch" onkeyup="filterQuickActions()" style="width: 100%;">
                 </div>
                 <div id="quickActionsContainer">
-                    <h4 style="color: rgb(20, 54, 25); margin: 15px 0 10px 0; font-size: 0.9rem;">Sales & Customer Management</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px;">
-                        <button class="quick-action-btn" onclick="quickAddItem('customer')" data-keywords="customer client">
-                            <i class="uil uil-user-plus" style="font-size: 2rem; margin-bottom: 8px; color: rgb(20, 54, 25);"></i>
-                            <div style="font-weight: 600; font-size: 0.85rem;">Customer</div>
-                        </button>
-                        <button class="quick-action-btn" onclick="quickAddItem('lead')" data-keywords="lead prospect">
-                            <i class="uil uil-users-alt" style="font-size: 2rem; margin-bottom: 8px; color: rgb(20, 54, 25);"></i>
-                            <div style="font-weight: 600; font-size: 0.85rem;">Lead</div>
-                        </button>
-                        <button class="quick-action-btn" onclick="quickAddItem('quote')" data-keywords="quote quotation">
-                            <i class="uil uil-file-edit-alt" style="font-size: 2rem; margin-bottom: 8px; color: rgb(20, 54, 25);"></i>
-                            <div style="font-weight: 600; font-size: 0.85rem;">Quote</div>
-                        </button>
-                    </div>
+                   
                     <h4 style="color: rgb(20, 54, 25); margin: 15px 0 10px 0; font-size: 0.9rem;">Orders & Production</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px;">
                         <button class="quick-action-btn" onclick="quickAddItem('order')" data-keywords="order">
