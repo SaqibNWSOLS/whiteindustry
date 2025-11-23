@@ -449,7 +449,7 @@ public function calculate(Request $request, Quote $quote)
     public function index()
     {
         $quotes = Quote::with(['customer', 'products.items'])->latest()->get();
-        return response()->json($quotes);
+        return view('quotes.index',compact('quotes'));
     }
 
     public function editModal(Request $request,$id)

@@ -617,8 +617,8 @@
                                   
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-danger remove-packaging">Remove</button>
-                                </div>
+{{--                                     <button type="button" class="btn btn-danger remove-packaging">Remove</button>
+ --}}                                </div>
                             </div>
                             @php $packagingIndex++; @endphp
                             @endforeach
@@ -639,18 +639,18 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
+                               {{--  <div>
                                     <button type="button" class="btn btn-danger remove-packaging">Remove</button>
-                                </div>
+                                </div> --}}
                             </div>
                             @endif
                         </div>
 
-                        <div class="form-actions" style="justify-content: flex-start; border-top: none; padding-top: 0;">
+                       {{--  <div class="form-actions" style="justify-content: flex-start; border-top: none; padding-top: 0;">
                             <button type="button" class="btn btn-success add-packaging" data-product-id="{{ $product->id }}">
                                 Add Another Packaging
                             </button>
-                        </div>
+                        </div> --}}
                     </div>
                     @endforeach
 
@@ -734,8 +734,8 @@
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Tax Rate %</label>
-                                <input type="number" name="tax_rate" class="form-control" 
+{{--                                 <label class="form-label">Tax Rate %</label>
+ --}}                                <input type="hidden" name="tax_rate" class="form-control" 
                                        value="{{ old('tax_rate', $quote->tax_rate ?? 19) }}" 
                                        min="0" max="100" step="0.1">
                             </div>

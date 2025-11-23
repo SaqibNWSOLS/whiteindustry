@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
         $admin = User::create([
             'first_name' => 'Pierre',
             'last_name' => 'Blanc',
-            'email' => 'admin@whiteindustry.com',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'phone' => '+213 555 123 456',
             'job_title' => 'Production Manager',

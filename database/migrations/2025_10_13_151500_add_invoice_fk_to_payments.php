@@ -6,42 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        if (!Schema::hasTable('payments') || !Schema::hasTable('invoices')) {
+        if (!Schema::hasTable('payments')) {
             return;
         }
 
         Schema::table('payments', function (Blueprint $table) {
-            // Ensure invoice_id exists and is unsignedBigInteger
+            // Ensure invoice_id exists as unsignedBigInteger
             if (!Schema::hasColumn('payments', 'invoice_id')) {
-                $table->unsignedBigInteger('invoice_id');
+                $table->unsignedBigInteger('invoice_id')->nullable();
             } else {
                 try {
-                    $table->unsignedBigInteger('invoice_id')->change();
-                } catch (Exception $e) {
-                    // ignore if change() requires doctrine/dbal
+                    $table->unsignedBigInteger('invoice_id')->nullable()->change();
+                } catch (\Exception $e) {
+                    // ignore if dbal not installed
                 }
             }
-
-            // Add FK constraint to invoices
-            // Drop any existing FK on invoice_id first (safe attempt)
-            try {
-                $table->dropForeign(['invoice_id']);
-            } catch (Exception $e) {
-                // no-op
-            }
-
-            $table->foreign('invoice_id')->references('id')->on('invoices')->cascadeOnDelete();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         if (!Schema::hasTable('payments')) {
@@ -49,9 +33,12 @@ return new class extends Migration
         }
 
         Schema::table('payments', function (Blueprint $table) {
+            // Optional: remove column on rollback
             try {
-                $table->dropForeign(['invoice_id']);
-            } catch (Exception $e) {
+                if (Schema::hasColumn('payments', 'invoice_id')) {
+                    $table->dropColumn('invoice_id');
+                }
+            } catch (\Exception $e) {
                 // ignore
             }
         });

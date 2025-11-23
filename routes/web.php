@@ -18,7 +18,11 @@ Route::post('/logout', [AuthWebController::class, 'logout']);
 Route::resource('products',ProductController::class);
 Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
 Route::put('/products/{product}/status', [ProductController::class, 'updateStatus'])->name('products.status');
-
+Route::middleware('auth')->group(function () {
+    // Web routes for CRM
+    Route::resource('customers', App\Http\Controllers\CustomerController::class);
+    Route::get('customers/export/{type}', [App\Http\Controllers\CustomerController::class, 'export'])->name('customers.export');
+});
 // Protected pages
 Route::middleware('auth')->group(function () {
 
@@ -54,7 +58,6 @@ Route::prefix('quotes')->group(function () {
 
     Route::view('/dashboard', 'dashboard');
     Route::view('/users', 'users.index')->name('users.index');
-    Route::view('/crm', 'modules.crm');
     Route::view('/production', 'modules.production');
     Route::view('/inventory', 'modules.inventory');
     Route::view('/orders', 'modules.orders');

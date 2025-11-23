@@ -13,7 +13,7 @@
         </div>
 
         <div class="nav-item {{ request()->is('crm*') ? 'active' : '' }}" data-module="crm">
-            <a href="{{ url('/crm') }}" class="nav-button" aria-expanded="false">
+            <a href="{{ url('/customers') }}" class="nav-button" aria-expanded="false">
                 <i class="uil uil-users-alt nav-icon"></i>
                 <span class="nav-label">CRM</span>
             </a>

@@ -1,19 +1,36 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
-        'customer_id', 'type', 'company_name', 'industry_type', 'tax_id',
-        'contact_person', 'email', 'phone', 'address', 'city', 'postal_code', 'status',
+        'type', // 'lead' or 'customer'
+        'company_name',
+        'contact_person',
+        'email',
+        'phone',
+        'address',
+        'city',
+        'postal_code',
+        'industry_type',
+        'tax_id',
+        'source', // for leads: website, referral, trade_show, etc.
+        'status', // for leads: new, contacted, qualified, converted, proposal, lost
+                  // for customers: active, inactive
+        'estimated_value', // for leads
+        'notes',
     ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
 
     protected static function boot()
     {
@@ -43,6 +60,32 @@ class Customer extends Model
                 $customer->customer_id = $candidate;
             }
         });
+    }
+
+    public function scopeLead($query)
+    {
+        return $query->where('type', 'lead');
+    }
+
+    public function scopeCustomer($query)
+    {
+        return $query->where('type', 'customer');
+    }
+     
+    public function convertToCustomer()
+    {
+        $this->update([
+            'type' => 'customer',
+            'status' => 'active',
+            'source' => null,
+            'estimated_value' => null,
+        ]);
+        return $this;
+    }
+
+    public function getDisplayNameAttribute()
+    {
+        return $this->company_name ?? $this->contact_person ?? 'N/A';
     }
 
     public function orders()

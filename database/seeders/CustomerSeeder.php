@@ -16,7 +16,7 @@ class CustomerSeeder extends Seeder
         $customers = [
             // Corporate customers
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Tech Solutions Inc.',
                 'industry_type' => 'Information Technology',
                 'tax_id' => 'TX-123456789',
@@ -29,7 +29,7 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Global Manufacturing Ltd.',
                 'industry_type' => 'Manufacturing',
                 'tax_id' => 'TX-987654321',
@@ -42,7 +42,7 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Premium Retail Group',
                 'industry_type' => 'Retail',
                 'tax_id' => 'TX-456789123',
@@ -57,7 +57,7 @@ class CustomerSeeder extends Seeder
 
             // Individual customers
             [
-                'type' => 'person',
+                'type' => 'lead',
                 'company_name' => null,
                 'industry_type' => null,
                 'tax_id' => 'TX-111222333',
@@ -70,7 +70,7 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'type' => 'person',
+                'type' => 'lead',
                 'company_name' => null,
                 'industry_type' => null,
                 'tax_id' => 'TX-444555666',
@@ -83,9 +83,9 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
 
-            // More business customers from various industries
+            // More customer customers from various industries
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Healthcare Partners LLC',
                 'industry_type' => 'Healthcare',
                 'tax_id' => 'TX-777888999',
@@ -98,7 +98,7 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Eco Foods International',
                 'industry_type' => 'Food & Beverage',
                 'tax_id' => 'TX-222333444',
@@ -111,7 +111,7 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Innovate Construction Co.',
                 'industry_type' => 'Construction',
                 'tax_id' => 'TX-555666777',
@@ -126,7 +126,7 @@ class CustomerSeeder extends Seeder
 
             // More person customers
             [
-                'type' => 'person',
+                'type' => 'lead',
                 'company_name' => null,
                 'industry_type' => null,
                 'tax_id' => 'TX-888999000',
@@ -139,7 +139,7 @@ class CustomerSeeder extends Seeder
                 'status' => 'active',
             ],
             [
-                'type' => 'person',
+                'type' => 'lead',
                 'company_name' => null,
                 'industry_type' => null,
                 'tax_id' => 'TX-333444555',
@@ -154,7 +154,7 @@ class CustomerSeeder extends Seeder
 
             // Inactive customer example
             [
-                'type' => 'business',
+                'type' => 'customer',
                 'company_name' => 'Former Partner Corp',
                 'industry_type' => 'Consulting',
                 'tax_id' => 'TX-666777888',
