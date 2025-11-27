@@ -19,10 +19,40 @@
             </a>
         </div>
 
+          <div class="nav-item {{ request()->is('rnd*') ? 'active' : '' }}" data-module="documents">
+            <a href="{{ url('/rnd') }}" class="nav-button" aria-expanded="false">
+                <i class="uil uil-file-alt nav-icon"></i>
+                <span class="nav-label">R&N</span>
+            </a>
+        </div>
+
+         <div class="nav-item {{ request()->is('qa*') ? 'active' : '' }}" data-module="documents">
+            <a href="{{ url('/qa') }}" class="nav-button" aria-expanded="false">
+                <i class="uil uil-file-alt nav-icon"></i>
+                <span class="nav-label">Q&A</span>
+            </a>
+        </div>
+
+         <div class="nav-item {{ request()->is('orders*') ? 'active' : '' }}" data-module="orders">
+            <a href="{{ url('/orders') }}" class="nav-button" aria-expanded="false">
+                <i class="uil uil-receipt nav-icon"></i>
+                <span class="nav-label">Orders</span>
+                {{-- optional dynamic badge for pending invoices --}}
+                {{-- <span style="margin-left:auto; background:#f59e0b; color:#fff; border-radius:12px; padding:2px 8px; font-size:11px; font-weight:700;" id="nav-orders-pending">{{ $navCounts['orders_pending'] ?? '' }}</span> --}}
+            </a>
+        </div>
+
         <div class="nav-item {{ request()->is('production*') ? 'active' : '' }}" data-module="production">
             <a href="{{ url('/production') }}" class="nav-button" aria-expanded="false">
                 <i class="uil uil-cube nav-icon"></i>
                 <span class="nav-label">Production</span>
+            </a>
+        </div>
+
+        <div class="nav-item {{ request()->is('invoices*') ? 'active' : '' }}" data-module="invoices">
+            <a href="{{ url('/invoices') }}" class="nav-button" aria-expanded="false">
+                <i class="uil uil-invoice nav-icon"></i>
+                <span class="nav-label">Invoicing</span>
             </a>
         </div>
 
@@ -40,14 +70,7 @@
             </a>
         </div>
 
-        <div class="nav-item {{ request()->is('orders*') ? 'active' : '' }}" data-module="orders">
-            <a href="{{ url('/orders') }}" class="nav-button" aria-expanded="false">
-                <i class="uil uil-receipt nav-icon"></i>
-                <span class="nav-label">Orders</span>
-                {{-- optional dynamic badge for pending invoices --}}
-                {{-- <span style="margin-left:auto; background:#f59e0b; color:#fff; border-radius:12px; padding:2px 8px; font-size:11px; font-weight:700;" id="nav-orders-pending">{{ $navCounts['orders_pending'] ?? '' }}</span> --}}
-            </a>
-        </div>
+       
 
         @auth
             @if(auth()->user()->hasRole('administrator') || auth()->user()->hasRole('manager'))
@@ -60,12 +83,7 @@
             @endif
         @endauth
 
-        <div class="nav-item {{ request()->is('invoicing*') ? 'active' : '' }}" data-module="invoicing">
-            <a href="{{ url('/invoicing') }}" class="nav-button" aria-expanded="false">
-                <i class="uil uil-invoice nav-icon"></i>
-                <span class="nav-label">Invoicing</span>
-            </a>
-        </div>
+        
 
         {{-- <div class="nav-item {{ request()->is('reports*') ? 'active' : '' }}" data-module="reports">
             <a href="{{ url('/reports') }}" class="nav-button" aria-expanded="false">
@@ -82,12 +100,7 @@
             </a>
         </div>
 
-        <div class="nav-item {{ request()->is('documents*') ? 'active' : '' }}" data-module="documents">
-            <a href="{{ url('/documents') }}" class="nav-button" aria-expanded="false">
-                <i class="uil uil-file-alt nav-icon"></i>
-                <span class="nav-label">Documents</span>
-            </a>
-        </div>
+      
 
         {{-- <div class="nav-item {{ request()->is('notifications*') ? 'active' : '' }}" data-module="notifications">
             <a href="{{ url('/notifications') }}" class="nav-button" aria-expanded="false">

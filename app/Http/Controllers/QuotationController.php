@@ -10,6 +10,9 @@ use Illuminate\Support\Str;
 use App\Models\Product;
 use App\Models\Customer;
 use Session;
+use App\Models\RndQuote;
+ use Illuminate\Support\Facades\Validator;
+
 class QuotationController extends Controller
 {
     public function create(Request $request)
@@ -81,6 +84,7 @@ class QuotationController extends Controller
     $request->validate([
         'products' => 'required|array',
         'products.*.product_name' => 'required|string|max:255',
+        'products.*.quantity' => 'required',
         'products.*.product_type' => 'required|in:cosmetic,food_supplement',
     ]);
 
@@ -95,6 +99,7 @@ class QuotationController extends Controller
                 $quoteProduct->update([
                     'product_name' => $productData['product_name'],
                     'product_type' => $productData['product_type'],
+                    'quantity'=> $productData['quantity'],
                     'tax_rate' => 19.00,
                 ]);
                 $newProductIds[] = $quoteProduct->id;
@@ -106,6 +111,7 @@ class QuotationController extends Controller
         $newProduct = $quote->products()->create([
             'product_name' => $productData['product_name'],
             'product_type' => $productData['product_type'],
+            'quantity'=> $productData['quantity'],
             'tax_rate' => 19.00,
         ]);
         $newProductIds[] = $newProduct->id;
@@ -123,21 +129,58 @@ class QuotationController extends Controller
  public function addRawMaterialsAndBlends(Request $request, $id)
 {
 
-/*    echo json_encode($request->all()); exit;
-*/    $request->validate([
-    // Raw materials required if blends not submitted
-    'raw_materials' => 'required_without:blends|array',
-    'raw_materials.*.materials' => 'required_with:raw_materials|array',
-    'raw_materials.*.materials.*.item_id' => 'required_with:raw_materials|exists:products,id',
-    'raw_materials.*.materials.*.percentage' => 'required_with:raw_materials|numeric|min:0|max:100',
 
-    // Blends required if raw materials not submitted
-    'blends' => 'required_without:raw_materials|array',
+// First, check what data we actually have
+$hasItemId = false;
+$hasBlendId = false;
 
-    // Blend ID is only required if blends is not empty and raw_materials is NOT used
-    'blends.*.blend_id' => 'required_without:raw_materials|nullable|exists:products,id',
-]);
+// Check for valid item_id in raw_materials
+if (!empty($request->raw_materials)) {
+    foreach ($request->raw_materials as $rawMaterial) {
+        if (!empty($rawMaterial['materials']) && is_array($rawMaterial['materials'])) {
+            foreach ($rawMaterial['materials'] as $material) {
+                if (!empty($material['item_id'])) {
+                    $hasItemId = true;
+                    break 2;
+                }
+            }
+        }
+    }
+}
 
+// Check for valid blend_id in blends
+if (!empty($request->blends)) {
+    foreach ($request->blends as $blend) {
+        if (!empty($blend['blend_id'])) {
+            $hasBlendId = true;
+            break;
+        }
+    }
+}
+
+// Validate mutual exclusion
+if ($hasItemId && $hasBlendId) {
+    return redirect()->back()->withErrors(['base' => 'Cannot provide both raw materials and blends.'])->withInput();
+}
+
+if (!$hasItemId && !$hasBlendId) {
+    return redirect()->back()->withErrors(['base' => 'Either raw materials (with item_id) or blends (with blend_id) must be provided.'])->withInput();
+}
+
+// Now do the actual validation based on what we have
+if ($hasItemId) {
+    $request->validate([
+        'raw_materials' => 'required|array',
+        'raw_materials.*.materials' => 'required|array|min:1',
+        'raw_materials.*.materials.*.item_id' => 'required|exists:products,id',
+        'raw_materials.*.materials.*.percentage' => 'required|numeric|min:0.01|max:100',
+    ]);
+} elseif ($hasBlendId) {
+    $request->validate([
+        'blends' => 'required|array|min:1',
+        'blends.*.blend_id' => 'required|exists:products,id',
+    ]);
+}
 
 
     $quote = Quote::findOrFail($id);
@@ -158,7 +201,7 @@ class QuotationController extends Controller
                 $material = Product::find($materialData['item_id']);
                 $totalPercentage += $materialData['percentage'];
 
-                if (isset($materialData['id'])) {
+                if (isset($materialData['id']) && !empty($material)) {
                     // Update existing raw material
                     $quoteItem = $quoteProduct->rawMaterialItems()->find($materialData['id']);
                     if ($quoteItem) {
@@ -177,6 +220,8 @@ class QuotationController extends Controller
                 }
 
                 // Create new raw material
+                if (!empty($material)) {
+                   
                 $newItem = $quoteProduct->rawMaterialItems()->create([
                     'item_type' => 'raw_material',
                     'item_id' => $material->id,
@@ -188,13 +233,15 @@ class QuotationController extends Controller
                     'total_cost' => $material->unit_price/100*$materialData['percentage'],
                 ]);
                 $newItemIds[] = $newItem->id;
+                 // code...
+                }
             }
 
             // Optional: delete items not included in request
             $quoteProduct->rawMaterialItems()->whereNotIn('id', $newItemIds)->delete();
 
             // Validate total percentage
-            if ($totalPercentage != 100) {
+            if (!empty($material ) && $totalPercentage != 100) {
                 return redirect()->back()->with('error', "Total percentage for product '{$quoteProduct->product_name}' must be exactly 100%. Current: {$totalPercentage}%");
             }
         }
@@ -388,7 +435,7 @@ public function calculate(Request $request, Quote $quote)
         // ----- Packaging cost -----
         $packagingCost = $quoteProduct->packagingItems()->sum('total_cost');
 
-        $productCost = $rawMaterialCost + $packagingCost;
+        $productCost = $quoteProduct->quantity*($rawMaterialCost + $packagingCost);
 
         // ----- Manufacturing & Risk -----
         $manufacturingCost = ($manufacturingPercent / 100) * $productCost;
@@ -443,11 +490,21 @@ public function calculate(Request $request, Quote $quote)
 }
 
 
-    public function index()
-    {
-        $quotes = Quote::with(['customer', 'products.items'])->latest()->get();
-        return view('quotes.index',compact('quotes'));
-    }
+   public function index()
+{
+    $quotes = Quote::with(['customer', 'products.items'])->latest()->get();
+    
+    $stats = [
+        'total' => Quote::count(),
+        'draft' => Quote::where('status', 'draft')->count(),
+        'sent' => Quote::where('status', 'sent')->count(),
+        'accepted' => Quote::where('status', 'accepted')->count(),
+        'rejected' => Quote::where('status', 'rejected')->count(),
+        'completed' => Quote::where('status', 'completed')->count(),
+    ];
+
+    return view('quotes.index', compact('quotes', 'stats'));
+}
 
     public function editModal(Request $request,$id)
     {
@@ -519,4 +576,45 @@ public function show(Quote $quote)
             'unit_of_measure' => $product->unit_of_measure
         ]);
     }
+
+    public function markAsAccepted(Quote $quote){
+
+        if ($quote->status == 'accepted') {
+            return redirect()->back()->with('error', 'Only un accepted can be marked as accepted');
+        }
+
+        $quote->update(['status' => 'accepted']);
+
+           return redirect()->route('quotes.index')
+            ->with('success', 'Quotation has been marked as accepted');
+
+    }
+
+    public function sendToRnd(Quote $quote)
+    {
+        // Check if already sent to R&D
+        if ($quote->rndQuote) {
+            return redirect()->back()->with('error', 'This quotation has already been sent to R&D');
+        }
+
+        // Check if quotation is accepted
+     /*   if ($quote->status !== 'accepted') {
+            return redirect()->back()->with('error', 'Only accepted quotations can be sent to R&D');
+        }*/
+
+        // Create R&D Department entry
+        $rnd = RndQuote::create([
+            'quote_id' => $quote->id,
+            'sent_at' => now(),
+            'status' => 'pending'
+        ]);
+
+        // Update quote status
+        $quote->update(['status' => 'sent_to_rnd']);
+
+        return redirect()->route('quotes.index')
+            ->with('success', 'Quotation sent to R&D department successfully');
+    }
+
+
 }

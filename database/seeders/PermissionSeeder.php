@@ -78,7 +78,7 @@ class PermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create($permission);
+            Permission::create(['name'=>$permission['display_name'],'guard_name'=>'web']);
         }
     }
 }

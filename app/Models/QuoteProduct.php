@@ -16,6 +16,7 @@ class QuoteProduct extends Model
         'risk_cost',
         'profit_margin',
         'subtotal',
+        'quantity',
         'tax_rate',
         'tax_amount',
         'total_amount',

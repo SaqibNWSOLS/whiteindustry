@@ -11,56 +11,41 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'order_number', 'customer_id', 'product_id', 'quantity', 'unit',
-        'total_value', 'order_date', 'delivery_date', 'priority', 'status', 'special_instructions',
+        'order_number', 
+        'customer_id',
+        'quote_id', 
+        'rnd_quotes_id', 
+        'order_date', 
+        'delivery_date', 
+        'total_amount', 
+        'order_notes', 
+        'status'
     ];
+    
+    protected $dates = ['order_date', 'delivery_date'];
 
-    protected $casts = [
-        'quantity' => 'decimal:3',
-        'total_value' => 'decimal:2',
-        'order_date' => 'date',
-        'delivery_date' => 'date',
-    ];
-
-    protected static function boot()
-    {
-        parent::boot();
-        
-        // Generate a reasonably collision-resistant sequential order number per year.
-        // We use the current max numeric suffix rather than a simple count to avoid
-        // duplicates when rows are soft-deleted. Note this is still vulnerable to
-        // a tiny race window; the controller will attempt retries on duplicate-key errors.
-        static::creating(function ($order) {
-            if (empty($order->order_number)) {
-                $year = date('Y');
-                // extract the numeric suffix from order_number and take the max
-                $max = static::whereYear('created_at', $year)
-                    ->selectRaw("MAX(CAST(SUBSTRING_INDEX(order_number, '-', -1) AS UNSIGNED)) as max_suffix")
-                    ->value('max_suffix');
-
-                $next = ($max ? intval($max) : 0) + 1;
-                $order->order_number = 'ORD-' . $year . '-' . str_pad($next, 3, '0', STR_PAD_LEFT);
-            }
-        });
+    public function quote() {
+        return $this->belongsTo(Quote::class);
     }
 
-    public function customer()
+     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class,'customer_id');
     }
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
+    public function rndQuote() {
+        return $this->belongsTo(RndQuote::class, 'rnd_quotes_id');
     }
 
-    public function invoice()
-    {
-        return $this->hasOne(Invoice::class);
+    public function products() {
+        return $this->hasMany(OrderProduct::class, 'orders_id');
     }
 
-    public function productionOrder()
-    {
-        return $this->hasOne(ProductionOrder::class);
+    public function items() {
+        return $this->hasManyThrough(OrderItem::class, OrderProduct::class, 'orders_id', 'order_products_id');
+    }
+
+    public function production() {
+        return $this->hasOne(Production::class);
     }
 }

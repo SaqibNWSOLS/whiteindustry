@@ -13,12 +13,7 @@ class CustomerController extends Controller
         $search = $request->get('q');
         
         $query = Customer::query();
-        
-        if ($type === 'lead') {
-            $query->lead();
-        } else {
-            $query->customer();
-        }
+      
         
         if ($search) {
             $query->where(function ($q) use ($search) {

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('quote_id');
             $table->string('product_name');
             $table->enum('product_type', ['cosmetic', 'food_supplement']);
+            $table->decimal('quantity', 15, 2)->nullable()->default(0);
             $table->decimal('total_raw_material_cost', 15, 2)->default(0);
             $table->decimal('total_packaging_cost', 15, 2)->default(0);
             $table->decimal('manufacturing_cost', 15, 2)->default(0);

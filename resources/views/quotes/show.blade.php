@@ -356,7 +356,7 @@
                                                                                 <td class="pl0">{{ $product->product_name }}</td>
 
                                         <td>{{ $product->packaging->volume??'' }} {{ $product->packaging->unit??'' }}</td>
-                                                                                <td class="text-center">1</td>
+                                                                                <td class="text-center">{{ $product->quantity??'' }}</td>
 
                                         <td class="text-center">{{ $product->total_amount }} DA</td>
                                         <td class="text-end">{{ $product->total_amount }} DA</td>

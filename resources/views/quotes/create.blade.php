@@ -150,6 +150,13 @@
                                         <option value="food_supplement" {{ $product->product_type == 'food_supplement' ? 'selected' : '' }}>Food Supplement</option>
                                     </select>
                                 </div>
+
+                                <div class="form-group">
+                                    <input type="number" name="products[{{ $productIndex }}][quantity]" 
+                                           class="form-control" value="{{ $product->quantity }}" 
+                                           placeholder="Enter product quantity" required>
+                                   
+                                </div>
                                
                             </div>
                             <div>
@@ -175,6 +182,11 @@
                                         <option value="cosmetic">Cosmetic</option>
                                         <option value="food_supplement">Food Supplement</option>
                                     </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="number" name="products[0][quantity]" class="form-control" 
+                                           placeholder="Enter product quantity" required>
                                 </div>
                                 
                             </div>
@@ -211,6 +223,10 @@
                                             <option value="cosmetic">Cosmetic</option>
                                             <option value="food_supplement">Food Supplement</option>
                                         </select>
+                                    </div>
+                                 <div class="form-group">
+                                        <input type="text" name="products[${productCount}][quantity]" 
+                                               class="form-control" placeholder="Enter product quantity" required>
                                     </div>
                                    
                                 </div>
@@ -362,7 +378,7 @@
                             <div class="dynamic-row material-row">
                                 <div class="dynamic-fields">
                                     <div class="form-group">
-                                        <select name="raw_materials[{{ $product->id }}][materials][0][item_id]" class="form-control" required>
+                                        <select name="raw_materials[{{ $product->id }}][materials][0][item_id]" class="form-control" >
                                             <option value="">Select Material</option>
                                             @foreach($rawMaterials as $material)
                                                 <option value="{{ $material->id }}"
@@ -431,7 +447,7 @@
                                 newRow.innerHTML = `
                                     <div class="dynamic-fields">
                                         <div class="form-group">
-                                            <select name="raw_materials[${productId}][materials][${materialCount}][item_id]" class="form-control" required>
+                                            <select name="raw_materials[${productId}][materials][${materialCount}][item_id]" class="form-control" >
                                                 <option value="">Select Material</option>
                                                 @foreach($rawMaterials as $material)
                                                     <option value="{{ $material->id }}" 

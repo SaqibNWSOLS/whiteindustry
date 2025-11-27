@@ -7,7 +7,13 @@ use App\Http\Controllers\Api\ReportingController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ProductController;
-
+use App\Http\Controllers\RndQuoteController;
+use App\Http\Controllers\QaQuoteController;
+use App\Http\Controllers\OrderController;
+use App\Models\QaQuote;
+use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\UserController;
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
@@ -56,12 +62,71 @@ Route::prefix('quotes')->group(function () {
     Route::get('/product/{id}/details', [QuotationController::class, 'getProductDetails'])->name('quotes.product-details');
 });
 
+
+Route::post('quotes/{quote}/send-to-rnd', [QuotationController::class, 'sendToRnd'])->name('rnd.send');
+Route::post('quotes/{quote}/mark-as-accepted', [QuotationController::class, 'markAsAccepted'])->name('quotes.accepted');
+
+// R&D Department Routes
+Route::prefix('rnd')->group(function () {
+    Route::get('/', [RndQuoteController::class, 'index'])->name('rnd.index');
+    Route::get('{id}', [RndQuoteController::class, 'show'])->name('rnd.show');
+    Route::post('{id}/upload', [RndQuoteController::class, 'uploadDocuments'])->name('rnd.upload');
+    Route::post('{id}/approve', [RndQuoteController::class, 'approve'])->name('rnd.approve');
+    Route::post('{id}/reject', [RndQuoteController::class, 'reject'])->name('rnd.reject');
+});
+
+// QA Department Routes
+Route::prefix('qa')->group(function () {
+    Route::get('/', [QaQuoteController::class, 'index'])->name('qa.index');
+    Route::get('{id}', [QaQuoteController::class, 'show'])->name('qa.show');
+    Route::post('{id}/upload', [QaQuoteController::class, 'uploadDocuments'])->name('qa.upload');
+    Route::post('{id}/approve', [QaQuoteController::class, 'approve'])->name('qa.approve');
+    Route::post('{id}/reject', [QaQuoteController::class, 'reject'])->name('qa.reject');
+});
+
+// Orders Routes
+Route::prefix('orders')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('create', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('{id}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+});
+
+// Production Routes
+Route::prefix('production')->group(function () {
+    Route::get('/', [ProductionController::class, 'index'])->name('production.index');
+    Route::get('create', [ProductionController::class, 'create'])->name('production.create');
+    Route::post('/', [ProductionController::class, 'store'])->name('production.store');
+    Route::get('{id}', [ProductionController::class, 'show'])->name('production.show');
+    Route::post('{id}/start', [ProductionController::class, 'startProduction'])->name('production.start');
+    Route::post('{id}/complete', [ProductionController::class, 'completeProduction'])->name('production.complete');
+});
+
+// Invoices Routes
+Route::prefix('invoices')->group(function () {
+    Route::get('/', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('create/{productionId}', [InvoiceController::class, 'create'])->name('invoices.create');
+    Route::post('/', [InvoiceController::class, 'store'])->name('invoices.store');
+    Route::get('{id}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::post('{id}/send', [InvoiceController::class, 'sendInvoice'])->name('invoices.send');
+    Route::post('{id}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.paid');
+    Route::get('{id}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+});
+
+Route::delete('/rnd/documents/{id}', [RndQuoteController::class, 'deleteDocument'])->name('rnd.document.delete');
+Route::delete('/qa/documents/{id}', [QaQuoteController::class, 'deleteDocument'])->name('qa.document.delete');
+
+// API Route for loading products
+Route::get('api/qa/{id}/products', function($id) {
+    $qa = QaQuote::findOrFail($id);
+    return response()->json(['products' => $qa->quote->products]);
+});
+
+
     Route::view('/dashboard', 'dashboard');
-    Route::view('/users', 'users.index')->name('users.index');
-    Route::view('/production', 'modules.production');
+    Route::resource('/users', UserController::class);
     Route::view('/inventory', 'modules.inventory');
-    Route::view('/orders', 'modules.orders');
-    Route::view('/invoicing', 'modules.invoicing');
     // Render reports view and inject initial sales stats so the page loads server-side data
     Route::get('/reports', [ReportingController::class, 'index']);
     // Export reports as PDF

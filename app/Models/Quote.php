@@ -34,5 +34,17 @@ class Quote extends Model
         return $this->hasMany(QuoteProduct::class, 'quote_id');
     }
 
+     public function rndQuote() {
+        return $this->hasOne(RndQuote::class);
+    }
+
+    public function qaQuote() {
+        return $this->hasOne(QaQuote::class);
+    }
+
+    public function orders() {
+        return $this->hasMany(Order::class);
+    }
+
    
 }

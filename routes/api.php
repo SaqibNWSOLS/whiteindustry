@@ -6,9 +6,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ReportingController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ApiController;
 // Public auth routes: register / login
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('qa/{id}/products', [ApiController::class, 'getQaProducts']);
+Route::get('order/{orderId}/production', [ApiController::class, 'getProductionByOrder']);
 
 // Protected routes require web session auth (user must be logged in via session)
 Route::middleware(['web', 'auth'])->group(function () {
