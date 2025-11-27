@@ -76,11 +76,11 @@
         </div>
     </div>
 
-    <div class="module-header">
+   {{--  <div class="module-header">
         <a href="{{ route('orders.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Create Order
         </a>
-    </div>
+    </div> --}}
 
     <div class="table-container">
         <table id="quotesTable">
@@ -118,9 +118,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="text-center">No orders found</td>
-                    </tr>
+                    
                 @endforelse
             </tbody>
         </table>

@@ -101,7 +101,6 @@ class QaQuoteController extends Controller
             'qa_notes' => $request->qa_notes
         ]);
 
-        $qa->quote->update(['status' => 'qa_approved']);
 
         return redirect()->route('qa.show', $qa->id)->with('success', 'QA approved successfully');
     }
