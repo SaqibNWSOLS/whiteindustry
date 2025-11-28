@@ -40,7 +40,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $type = $request->get('type', 'customer');
-       /* 
+        
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'contact_person' => 'required|string|max:255',
@@ -55,7 +55,7 @@ class CustomerController extends Controller
             'status' => 'nullable|string',
             'estimated_value' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-        ]);*/
+        ]);
 
         $validated['type'] = $type;
         

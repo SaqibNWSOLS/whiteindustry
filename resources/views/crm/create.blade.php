@@ -8,6 +8,7 @@
 @section('content')
 <div class="content">
     <div style="max-width: 600px; margin: 0 auto;">
+
         <form method="POST" action="{{ route('customers.store') }}">
             @csrf
             <input type="hidden" name="type" value="{{ $type }}">
@@ -50,6 +51,7 @@
                 <div class="form-group">
                     <label class="form-label">Postal Code</label>
                     <input type="text" name="postal_code" class="form-input" value="{{ old('postal_code') }}">
+                    @error('postal_code') <span class="error-text">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-group">
