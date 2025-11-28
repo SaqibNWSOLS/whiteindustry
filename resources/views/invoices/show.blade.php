@@ -108,8 +108,8 @@
                         <td>{{ ++$key }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td class="text-center">{{ $item->quantity }}</td>
-                        <td class="text-right">${{ number_format($item->unit_price, 2) }}</td>
-                        <td class="text-right">${{ number_format($item->total_price, 2) }}</td>
+                        <td class="text-right">{{ priceFormat($item->unit_price) }}</td>
+                        <td class="text-right">{{ priceFormat($item->total_price) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -120,15 +120,15 @@
             <table class="totals-table">
                 <tr>
                     <td>Subtotal:</td>
-                    <td class="text-right">${{ number_format($invoice->subtotal, 2) }}</td>
+                    <td class="text-right">{{ priceFormat($invoice->subtotal) }}</td>
                 </tr>
                 <tr>
                     <td>Tax (19%):</td>
-                    <td class="text-right">${{ number_format($invoice->tax_amount, 2) }}</td>
+                    <td class="text-right">{{ priceFormat($invoice->tax_amount) }}</td>
                 </tr>
                 <tr class="grand-total">
                     <td>Total Amount:</td>
-                    <td class="text-right">${{ number_format($invoice->total_amount, 2) }}</td>
+                    <td class="text-right">{{ priceFormat($invoice->total_amount) }}</td>
                 </tr>
             </table>
         </div>
@@ -140,19 +140,19 @@
                 <div class="col-md-3">
                     <div class="stat-card">
                         <p class="text-muted">Total Amount</p>
-                        <p class="stat-value">${{ number_format($invoice->total_amount, 2) }}</p>
+                        <p class="stat-value">{{ priceFormat($invoice->total_amount, 2) }}</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card">
                         <p class="text-muted">Paid Amount</p>
-                        <p class="stat-value text-success">${{ number_format($invoice->paid_amount, 2) }}</p>
+                        <p class="stat-value text-success">{{ priceFormat($invoice->paid_amount, 2) }}</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card">
                         <p class="text-muted">Pending Amount</p>
-                        <p class="stat-value text-danger">${{ number_format($invoice->pending_amount, 2) }}</p>
+                        <p class="stat-value text-danger">{{ priceFormat($invoice->pending_amount, 2) }}</p>
                     </div>
                 </div>
                 <div class="col-md-3">

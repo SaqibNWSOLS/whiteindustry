@@ -18,8 +18,8 @@
                     <strong>Total Revenue</strong>
                     <div id="total-revenue-desc" style="font-size: 0.77rem; color: #666;">All completed orders</div>
                 </div>
-                <div id="total-revenue" style="font-size: 2rem; font-weight: bold; color: #000;">
-                    {{ number_format($totalRevenue, 2, '.', ',') }} DA
+                <div id="total-revenue" style="font-size: 1.8rem; font-weight: bold; color: #000;">
+                    {{ priceFormat($totalRevenue) }} 
                 </div>
             </div>
             <div class="status-card status-pending">
@@ -27,8 +27,8 @@
                     <strong>Average Order Value</strong>
                     <div id="avg-monthly-desc" style="font-size: 0.77rem; color: #666;">Based on completed orders</div>
                 </div>
-                <div id="avg-monthly" style="font-size: 2rem; font-weight: bold; color: #000;">
-                    {{ number_format($averageOrderValue, 2, '.', ',') }} DA
+                <div id="avg-monthly" style="font-size: 1.8rem; font-weight: bold; color: #000;">
+                    {{ priceFormat($averageOrderValue) }} 
                 </div>
             </div>
             <div class="status-card status-completed">
@@ -90,7 +90,7 @@
                 @forelse($topClients as $client)
                 <div class="client-item">
                     <div class="client-name">{{ $client->company_name ?: $client->contact_person }}</div>
-                    <div class="client-amount">{{ number_format($client->total_spent, 2, '.', ',') }} DA</div>
+                    <div class="client-amount">{{ priceFormat($client->total_spent) }} </div>
                     <div class="progress-bar">
                         @php
                             $percentage = $topClients->max('total_spent') > 0 ? 
@@ -137,7 +137,7 @@
                         @endphp
                         {{ $customer ? ($customer->company_name ?: $customer->contact_person) : 'N/A' }}
                     </td>
-                    <td>{{ number_format($order->total_amount, 2, '.', ',') }} DA</td>
+                    <td>{{ priceFormat($order->total_amount) }} </td>
                     <td>
                         <span class="badge badge-{{ 
                             $order->status === 'completed' ? 'success' : 

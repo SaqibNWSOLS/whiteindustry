@@ -181,7 +181,7 @@
                                 @foreach($production->invoices as $invoice)
                                     <tr>
                                         <td>{{ $invoice->invoice_number }}</td>
-                                        <td>${{ number_format($invoice->total_amount, 2) }}</td>
+                                        <td>{{ priceFormat($invoice->total_amount, 2) }}</td>
                                         <td>
                                             <span class="badge badge-{{ $invoice->status === 'paid' ? 'success' : 'warning' }}">
                                                 {{ ucfirst($invoice->status) }}

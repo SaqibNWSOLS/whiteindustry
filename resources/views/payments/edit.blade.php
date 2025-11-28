@@ -12,9 +12,9 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="invoice-summary">
-                        <p><strong>Total Amount:</strong> ${{ number_format($invoice->total_amount, 2) }}</p>
-                        <p><strong>Paid Amount (excluding this):</strong> <span class="text-success">${{ number_format($invoice->paid_amount - $payment->amount, 2) }}</span></p>
-                        <p><strong>Max This Payment Can Be:</strong> <span class="text-info">${{ number_format($invoice->total_amount - ($invoice->paid_amount - $payment->amount), 2) }}</span></p>
+                        <p><strong>Total Amount:</strong> {{ priceFormat($invoice->total_amount, 2) }}</p>
+                        <p><strong>Paid Amount (excluding this):</strong> <span class="text-success">{{ priceFormat($invoice->paid_amount - $payment->amount, 2) }}</span></p>
+                        <p><strong>Max This Payment Can Be:</strong> <span class="text-info">{{ priceFormat($invoice->total_amount - ($invoice->paid_amount - $payment->amount), 2) }}</span></p>
                     </div>
                 </div>
             </div>

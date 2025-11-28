@@ -127,9 +127,9 @@
                                 <td><strong>{{ $invoice->invoice_number }}</strong></td>
                                 <td>{{ $invoice->production->production_number }}</td>
                                 <td>{{ $invoice->customer->company_name }}</td>
-                                <td>${{ number_format($invoice->total_amount, 2) }}</td>
-                                <td><span class="text-success">${{ number_format($invoice->paid_amount, 2) }}</span></td>
-                                <td><span class="text-danger">${{ number_format($invoice->pending_amount, 2) }}</span></td>
+                                <td>{{ priceFormat($invoice->total_amount) }}</td>
+                                <td><span class="text-success">{{ priceFormat($invoice->paid_amount) }}</span></td>
+                                <td><span class="text-danger">{{ priceFormat($invoice->pending_amount) }}</span></td>
                                 <td>
                                     <div class="progress" style="height: 20px; min-width: 100px;">
                                         <div class="progress-bar bg-success" style="width: {{ $invoice->payment_progress }}%;" 

@@ -12,9 +12,9 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="invoice-summary">
-                        <p><strong>Total Amount:</strong> ${{ number_format($invoice->total_amount, 2) }}</p>
-                        <p><strong>Paid Amount:</strong> <span class="text-success">${{ number_format($invoice->paid_amount, 2) }}</span></p>
-                        <p><strong>Pending Amount:</strong> <span class="text-danger">${{ number_format($invoice->pending_amount, 2) }}</span></p>
+                        <p><strong>Total Amount:</strong> {{ priceFormat($invoice->total_amount, 2) }}</p>
+                        <p><strong>Paid Amount:</strong> <span class="text-success">{{ priceFormat($invoice->paid_amount, 2) }}</span></p>
+                        <p><strong>Pending Amount:</strong> <span class="text-danger">{{ priceFormat($invoice->pending_amount, 2) }}</span></p>
                     </div>
                 </div>
             </div>
@@ -27,7 +27,7 @@
                     <input type="number" class="form-control @error('amount') is-invalid @enderror" 
                            id="amount" name="amount" step="0.01" min="0.01" 
                            max="{{ $invoice->pending_amount }}" placeholder="0.00" value="{{ old('amount') }}" required>
-                    <small class="text-muted">Max: ${{ number_format($invoice->pending_amount, 2) }}</small>
+                    <small class="text-muted">Max: {{ priceFormat($invoice->pending_amount, 2) }}</small>
                     @error('amount')<span class="invalid-feedback">{{ $message }}</span>@enderror
                 </div>
 

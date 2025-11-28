@@ -9,7 +9,7 @@ if (! function_exists('priceFormat')) {
     {
         
 
-        return  round((float)$price,2).' DA';
+        return  round((float)$price,2).' DZD';
     }
 }
 
