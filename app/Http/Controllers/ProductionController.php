@@ -158,6 +158,7 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production->update(['status' => 'completed']);
+        $production->order->update(['status' => 'completed']);
         return redirect()->back()->with('success', 'Production completed');
     }
 }
