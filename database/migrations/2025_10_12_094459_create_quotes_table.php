@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('total_packaging_cost', 15, 2)->default(0);
             $table->decimal('manufacturing_cost', 15, 2)->default(0);
             $table->decimal('risk_cost', 15, 2)->default(0);
-            $table->decimal('total_profit', 5, 2)->default(0);
+            $table->decimal('total_profit', 15, 2)->default(0);
             $table->decimal('subtotal', 15, 2)->default(0);
             $table->decimal('tax_amount', 15, 2)->default(0);
             $table->decimal('total_amount', 15, 2)->default(0);
