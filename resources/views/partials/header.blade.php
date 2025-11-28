@@ -4,8 +4,7 @@
         <div class="header-actions">
             @auth
                 <button id="sidebar-toggle" class="btn btn-secondary" title="Toggle sidebar" aria-pressed="false">☰</button>
-                <button id="header-quick-add-btn" class="btn btn-secondary" onclick="(window.showQuickAdd||showQuickAdd)()">Quick Add</button>
-                <button id="header-new-order-btn" class="btn btn-primary" onclick="(window.createItem||createItem)('order')">New Order</button>
+                
                 <button id="header-notifications-btn" style="position: relative; background: none; border: none; cursor: pointer; padding: 8px 12px; display: flex; align-items: center; justify-content: center;" onclick="window.location.href='{{ url('/notifications') }}'" title="Notifications" aria-label="Notifications">
                     <i class="uil uil-bell"></i>
                     <span id="notifications-badge" aria-hidden="true" style="display:none; position:absolute; top:6px; right:6px; min-width:18px; height:18px; padding:0 5px; background:#dc2626; color:#fff; font-size:12px; border-radius:9px; display:flex; align-items:center; justify-content:center;"></span>
