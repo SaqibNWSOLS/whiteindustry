@@ -88,7 +88,7 @@
                     </div>
                     <div>
                         <h6 class="card-title mb-1">Pending</h6>
-                        <div class="h4 fw-bold text-warning">${{ number_format(App\Models\Invoice::sum('pending_amount'), 2) }}</div>
+                        <div class="h4 fw-bold text-warning">{{ priceFormat(App\Models\Invoice::sum('pending_amount'), 2) }}</div>
                         <small class="text-muted">Pending amount</small>
                     </div>
                 </div>

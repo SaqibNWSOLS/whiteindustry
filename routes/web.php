@@ -16,6 +16,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\PaymentController;
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
@@ -117,6 +118,8 @@ Route::prefix('production')->group(function () {
     Route::get('{id}/complete', [ProductionController::class, 'completeProduction'])->name('production.complete');
 });
 
+    Route::post('invoices/{id}/issue', [InvoiceController::class, 'issue'])->name('invoices.issue');
+    Route::post('invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
 
 Route::resource('invoices', InvoiceController::class);
  Route::get('payments/{invoice_id}/create', [PaymentController::class, 'create'])->name('payments.create');

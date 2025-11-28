@@ -142,7 +142,7 @@ class InvoiceController extends Controller
 
     public function show($id)
     {
-        $invoice = Invoice::with(['production.order.quote.customer', 'order.quote.customer', 'items.productionItem'])
+        $invoice = Invoice::with(['production.order.quote.customer', 'items'])
             ->findOrFail($id);
 
         return view('invoices.show', compact('invoice'));
@@ -150,7 +150,7 @@ class InvoiceController extends Controller
 
     public function edit($id)
     {
-        $invoice = Invoice::with(['production', 'items.productionItem'])
+        $invoice = Invoice::with(['production', 'items'])
             ->findOrFail($id);
 
         if ($invoice->status !== 'draft') {

@@ -202,7 +202,7 @@ function displayProductionDetails(production) {
     production.items.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${item.product_name}</td>
+            <td>${item.order_product.product_name}</td>
             <td>${item.quantity_produced}</td>
             <td>
                 <input type="hidden" name="invoice_items[${index}][production_item_id]" value="${item.id}">
@@ -218,11 +218,11 @@ function displayProductionDetails(production) {
                 <input type="number" 
                        class="form-control unit-price" 
                        name="invoice_items[${index}][unit_price]" 
-                       value="${item.unit_price}" 
+                       value="${item.order_product.price_unit}" 
                        step="0.01"
                        onchange="calculateTotals()">
             </td>
-            <td class="item-amount">$0.00</td>
+            <td class="item-amount">DA 0.00</td>
         `;
         tbody.appendChild(row);
     });
@@ -249,9 +249,9 @@ function calculateTotals() {
     const taxAmount = (subtotal * taxPercentage) / 100;
     const total = subtotal + taxAmount;
 
-    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-    document.getElementById('tax-amount').textContent = '$' + taxAmount.toFixed(2);
-    document.getElementById('total-amount').textContent = '$' + total.toFixed(2);
+    document.getElementById('subtotal').textContent = 'DA' + subtotal.toFixed(2);
+    document.getElementById('tax-amount').textContent = 'DA' + taxAmount.toFixed(2);
+    document.getElementById('total-amount').textContent = 'DA' + total.toFixed(2);
 }
 </script>
 

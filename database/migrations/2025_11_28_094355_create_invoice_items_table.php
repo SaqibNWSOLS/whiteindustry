@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
-            $table->foreignId('production_item_id')->constrained('production_items')->onDelete('cascade');
-            $table->string('item_description');
-            $table->integer('quantity');
-            $table->decimal('unit_price', 12, 2);
-            $table->decimal('amount', 12, 2);
+            $table->foreignId('production_item_id')->constrained('production_items')->onDelete('cascade')->nullable();
+            $table->string('item_description')->nullable();
+            $table->integer('quantity')->nullable();
+            $table->decimal('unit_price', 12, 2)->nullable();
+            $table->decimal('amount', 12, 2)->nullable();
             $table->timestamps();
         });
     }

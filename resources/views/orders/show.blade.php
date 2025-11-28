@@ -413,8 +413,8 @@
                         <td>{{ ++$key }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td class="text-center">{{ $item->quantity }}</td>
-                        <td class="text-right">${{ number_format($item->total_amount/$item->quantity , 2) }}</td>
-                        <td class="text-right">${{ number_format($item->total_amount, 2) }}</td>
+                        <td class="text-right">{{ priceFormat($item->total_amount/$item->quantity , 2) }}</td>
+                        <td class="text-right">{{ priceFormat($item->total_amount, 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -425,7 +425,7 @@
             <table class="totals-table">
                 <tr class="grand-total">
                     <td>Total Amount:</td>
-                    <td class="text-right">${{ number_format($order->total_amount, 2) }}</td>
+                    <td class="text-right">{{ priceFormat($order->total_amount, 2) }}</td>
                 </tr>
             </table>
         </div>

@@ -127,7 +127,7 @@
                         <td>{{ isset($order->quote->quotation_number) ? $order->quote->quotation_number : '' }}</td>
                         <td>{{ isset($order->customer->company_name) ? $order->customer->company_name : '' }}</td>
                         <td>{{ $order->order_date ? $order->order_date : 'N/A' }}</td>
-                        <td>${{ number_format($order->total_amount, 2) }}</td>
+                        <td>{{ priceFormat($order->total_amount, 2) }}</td>
                         <td>
                             <span class="badge {{ 
                                 $order->status === 'completed' ? 'badge-success' : 
@@ -145,9 +145,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="text-center">No orders found</td>
-                    </tr>
+                  
                 @endforelse
             </tbody>
         </table>
