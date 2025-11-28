@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('unit_price', 15, 2);
             $table->decimal('volume', 15, 2)->nullable();
             $table->string('unit_of_measure');
+            $table->decimal('current_stock', 15, 3)->default(0);
+            $table->decimal('minimum_stock', 15, 3)->default(0);
             $table->enum('status', ['active', 'inactive', 'discontinued'])->default('active');
             $table->timestamps();
             $table->softDeletes();

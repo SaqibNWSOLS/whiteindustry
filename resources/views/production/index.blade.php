@@ -158,12 +158,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
-                                    <i class="fas fa-industry fa-2x mb-3 d-block"></i>
-                                    No production jobs found
-                                </td>
-                            </tr>
+                           
                         @endforelse
                     </tbody>
                 </table>

@@ -15,7 +15,7 @@ use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\InventoryController;
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
@@ -127,7 +127,7 @@ Route::resource('invoices', InvoiceController::class);
 
 // Invoices Routes
 Route::prefix('invoices')->group(function () {
-    
+
     Route::post('{id}/send', [InvoiceController::class, 'sendInvoice'])->name('invoices.send');
     Route::post('{id}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.paid');
     Route::get('{id}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
@@ -144,7 +144,7 @@ Route::get('api/qa/{id}/products', function($id) {
 
 
     Route::resource('/users', UserController::class);
-    Route::view('/inventory', 'modules.inventory');
+    Route::get('/inventory', [InventoryController::class,'index']);
     // Render reports view and inject initial sales stats so the page loads server-side data
     Route::get('/reports', [ReportingController::class, 'index']);
     // Export reports as PDF
