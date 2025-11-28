@@ -28,6 +28,10 @@ class Order extends Model
         return $this->belongsTo(Quote::class);
     }
 
+    public function qaQuote() {
+        return $this->hasOne(QaQuote::class,'orders_id');
+    }
+
      public function customer()
     {
         return $this->belongsTo(Customer::class,'customer_id');

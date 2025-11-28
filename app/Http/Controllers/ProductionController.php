@@ -86,7 +86,10 @@ class ProductionController extends Controller
             'invoices'
         ])->findOrFail($id);
 
-        return view('production.show', compact('production'));
+        $rndDocuments=$production?->order?->rndQuote?->documents??[];
+        $qaDocuments=$production?->order?->qaQuote?->documents??[];
+
+        return view('production.show', compact('production','rndDocuments','qaDocuments'));
     }
 
     public function addReadyQuantity(Request $request, $id)
