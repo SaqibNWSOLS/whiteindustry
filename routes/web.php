@@ -104,8 +104,9 @@ Route::prefix('orders')->group(function () {
     Route::put('/{order}/update-packaging', [OrderController::class, 'addPackaging'])->name('orders.update-packaging');
     Route::post('/{order}/calculate', [OrderController::class, 'calculate'])->name('orders.calculate');
 });
+Route::put('/production/item/{id}/add-ready', [ProductionController::class, 'addReadyQuantity'])
+    ->name('production.item.addReady');
 
-Route::put('production/item/{item}', [ProductionController::class, 'updateProductionItem'])->name('production.item.update');
 
 
 // Production Routes

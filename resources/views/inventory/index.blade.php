@@ -79,6 +79,8 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Unit Price</th>
+                            <th>Current Stock</th>
+                            <th>Minimum Stock</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -132,6 +134,8 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Unit Price</th>
+                            <th>Current Stock</th>
+                            <th>Minimum Stock</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -186,6 +190,8 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Unit Price</th>
+                            <th>Current Stock</th>
+                            <th>Minimum Stock</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -240,6 +246,8 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Unit Price</th>
+                            <th>Current Stock</th>
+                            <th>Minimum Stock</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -339,6 +347,9 @@
                                 return data ? 'DZD ' + Number(data).toLocaleString() : '—';
                             }
                         },
+                         { data: 'current_stock', name: 'current_stock' },
+                          { data: 'minimum_stock', name: 'minimum_stock' },
+
                         { 
                             data: 'status', 
                             name: 'status',

@@ -9,6 +9,9 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\InventoryTransaction;
+use App\Models\Product;
+use DB;
 
 class ProductionController extends Controller
 {
@@ -86,23 +89,63 @@ class ProductionController extends Controller
         return view('production.show', compact('production'));
     }
 
-    public function updateProductionItem(Request $request, $id)
-    {
-        $request->validate([
-            'quantity_produced' => 'required|integer|min:0',
-            'status' => 'required|in:pending,in_progress,completed,quality_check',
-            'notes' => 'nullable|string'
-        ]);
+    public function addReadyQuantity(Request $request, $id)
+{
+    $request->validate([
+        'quantity_to_add' => 'required|integer|min:1',
+        'notes' => 'nullable|string'
+    ]);
 
-        $productionItem = ProductionItem::findOrFail($id);
+    $productionItem = ProductionItem::findOrFail($id);
+    
+    // Check if adding quantity exceeds planned quantity
+    $newQuantity = $productionItem->quantity_produced + $request->quantity_to_add;
+    if ($newQuantity > $productionItem->quantity_planned) {
+        return redirect()->back()->with('error', 'Cannot exceed planned quantity of ' . $productionItem->quantity_planned);
+    }
+
+    DB::beginTransaction();
+
+    try {
+        // Increment the produced quantity
+        $productionItem->increment('quantity_produced', $request->quantity_to_add);
+        
+        // Update status
         $productionItem->update([
-            'quantity_produced' => $request->quantity_produced,
-            'status' => $request->status,
+            'status' => 'completed',
             'notes' => $request->notes
         ]);
 
-        return redirect()->back()->with('success', 'Production item updated');
+        // Create inventory transaction record for the added quantity
+        InventoryTransaction::create([
+            'product_id' => $productionItem->orderProduct->id,
+            'production_item_id' => $productionItem->id,
+            'transaction_type' => 'production',
+            'quantity_change' => $request->quantity_to_add,
+            'reference_type' => 'production_item',
+            'reference_id' => $productionItem->id,
+            'status' => 'completed',
+            'notes' => $request->notes,
+            'created_by' => auth()->id(),
+            'transaction_date' => now()
+        ]);
+
+        // Update or create inventory balance
+        $product = Product::firstOrCreate(
+            ['name' => $productionItem->orderProduct->product_name],
+            ['minimum_stock' => 0, 'current_stock' => 0,'category'=>'final_product','product_code'=>Str::random(5),'unit_price'=>$productionItem->orderProduct->price_unit,'unit_of_measure'=>$productionItem->orderProduct->volume_unit]
+        );
+
+        $product->increment('current_stock', $request->quantity_to_add);
+
+        DB::commit();
+
+        return redirect()->back()->with('success', 'Added ' . $request->quantity_to_add . ' units to production. Total produced: ' . $productionItem->quantity_produced);
+    } catch (\Exception $e) {
+        DB::rollback();
+        return redirect()->back()->with('error', 'Failed to add quantity: ' . $e->getMessage());
     }
+}
 
     public function startProduction($id)
     {

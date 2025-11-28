@@ -114,52 +114,50 @@
                             </tr>
 
                             <!-- Update Modal -->
+                          <!-- Update Modal -->
                             <div class="modal fade" id="updateModal{{ $item->id }}" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Update {{ $item->orderProduct->product_name }}</h5>
+                                            <h5 class="modal-title">Add Ready Quantity - {{ $item->orderProduct->product_name }}</h5>
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span>&times;</span>
                                             </button>
                                         </div>
-                                        <form action="{{ route('production.item.update', $item->id) }}" method="POST">
+                                        <form action="{{ route('production.item.addReady', $item->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
                                             <div class="modal-body">
-                                                <div class="form-group">
-                                                    <label>Quantity Produced {{ $item->id }}</label>
-                                                    <input type="number" name="quantity_produced" class="form-control" 
-                                                           value="{{ $item->quantity_produced }}" 
-                                                           min="0" 
-                                                           max="{{ $item->quantity_planned }}" required>
-                                                    <small class="form-text text-muted">Max: {{ $item->quantity_planned }}</small>
+                                                <div class="alert alert-info">
+                                                    <strong>Current Status:</strong><br>
+                                                    Produced: <strong>{{ $item->quantity_produced }}</strong> / Planned: <strong>{{ $item->quantity_planned }}</strong><br>
+                                                    Remaining: <strong>{{ $item->quantity_planned - $item->quantity_produced }}</strong>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label>Status</label>
-                                                    <select name="status" class="form-control" required>
-                                                        <option value="pending" {{ $item->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                        <option value="in_progress" {{ $item->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                                        <option value="quality_check" {{ $item->status === 'quality_check' ? 'selected' : '' }}>Quality Check</option>
-                                                        <option value="completed" {{ $item->status === 'completed' ? 'selected' : '' }}>Completed</option>
-                                                    </select>
+                                                    <label>Quantity to Add</label>
+                                                    <input type="number" name="quantity_to_add" class="form-control" 
+                                                           placeholder="Enter quantity to add"
+                                                           min="1" 
+                                                           max="{{ $item->quantity_planned - $item->quantity_produced }}" 
+                                                           required>
+                                                    <small class="form-text text-muted">Max available: {{ $item->quantity_planned - $item->quantity_produced }}</small>
                                                 </div>
 
+                                               
                                                 <div class="form-group">
-                                                    <label>Notes</label>
-                                                    <textarea name="notes" class="form-control" rows="3">{{ $item->notes }}</textarea>
+                                                    <label>Notes (Optional)</label>
+                                                    <textarea name="notes" class="form-control" rows="3" placeholder="Add any notes...">{{ $item->notes }}</textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Update Item</button>
+                                                <button type="submit" class="btn btn-success">Add Quantity</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                      
                         @endforeach
                     </tbody>
                 </table>
