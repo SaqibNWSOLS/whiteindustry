@@ -21,6 +21,8 @@ return new class extends Migration
     $table->decimal('subtotal', 15, 2);
     $table->decimal('tax_amount', 15, 2);
     $table->decimal('total_amount', 15, 2);
+    $table->decimal('paid_amount', 10, 2)->default(0);
+            $table->decimal('pending_amount', 10, 2)->default(0);
     $table->enum('status', ['draft', 'sent', 'paid', 'overdue'])->default('draft');
     $table->text('notes')->nullable();
     $table->timestamps();

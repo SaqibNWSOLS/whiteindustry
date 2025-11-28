@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('invoice_items', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
-    $table->foreignId('order_item_id')->constrained('order_items')->onDelete('cascade');
-    $table->string('product_name');
-    $table->integer('quantity');
-    $table->decimal('unit_price', 15, 2);
-    $table->decimal('total_price', 15, 2);
-    $table->timestamps();
-});
+            $table->id();
+            $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
+            $table->foreignId('production_item_id')->constrained('production_items')->onDelete('cascade');
+            $table->string('item_description');
+            $table->integer('quantity');
+            $table->decimal('unit_price', 12, 2);
+            $table->decimal('amount', 12, 2);
+            $table->timestamps();
+        });
     }
 
     /**

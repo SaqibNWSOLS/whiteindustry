@@ -358,7 +358,7 @@
                                         <td>{{ $product->packaging->volume??'' }} {{ $product->packaging->unit??'' }}</td>
                                                                                 <td class="text-center">{{ $product->quantity??'' }}</td>
 
-                                        <td class="text-center">{{ $product->total_amount }} DA</td>
+                                        <td class="text-center">{{ $product->price_unit }} DA</td>
                                         <td class="text-end">{{ $product->total_amount }} DA</td>
                     </tr>
                     @endforeach

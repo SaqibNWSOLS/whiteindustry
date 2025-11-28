@@ -13,20 +13,21 @@ return new class extends Migration
     {
         Schema::create('order_products', function (Blueprint $table) {
             $table->id();
-            $table->string('quote_id');
-            $table->string('orders_id');
-            $table->string('quote_product_id');
+            $table->string('quote_id')->nullable();
+            $table->string('orders_id')->nullable();
+            $table->string('quote_product_id')->nullable();
             $table->string('product_name');
             $table->enum('product_type', ['cosmetic', 'food_supplement']);
             $table->decimal('quantity', 15, 2)->nullable()->default(0);
-            $table->decimal('total_raw_material_cost', 15, 2)->default(0);
-            $table->decimal('total_packaging_cost', 15, 2)->default(0);
-            $table->decimal('manufacturing_cost', 15, 2)->default(0);
-            $table->decimal('risk_cost', 15, 2)->default(0);
-            $table->decimal('profit_margin', 5, 2)->default(0);
+            $table->decimal('raw_material_cost_unit', 15, 2)->default(0);
+            $table->decimal('packaging_cost_unit', 15, 2)->default(0);
+            $table->decimal('manufacturing_cost_unit', 15, 2)->default(0);
+            $table->decimal('risk_cost_unit', 15, 2)->default(0);
+            $table->decimal('profit_margin_unit', 5, 2)->default(0);
             $table->decimal('subtotal', 15, 2)->default(0);
             $table->decimal('tax_rate', 5, 2)->default(19.00);
-            $table->decimal('tax_amount', 15, 2)->default(0);
+            $table->decimal('tax_amount_unit', 15, 2)->default(0);
+            $table->decimal('price_unit', 15, 2)->default(0);
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->decimal('final_product_volume', 10, 3)->default(0);
             $table->string('volume_unit')->default('ml');

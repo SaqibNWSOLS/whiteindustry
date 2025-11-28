@@ -142,16 +142,7 @@
 </div>
 
 
-<script>
-    $(document).ready(function() {
-        $('#quotesTable').DataTable({
-            responsive: true,
-            pageLength: 10,
-            ordering: true,
-            searching: true
-        });
-    });
-</script>
+
 
 <style>
 .stats-grid {

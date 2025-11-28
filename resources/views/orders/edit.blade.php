@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', isset($quote) ? 'Edit Quotation' : 'Create Quotation')
-@section('page_title', isset($quote) ? 'Edit Quotation' : 'Create Quotation')
+@section('title', isset($order) ? 'Edit Quotation' : 'Create Quotation')
+@section('page_title', isset($order) ? 'Edit Quotation' : 'Create Quotation')
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/quotation.css') }}">
@@ -11,28 +11,28 @@
         <!-- Progress Steps -->
         <div class="progress-card">
             <div class="steps-container">
-                <a href="{{ isset($quote) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'basic']) : route('quotes.create', 'basic') }}" 
-                   class="step {{ $step == 'basic' ? 'active' : '' }} {{ (isset($quote) && $quote->id) ? 'completed' : '' }}">
+                <a href="{{ isset($order) ? route('orders.edit', ['order' => $order->id, 'step' => 'basic']) : route('orders.create', 'basic') }}" 
+                   class="step {{ $step == 'basic' ? 'active' : '' }} {{ (isset($order) && $order->id) ? 'completed' : '' }}">
                     <div class="step-number">1</div>
                     <div class="step-label">Basic Info</div>
                 </a>
-                <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'products']) : '#' }}" 
-                   class="step {{ $step == 'products' ? 'active' : '' }} {{ in_array($step, ['raw_materials', 'blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
+                <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'products']) : '#' }}" 
+                   class="step {{ $step == 'products' ? 'active' : '' }} {{ in_array($step, ['raw_materials', 'blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">2</div>
                     <div class="step-label">Products</div>
                 </a>
-                <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'raw_materials']) : '#' }}" 
-                   class="step {{ $step == 'raw_materials' ? 'active' : '' }} {{ in_array($step, ['blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
+                <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'raw_materials']) : '#' }}" 
+                   class="step {{ $step == 'raw_materials' ? 'active' : '' }} {{ in_array($step, ['blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">3</div>
                     <div class="step-label">Raw Materials & Blend</div>
                 </a>
-                <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'packaging']) : '#' }}" 
-                   class="step {{ $step == 'packaging' ? 'active' : '' }} {{ $step == 'calculation' ? 'completed' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
+                <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'packaging']) : '#' }}" 
+                   class="step {{ $step == 'packaging' ? 'active' : '' }} {{ $step == 'calculation' ? 'completed' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">5</div>
                     <div class="step-label">Packaging</div>
                 </a>
-                <a href="{{ (isset($quote) && $quote->id) ? route('quotes.edit', ['quote' => $quote->id, 'step' => 'calculation']) : '#' }}" 
-                   class="step {{ $step == 'calculation' ? 'active' : '' }} {{ !isset($quote) ? 'disabled' : '' }}">
+                <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'calculation']) : '#' }}" 
+                   class="step {{ $step == 'calculation' ? 'active' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">6</div>
                     <div class="step-label">Calculation</div>
                 </a>
@@ -74,9 +74,9 @@
 
                 <!-- Step 1: Basic Information -->
                 @if($step == 'basic')
-                <form method="POST" action="{{ isset($quote) ? route('quotes.update-basic', $quote->id) : route('quotes.store-basic') }}">
+                <form method="POST" action="{{ isset($order) ? route('orders.update-basic', $order->id) : route('orders.store-basic') }}">
                     @csrf
-                    @if(isset($quote)) @method('PUT') @endif
+                    @if(isset($order)) @method('PUT') @endif
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -85,7 +85,7 @@
                                 <option value="">Select Customer</option>
                                 @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}" 
-                                        {{ (old('customer_id', isset($quote) ? $quote->customer_id : '') == $customer->id) ? 'selected' : '' }}>
+                                        {{ (old('customer_id', isset($order) ? $order->customer_id : '') == $customer->id) ? 'selected' : '' }}>
                                         {{ $customer->company_name ?: $customer->contact_person }}
                                         @if($customer->company_name && $customer->contact_person)
                                             ({{ $customer->contact_person }})
@@ -98,21 +98,21 @@
                     
                     <div class="form-group">
                         <label class="form-label">Notes</label>
-                        <textarea name="notes" class="form-control" rows="4" placeholder="Add any additional notes...">{{ old('notes', isset($quote) ? $quote->notes : '') }}</textarea>
+                        <textarea name="notes" class="form-control" rows="4" placeholder="Add any additional notes...">{{ old('notes', isset($order) ? $order->notes : '') }}</textarea>
                     </div>
                     
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
-                            {{ isset($quote) ? 'Update & Continue' : 'Next: Add Products' }}
+                            {{ isset($order) ? 'Update & Continue' : 'Next: Add Products' }}
                         </button>
-                        <a href="{{ route('quotes.index') }}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ route('orders.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
                 @endif
 
                 <!-- Step 2: Products -->
-                @if($step == 'products' && isset($quote))
-                <form method="POST" action="{{ route('quotes.update-products', $quote->id) }}">
+                @if($step == 'products' && isset($order))
+                <form method="POST" action="{{ route('orders.update-products', $order->id) }}">
                     @csrf
                     @method('PUT')
                     
@@ -131,7 +131,7 @@
                         </div>
                         
                         @php
-                            $existingProducts = $quote->products;
+                            $existingProducts = $order->products;
                             $productIndex = 0;
                         @endphp
                         
@@ -200,7 +200,7 @@
                     <div class="form-actions">
                         <button type="button" id="add-product" class="btn btn-success">Add Another Product</button>
                         <button type="submit" class="btn btn-primary">Next: Add Raw Materials</button>
-                        <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'basic']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'basic']) }}" class="btn btn-secondary">Back</a>
                     </div>
                 </form>
 
@@ -276,13 +276,13 @@
                 @endif
 
                 <!-- Step 3: Raw Materials -->
-                @if($step == 'raw_materials' && isset($quote))
+                @if($step == 'raw_materials' && isset($order))
                 
-                <form method="POST" action="{{ route('quotes.update-raw-materials', $quote->id) }}">
+                <form method="POST" action="{{ route('orders.update-raw-materials', $order->id) }}">
                     @csrf
                     @method('PUT')
 
-                    @foreach($quote->products as $product)
+                    @foreach($order->products as $product)
                     <div class="product-section">
                         <div class="product-header">
                             <h3 class="product-title">{{ $product->product_name }}</h3>
@@ -315,7 +315,7 @@
                     </div>
                     @endforeach
                     
-                    @foreach($quote->products as $product)
+                    @foreach($order->products as $product)
                     <div class="product-section">
                         <div class="product-header">
                             <h3 class="product-title">{{ $product->product_name }}</h3>
@@ -429,7 +429,7 @@
                         <button type="submit" class="btn btn-primary" id="submit-materials">
                             Next: Add Packaging
                         </button>
-                        <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'products']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'products']) }}" class="btn btn-secondary">Back</a>
                     </div>
                 </form>
 
@@ -536,12 +536,12 @@
                 @endif
 
                 <!-- Step 4: Blend -->
-                @if($step == 'blend' && isset($quote))
-                <form method="POST" action="{{ route('quotes.update-blend', $quote->id) }}">
+                @if($step == 'blend' && isset($order))
+                <form method="POST" action="{{ route('orders.update-blend', $order->id) }}">
                     @csrf
                     @method('PUT')
                     
-                    @foreach($quote->products as $product)
+                    @foreach($order->products as $product)
                     <div class="product-section">
                         <div class="product-header">
                             <h3 class="product-title">{{ $product->product_name }}</h3>
@@ -576,18 +576,18 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Next: Add Packaging</button>
-                        <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'raw_materials']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'raw_materials']) }}" class="btn btn-secondary">Back</a>
                     </div>
                 </form>
                 @endif
 
                 <!-- Step 5: Packaging -->
-                @if($step == 'packaging' && isset($quote))
-                <form method="POST" action="{{ route('quotes.update-packaging', $quote->id) }}">
+                @if($step == 'packaging' && isset($order))
+                <form method="POST" action="{{ route('orders.update-packaging', $order->id) }}">
                     @csrf
                     @method('PUT')
                     
-                    @foreach($quote->products as $product)
+                    @foreach($order->products as $product)
                     <div class="product-section">
                         <div class="product-header">
                             <h3 class="product-title">{{ $product->product_name }}</h3>
@@ -672,7 +672,7 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Next: Calculate Quotation</button>
-                        <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'blend']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'blend']) }}" class="btn btn-secondary">Back</a>
                     </div>
                 </form>
 
@@ -725,8 +725,8 @@
                 @endif
 
                 <!-- Step 6: Calculation -->
-                @if($step == 'calculation' && isset($quote))
-                <form method="POST" action="{{ route('quotes.calculate', $quote->id) }}">
+                @if($step == 'calculation' && isset($order))
+                <form method="POST" action="{{ route('orders.calculate', $order->id) }}">
                     @csrf
                     <div class="form-row">
                         <div class="form-group">
@@ -734,25 +734,25 @@
                             <div class="form-group">
                                 <label class="form-label">Manufacturing Cost %</label>
                                 <input type="number" name="manufacturing_cost_percent" class="form-control" 
-                                       value="{{ old('manufacturing_cost_percent', $quote->manufacturing_cost_percent ?? 30) }}" 
+                                       value="{{ old('manufacturing_cost_percent', $order->manufacturing_cost_percent ?? 30) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Risk Cost %</label>
                                 <input type="number" name="risk_cost_percent" class="form-control" 
-                                       value="{{ old('risk_cost_percent', $quote->risk_cost_percent ?? 5) }}" 
+                                       value="{{ old('risk_cost_percent', $order->risk_cost_percent ?? 5) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Profit Margin %</label>
                                 <input type="number" name="profit_margin_percent" class="form-control" 
-                                       value="{{ old('profit_margin_percent', $quote->profit_margin_percent ?? 30) }}" 
+                                       value="{{ old('profit_margin_percent', $order->profit_margin_percent ?? 30) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
 {{--                                 <label class="form-label">Tax Rate %</label>
  --}}                                <input type="hidden" name="tax_rate" class="form-control" 
-                                       value="{{ old('tax_rate', $quote->tax_rate ?? 19) }}" 
+                                       value="{{ old('tax_rate', $order->tax_rate ?? 19) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                         </div>
@@ -761,28 +761,28 @@
                             <div class="summary-grid">
                                 <div class="summary-card">
                                     <p class="summary-label">Customer</p>
-                                    <p class="summary-value">{{ $quote->customer->company_name ?: $quote->customer->contact_person }}</p>
+                                    <p class="summary-value">{{ $order->customer->company_name ?: $order->customer->contact_person }}</p>
                                 </div>
                                 <div class="summary-card">
                                     <p class="summary-label">Number of Products</p>
-                                    <p class="summary-value">{{ $quote->products->count() }}</p>
+                                    <p class="summary-value">{{ $order->products->count() }}</p>
                                 </div>
                                 <div class="summary-card">
                                     <p class="summary-label">Total Raw Materials</p>
-                                    <p class="summary-value">{{ $quote->products->sum(fn($product) => $product->rawMaterialItems->count()) }}</p>
+                                    <p class="summary-value">{{ $order->products->sum(fn($product) => $product->rawMaterialItems->count()) }}</p>
                                 </div>
                                 <div class="summary-card">
                                     <p class="summary-label">Total Packaging Items</p>
-                                    <p class="summary-value">{{ $quote->products->sum(fn($product) => $product->packagingItems->count()) }}</p>
+                                    <p class="summary-value">{{ $order->products->sum(fn($product) => $product->packagingItems->count()) }}</p>
                                 </div>
                             </div>
                             
-                            @if($quote->total_price)
+                            @if($order->total_price)
                             <div class="alert alert-success mt-3">
                                 <h5>Current Calculation</h5>
-                                <p><strong>Total Price:</strong> €{{ number_format($quote->total_price, 2) }}</p>
-                                <p><strong>Status:</strong> {{ ucfirst($quote->status) }}</p>
-                                <p><strong>Last Updated:</strong> {{ $quote->updated_at->format('M j, Y H:i') }}</p>
+                                <p><strong>Total Price:</strong> €{{ number_format($order->total_price, 2) }}</p>
+                                <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
+                                <p><strong>Last Updated:</strong> {{ $order->updated_at->format('M j, Y H:i') }}</p>
                             </div>
                             @endif
                         </div>
@@ -790,16 +790,16 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-success">
-                            @if($quote->total_price)
+                            @if($order->total_price)
                                 Recalculate & Update Quotation
                             @else
                                 Calculate & Save Quotation
                             @endif
                         </button>
-                        <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'packaging']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'packaging']) }}" class="btn btn-secondary">Back</a>
                         
-                        @if($quote->total_price)
-                        <a href="{{ route('quotes.show', $quote->id) }}" class="btn btn-outline" target="_blank">
+                        @if($order->total_price)
+                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline" target="_blank">
                             View Final Quotation
                         </a>
                         @endif

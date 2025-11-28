@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
     $table->id();
     $table->foreignId('order_products_id')->constrained('order_products')->onDelete('cascade');
-     $table->string('quote_product_id');     
-     $table->string('quote_item_id');     
+     $table->string('quote_product_id')->nullable();     
+     $table->string('quote_item_id')->nullable();     
      
-            $table->string('item_type'); // 'raw_material' or 'packaging'
-            $table->foreignId('item_id'); // polymorphic relation
+            $table->string('item_type')->nullable(); // 'raw_material' or 'packaging'
+            $table->foreignId('item_id')->nullable(); // polymorphic relation
             $table->string('item_name');
             $table->decimal('quantity', 10, 3)->default(0);
             $table->string('unit');

@@ -22,14 +22,14 @@
           <div class="nav-item {{ request()->is('rnd*') ? 'active' : '' }}" data-module="documents">
             <a href="{{ url('/rnd') }}" class="nav-button" aria-expanded="false">
                 <i class="uil uil-file-alt nav-icon"></i>
-                <span class="nav-label">R&N</span>
+                <span class="nav-label">R&D</span>
             </a>
         </div>
 
          <div class="nav-item {{ request()->is('qa*') ? 'active' : '' }}" data-module="documents">
             <a href="{{ url('/qa') }}" class="nav-button" aria-expanded="false">
                 <i class="uil uil-file-alt nav-icon"></i>
-                <span class="nav-label">Q&A</span>
+                <span class="nav-label">Quality Control</span>
             </a>
         </div>
 

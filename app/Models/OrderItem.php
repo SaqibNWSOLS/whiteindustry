@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
-    protected $fillable = [
+     protected $fillable = [
         'order_products_id',
         'quote_product_id',
         'quote_item_id',
@@ -17,7 +17,7 @@ class OrderItem extends Model
         'unit',
         'percentage',
         'unit_cost',
-        'total_cost'
+        'total_cost',
     ];
 
     public function orderProduct() {

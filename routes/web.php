@@ -14,11 +14,14 @@ use App\Models\QaQuote;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
+
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthWebController::class, 'login']);
 Route::post('/logout', [AuthWebController::class, 'logout']);
+    Route::get('/dashboard', [DashboardController::class,'index']);
 
 
 Route::resource('products',ProductController::class);
@@ -84,14 +87,25 @@ Route::prefix('qa')->group(function () {
     Route::post('{id}/reject', [QaQuoteController::class, 'reject'])->name('qa.reject');
 });
 
+Route::resource('orders',OrderController::class);
+Route::get('/productions/{production}/details', [InvoiceController::class, 'getProductionDetails'])->name('productions.details');
 // Orders Routes
 Route::prefix('orders')->group(function () {
-    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('create', [OrderController::class, 'create'])->name('orders.create');
-    Route::post('/', [OrderController::class, 'store'])->name('orders.store');
-    Route::get('{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('{id}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+
+
+    Route::post('/store-basic', [OrderController::class, 'storeBasic'])->name('orders.store-basic');
+        Route::put('/update-basic/{id}', [OrderController::class, 'updateBasic'])->name('orders.update-basic');
+
+    Route::put('/{order}/add-products', [OrderController::class, 'addProducts'])->name('orders.update-products');
+    Route::put('/{order}/add-raw-materials', [OrderController::class, 'addRawMaterialsAndBlends'])->name('orders.update-raw-materials');
+    Route::put('/{order}/update-blend', [OrderController::class, 'addBlend'])->name('orders.update-blend');
+    Route::put('/{order}/update-packaging', [OrderController::class, 'addPackaging'])->name('orders.update-packaging');
+    Route::post('/{order}/calculate', [OrderController::class, 'calculate'])->name('orders.calculate');
 });
+
+Route::put('production/item/{item}', [ProductionController::class, 'updateProductionItem'])->name('production.item.update');
+
 
 // Production Routes
 Route::prefix('production')->group(function () {
@@ -99,16 +113,21 @@ Route::prefix('production')->group(function () {
     Route::get('create', [ProductionController::class, 'create'])->name('production.create');
     Route::post('/', [ProductionController::class, 'store'])->name('production.store');
     Route::get('{id}', [ProductionController::class, 'show'])->name('production.show');
-    Route::post('{id}/start', [ProductionController::class, 'startProduction'])->name('production.start');
-    Route::post('{id}/complete', [ProductionController::class, 'completeProduction'])->name('production.complete');
+    Route::get('{id}/start', [ProductionController::class, 'startProduction'])->name('production.start');
+    Route::get('{id}/complete', [ProductionController::class, 'completeProduction'])->name('production.complete');
 });
+
+
+Route::resource('invoices', InvoiceController::class);
+ Route::get('payments/{invoice_id}/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('payments/{invoice_id}', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('payments/{id}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
+    Route::put('payments/{id}', [PaymentController::class, 'update'])->name('payments.update');
+    Route::delete('payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
 
 // Invoices Routes
 Route::prefix('invoices')->group(function () {
-    Route::get('/', [InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('create/{productionId}', [InvoiceController::class, 'create'])->name('invoices.create');
-    Route::post('/', [InvoiceController::class, 'store'])->name('invoices.store');
-    Route::get('{id}', [InvoiceController::class, 'show'])->name('invoices.show');
+    
     Route::post('{id}/send', [InvoiceController::class, 'sendInvoice'])->name('invoices.send');
     Route::post('{id}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.paid');
     Route::get('{id}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
@@ -124,7 +143,6 @@ Route::get('api/qa/{id}/products', function($id) {
 });
 
 
-    Route::view('/dashboard', 'dashboard');
     Route::resource('/users', UserController::class);
     Route::view('/inventory', 'modules.inventory');
     // Render reports view and inject initial sales stats so the page loads server-side data

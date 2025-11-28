@@ -399,9 +399,10 @@ public function calculate(Request $request, Quote $quote)
     ];
 
     foreach ($quote->products as $quoteProduct) {
-
         // Use packaging volume as final product volume
-        $productVolume = $quoteProduct->packagingItems()->first()->itemDetail->volume ?? $quoteProduct->final_product_volume;
+        $packagingItem = $quoteProduct->packagingItems()->first();
+        $productVolume = $packagingItem->itemDetail->volume ?? $quoteProduct->final_product_volume;
+        $packagingUnit = $packagingItem->itemDetail->unit_of_measure ?? 'kg'; // Get packaging unit
 
         // ----- Calculate raw materials -----
         $rawMaterialCost = 0;
@@ -409,55 +410,75 @@ public function calculate(Request $request, Quote $quote)
 
         if ($rawMaterialItems->count() > 0) {
             foreach ($rawMaterialItems as $item) {
-                $quantity = ($item->percentage / 100) * $productVolume; // take percentage of product volume
-                $cost = $quantity * $item->unit_cost; // unit price * percentage * volume
-
+                // Convert raw material unit to packaging unit
+                $convertedQuantity = $this->convertUnit(
+                    ($item->percentage / 100) * $productVolume,
+                    $item->itemDetail->unit_of_measure ?? 'kg',
+                    $packagingUnit
+                );
+                
+                $cost = $convertedQuantity * $item->unit_cost;
                 $item->update([
-                    'quantity' => $quantity,
+                    'quantity' => $convertedQuantity,
                     'total_cost' => $cost
                 ]);
 
                 $rawMaterialCost += $cost;
             }
         }
-
         // ----- Calculate blend -----
         $blendItem = $quoteProduct->items()->where('item_type', 'blend')->first();
         if ($blendItem) {
-            $blendCost = $blendItem->itemDetail->unit_price * $productVolume;
+            // Convert blend to packaging unit
+            $convertedBlendVolume = $this->convertUnit(
+                $productVolume,
+                $blendItem->itemDetail->unit_of_measure ?? 'kg',
+                $packagingUnit
+            );
+            
+            $blendCost = $blendItem->itemDetail->unit_price * $convertedBlendVolume;
             $blendItem->update([
-                'quantity' => 1,
+                'quantity' => $convertedBlendVolume,
                 'total_cost' => $blendCost
             ]);
-            $rawMaterialCost = $blendCost; // override raw material if blend exists
+            $rawMaterialCost = $blendCost; // Override raw material if blend exists
         }
 
         // ----- Packaging cost -----
         $packagingCost = $quoteProduct->packagingItems()->sum('total_cost');
 
-        $productCost = $quoteProduct->quantity*($rawMaterialCost + $packagingCost);
+        // Calculate product cost for entire quantity
+        $productCost = $quoteProduct->quantity * ($rawMaterialCost + $packagingCost);
 
         // ----- Manufacturing & Risk -----
         $manufacturingCost = ($manufacturingPercent / 100) * $productCost;
         $riskCost = ($riskPercent / 100) * $productCost;
 
-        // ----- Subtotal & Tax -----
+        // ----- Subtotal, Profit & Tax -----
         $subtotal = $productCost + $manufacturingCost + $riskCost;
         $profitAmount = ($profitPercent / 100) * $subtotal;
         $totalBeforeTax = $subtotal + $profitAmount;
         $taxAmount = ($taxRate / 100) * $totalBeforeTax;
         $totalAmount = $totalBeforeTax + $taxAmount;
 
+        // Calculate per-unit values
+        $priceUnit = $totalAmount / $quoteProduct->quantity;
+        $subtotalUnit = $subtotal / $quoteProduct->quantity;
+        $manufacturingCostUnit = $manufacturingCost / $quoteProduct->quantity;
+        $riskCostUnit = $riskCost / $quoteProduct->quantity;
+        $taxAmountUnit = $taxAmount / $quoteProduct->quantity;
+
         // ----- Update quote product -----
         $quoteProduct->update([
-            'total_raw_material_cost' => $rawMaterialCost,
-            'total_packaging_cost' => $packagingCost,
-            'manufacturing_cost' => $manufacturingCost,
-            'risk_cost' => $riskCost,
-            'profit_margin' => $profitPercent,
-            'subtotal' => $subtotal,
+            'raw_material_cost_unit' => $rawMaterialCost,
+            'packaging_cost_unit' => $packagingCost,
+            'packaging_cost_unit' => $packagingCost / $quoteProduct->quantity,
+            'risk_cost_unit' => $riskCostUnit,
+            'profit_margin_unit' => $profitPercent,
+            'subtotal' => $subtotalUnit,
             'tax_rate' => $taxRate,
-            'tax_amount' => $taxAmount,
+            'tax_amount_unit' => $taxAmountUnit,
+            'price_unit' => $priceUnit,
             'total_amount' => $totalAmount
         ]);
 
@@ -473,20 +494,54 @@ public function calculate(Request $request, Quote $quote)
 
     // ----- Update main quote -----
     $quote->update([
-        'total_raw_material_cost' => $quoteTotals['raw'],
-        'total_packaging_cost' => $quoteTotals['packaging'],
-        'manufacturing_cost' => $quoteTotals['manufacturing'],
-        'risk_cost' => $quoteTotals['risk'],
-        'total_profit' => $profitPercent,
-        'subtotal' => $quoteTotals['subtotal'],
-        'tax_amount' => $quoteTotals['tax'],
-        'total_amount' => $quoteTotals['total']
+        'total_raw_material_cost' => round($quoteTotals['raw'],2),
+        'total_packaging_cost' => round($quoteTotals['packaging'],2),
+        'manufacturing_cost' => round($quoteTotals['manufacturing'],2),
+        'risk_cost' => round($quoteTotals['risk'],2),
+        'total_profit' => round($quoteTotals['subtotal'] * ($profitPercent / 100),2),
+        'subtotal' => round($quoteTotals['subtotal'],2),
+        'tax_amount' => round($quoteTotals['tax'],2),
+        'total_amount' => round($quoteTotals['total'],2)
     ]);
 
     session()->forget('current_quote_id');
 
     return redirect()->route('quotes.show', $quote->id)
         ->with('success', 'Quotation calculated and saved successfully');
+}
+
+/**
+ * Convert between units: kg, g, mg
+ * 
+ * @param float $quantity
+ * @param string $fromUnit
+ * @param string $toUnit
+ * @return float
+ */
+private function convertUnit($quantity, $fromUnit, $toUnit)
+{
+    // Conversion map to base unit (kg)
+    $toKilogram = [
+        'kg' => 1,
+        'g'  => 0.001,
+        'mg' => 0.000001
+    ];
+
+    // Validate units
+    if (!isset($toKilogram[$fromUnit]) || !isset($toKilogram[$toUnit])) {
+        return $quantity; // Return unchanged if unit is invalid
+    }
+
+    // If same unit, return as is
+    if ($fromUnit === $toUnit) {
+        return $quantity;
+    }
+
+    // Convert from source unit to kg, then to target unit
+    $quantityInKg = $quantity * $toKilogram[$fromUnit];
+    $convertedQuantity = $quantityInKg / $toKilogram[$toUnit];
+
+    return $convertedQuantity;
 }
 
 

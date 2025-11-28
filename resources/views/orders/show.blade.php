@@ -379,7 +379,7 @@
            </tr>
            <tr>
                <td><div>
-                Quotation: <span>{{ $order->quote->quotation_number }}</span>
+                Quotation: <span>{{ isset($order->quote->quotation_number)?$order->quote->quotation_number:'' }}</span>
             </div>
            </td>
                <td><div>
@@ -390,7 +390,7 @@
     </div>
     
     <div class="client-info">
-        <h3>CLIENT: {{ $order->quote->customer->company_name ?? $order->quote->customer->contact_person }}</h3>
+        <h3>CLIENT: {{ $order->customer->company_name ?? $order->customer->contact_person }}</h3>
     </div>
     
     <div class="invoice-body">
@@ -413,8 +413,8 @@
                         <td>{{ ++$key }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td class="text-center">{{ $item->quantity }}</td>
-                        <td class="text-right">${{ number_format($item->unit_price, 2) }}</td>
-                        <td class="text-right">${{ number_format($item->total_price, 2) }}</td>
+                        <td class="text-right">${{ number_format($item->total_amount/$item->quantity , 2) }}</td>
+                        <td class="text-right">${{ number_format($item->total_amount, 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>

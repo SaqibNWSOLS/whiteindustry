@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -26,29 +25,62 @@ class OrderProduct extends Model
         'volume_unit'
     ];
 
-    public function order() {
+    public function order()
+    {
         return $this->belongsTo(Order::class, 'orders_id');
     }
 
-    public function quoteProduct() {
+    public function quoteProduct()
+    {
         return $this->belongsTo(QuoteProduct::class, 'quote_product_id');
     }
 
-    public function items() {
+    public function items()
+    {
         return $this->hasMany(OrderItem::class, 'order_products_id');
     }
 
-    public function blendItems() {
+    public function blendItems()
+    {
         return $this->hasMany(OrderItem::class, 'order_products_id')->where('item_type', 'blend');
     }
 
-    public function rawMaterialItems() {
+    public function rawMaterialItems()
+    {
         return $this->hasMany(OrderItem::class, 'order_products_id')
                     ->where('item_type', 'raw_material');
     }
 
-    public function packagingItems() {
+    public function packagingItems()
+    {
         return $this->hasMany(OrderItem::class, 'order_products_id')
                     ->where('item_type', 'packaging');
+    }
+
+    // New relationship for production tracking
+    public function productionItems()
+    {
+        return $this->hasMany(ProductionItem::class);
+    }
+
+    // Get total production quantity for this product
+    public function getTotalProductionQuantity()
+    {
+        return $this->productionItems()->sum('quantity_produced');
+    }
+
+    // Get total planned production
+    public function getTotalPlannedProduction()
+    {
+        return $this->productionItems()->sum('quantity_planned');
+    }
+
+    // Check if production is complete
+    public function isProductionComplete()
+    {
+        $planned = $this->getTotalPlannedProduction();
+        $produced = $this->getTotalProductionQuantity();
+        
+        return $planned > 0 && $produced >= $planned;
     }
 }

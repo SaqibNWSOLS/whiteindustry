@@ -81,7 +81,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Customer *</label>
-                            <select name="customer_id" class="form-control" required>
+                            <select name="customer_id" class="form-control select2" required>
                                 <option value="">Select Customer</option>
                                 @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}" 
@@ -302,7 +302,7 @@
                                             {{ $existingBlend && $existingBlend->item_id == $blend->id ? 'selected' : '' }}
                                             data-price="{{ $blend->unit_price }}"
                                             data-unit="{{ $blend->unit_of_measure }}">
-                                            {{ $blend->name }} (€{{ $blend->unit_price }}/{{ $blend->unit_of_measure }})
+                                            {{ $blend->name }} /{{ $blend->unit_of_measure }})
                                         </option>
                                     @endforeach
                                 </select>

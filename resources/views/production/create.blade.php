@@ -31,9 +31,10 @@
                         @foreach($confirmedOrders as $order)
                             <option value="{{ $order->id }}" 
                                 data-order-num="{{ $order->order_number }}"
-                                data-customer="{{ $order->quote->customer->company_name }}"
-                                data-total="{{ $order->total_amount }}">
-                                {{ $order->order_number }} - {{ $order->quote->customer->company_name }}
+                                data-customer="{{ $order->customer->company_name }}"
+                                data-total="{{ $order->total_amount }}"
+                                data-order="{{ json_encode($order->products->map(function($p) { return ['id' => $p->id, 'name' => $p->product_name, 'quantity' => $p->quantity, 'type' => $p->product_type]; })) }}">
+                                {{ $order->order_number }} - {{ $order->customer->company_name }}
                             </option>
                         @endforeach
                     </select>
@@ -70,6 +71,26 @@
                         </div>
                     </div>
 
+                    <!-- PRODUCTION ITEMS SECTION -->
+                    <div class="form-section">
+                        <h4 class="section-title">Production Items</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Product Type</th>
+                                        <th>Order Quantity</th>
+                                        <th>Quantity to Produce</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="production-items-tbody">
+                                    <!-- Items will be dynamically loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div style="display: flex; gap: 10px;">
                         <button type="submit" class="btn btn-success">Create Production</button>
                         <a href="{{ route('production.index') }}" class="btn btn-secondary">Cancel</a>
@@ -92,6 +113,32 @@ function loadOrderDetails(orderId) {
     document.getElementById('order-num').textContent = selected.dataset.orderNum;
     document.getElementById('customer-name').textContent = selected.dataset.customer;
     document.getElementById('order-total').textContent = '$' + parseFloat(selected.dataset.total).toFixed(2);
+
+    // Load production items
+    const products = JSON.parse(selected.dataset.order);
+    const tbody = document.getElementById('production-items-tbody');
+    tbody.innerHTML = '';
+
+    products.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${product.name}</td>
+            <td>${product.type}</td>
+            <td>${product.quantity}</td>
+            <td>
+                <input type="hidden" name="production_items[${index}][order_product_id]" value="${product.id}">
+                <input type="number" 
+                       name="production_items[${index}][quantity_planned]" 
+                       class="form-control" 
+            readonly
+                       value="${product.quantity}" 
+                       min="1" 
+                       max="${product.quantity * 2}"
+                       required>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
 
     document.getElementById('order-details').style.display = 'block';
 }
