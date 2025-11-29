@@ -1,16 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Administration')
+@section('title', __('settings.administration'))
+@section('page_title', __('settings.administration'))
 
 @section('content')
     <div class="content">
         <div id="admin" class="module active">
             <div class="tabs">
                 <div class="tab-nav">
-                    <button class="tab-button active" onclick="showTab('admin', 'profile', this)">My Profile</button>
-                    <button class="tab-button" onclick="showTab('admin', 'password', this)">Change Password</button>
+                    <button class="tab-button active" onclick="showTab('admin', 'profile', this)">{{ __('settings.tabs.profile') }}</button>
+                    <button class="tab-button" onclick="showTab('admin', 'password', this)">{{ __('settings.tabs.password') }}</button>
                     @if(Auth::user()->hasRole('Administrator'))
-                    <button class="tab-button" onclick="showTab('admin', 'settings', this)">Settings</button>
+                    <button class="tab-button" onclick="showTab('admin', 'settings', this)">{{ __('settings.tabs.settings') }}</button>
                     @endif
                 </div>
             </div>
@@ -20,7 +21,7 @@
                     <form id="admin-profile-form" action="{{ route('admin.profile.update') }}" method="post">
                         @csrf
                         @method('PUT')
-                        <h3 style="margin-bottom: 20px;"><i class="ti ti-user-circle"></i> Administrator Profile</h3>
+                        <h3 style="margin-bottom: 20px;"><i class="ti ti-user-circle"></i> {{ __('settings.profile.title') }}</h3>
                         
                         @if(session('profile_success'))
                             <div class="alert alert-success">
@@ -40,7 +41,7 @@
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div class="form-group">
-                                <label class="form-label">First Name *</label>
+                                <label class="form-label">{{ __('settings.profile.first_name') }} *</label>
                                 <input type="text" name="first_name" class="form-input @error('first_name') error @enderror" 
                                        value="{{ old('first_name', Auth::user()->first_name) }}" required>
                                 @error('first_name')
@@ -48,7 +49,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Last Name *</label>
+                                <label class="form-label">{{ __('settings.profile.last_name') }} *</label>
                                 <input type="text" name="last_name" class="form-input @error('last_name') error @enderror" 
                                        value="{{ old('last_name', Auth::user()->last_name) }}" required>
                                 @error('last_name')
@@ -59,7 +60,7 @@
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div class="form-group">
-                                <label class="form-label">Email Address *</label>
+                                <label class="form-label">{{ __('settings.profile.email') }} *</label>
                                 <input type="email" name="email" class="form-input @error('email') error @enderror" 
                                        value="{{ old('email', Auth::user()->email) }}" required>
                                 @error('email')
@@ -67,7 +68,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Phone Number</label>
+                                <label class="form-label">{{ __('settings.profile.phone') }}</label>
                                 <input type="tel" name="phone" class="form-input @error('phone') error @enderror" 
                                        value="{{ old('phone', Auth::user()->phone) }}">
                                 @error('phone')
@@ -77,16 +78,16 @@
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Address</label>
+                            <label class="form-label">{{ __('settings.profile.address') }}</label>
                             <textarea name="address" class="form-input @error('address') error @enderror" 
-                                      rows="3" placeholder="Enter your address">{{ old('address', Auth::user()->address) }}</textarea>
+                                      rows="3" placeholder="{{ __('settings.placeholders.enter_address') }}">{{ old('address', Auth::user()->address) }}</textarea>
                             @error('address')
                                 <span class="form-error">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <button id="admin-profile-save" class="btn btn-primary" type="submit">
-                            <i class="ti ti-device-floppy"></i> Save Changes
+                            <i class="ti ti-device-floppy"></i> {{ __('settings.profile.save_changes') }}
                         </button>
                     </form>
                 </div>
@@ -97,7 +98,7 @@
                     <form id="admin-password-form" action="{{ route('admin.password.update') }}" method="post">
                         @csrf
                         @method('PUT')
-                        <h3 style="margin-bottom: 20px;"><i class="ti ti-lock"></i> Change Password</h3>
+                        <h3 style="margin-bottom: 20px;"><i class="ti ti-lock"></i> {{ __('settings.password.title') }}</h3>
                         
                         @if(session('password_success'))
                             <div class="alert alert-success">
@@ -112,9 +113,9 @@
                         @endif
 
                         <div class="form-group">
-                            <label class="form-label">Current Password *</label>
+                            <label class="form-label">{{ __('settings.password.current_password') }} *</label>
                             <input type="password" name="current_password" class="form-input @error('current_password') error @enderror" 
-                                   placeholder="Enter current password" required>
+                                   placeholder="{{ __('settings.placeholders.enter_current_password') }}" required>
                             @error('current_password')
                                 <span class="form-error">{{ $message }}</span>
                             @enderror
@@ -122,33 +123,33 @@
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div class="form-group">
-                                <label class="form-label">New Password *</label>
+                                <label class="form-label">{{ __('settings.password.new_password') }} *</label>
                                 <input type="password" name="new_password" class="form-input @error('new_password') error @enderror" 
-                                       placeholder="Enter new password" required>
+                                       placeholder="{{ __('settings.placeholders.enter_new_password') }}" required>
                                 @error('new_password')
                                     <span class="form-error">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Confirm New Password *</label>
+                                <label class="form-label">{{ __('settings.password.confirm_password') }} *</label>
                                 <input type="password" name="new_password_confirmation" class="form-input" 
-                                       placeholder="Confirm new password" required>
+                                       placeholder="{{ __('settings.placeholders.confirm_new_password') }}" required>
                             </div>
                         </div>
 
                         <div class="password-requirements">
-                            <small>Password must contain at least:</small>
+                            <small>{{ __('settings.password.password_requirements') }}</small>
                             <ul style="margin: 8px 0 0 16px; font-size: 12px; color: #666;">
-                                <li>8 characters</li>
-                                <li>1 uppercase letter</li>
-                                <li>1 lowercase letter</li>
-                                <li>1 number</li>
-                                <li>1 special character</li>
+                                <li>{{ __('settings.password.requirements.min_chars') }}</li>
+                                <li>{{ __('settings.password.requirements.uppercase') }}</li>
+                                <li>{{ __('settings.password.requirements.lowercase') }}</li>
+                                <li>{{ __('settings.password.requirements.number') }}</li>
+                                <li>{{ __('settings.password.requirements.special_char') }}</li>
                             </ul>
                         </div>
 
                         <button id="admin-password-save" class="btn btn-primary" type="submit">
-                            <i class="ti ti-key"></i> Update Password
+                            <i class="ti ti-key"></i> {{ __('settings.password.update_password') }}
                         </button>
                     </form>
                 </div>
@@ -159,7 +160,7 @@
                     <form id="admin-settings-form" action="{{ route('admin.settings.update') }}" method="post">
                         @csrf
                         @method('PUT')
-                        <h3 style="margin-bottom: 20px;"><i class="ti ti-settings"></i> System Settings</h3>
+                        <h3 style="margin-bottom: 20px;"><i class="ti ti-settings"></i> {{ __('settings.settings.title') }}</h3>
                         
                         @if(session('settings_success'))
                             <div class="alert alert-success">
@@ -168,7 +169,7 @@
                         @endif
 
                         <div class="form-group">
-                            <label class="form-label">Company Name *</label>
+                            <label class="form-label">{{ __('settings.settings.company_name') }} *</label>
                             <input type="text" name="company_name" class="form-input @error('company_name') error @enderror" 
                                    value="{{ old('company_name', $settings->company_name ?? 'White Industry') }}" required>
                             @error('company_name')
@@ -178,7 +179,7 @@
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div class="form-group">
-                                <label class="form-label">Tax ID</label>
+                                <label class="form-label">{{ __('settings.settings.tax_id') }}</label>
                                 <input type="text" name="tax_id" class="form-input @error('tax_id') error @enderror" 
                                        value="{{ old('tax_id', $settings->tax_id ?? 'DZ-123456789') }}">
                                 @error('tax_id')
@@ -186,7 +187,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Phone</label>
+                                <label class="form-label">{{ __('settings.settings.phone') }}</label>
                                 <input type="tel" name="phone" class="form-input @error('phone') error @enderror" 
                                        value="{{ old('phone', $settings->phone ?? '+213 21 123 456') }}">
                                 @error('phone')
@@ -195,51 +196,27 @@
                             </div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                            <div class="form-group">
-                                <label class="form-label">Default Currency *</label>
-                                <select class="form-select @error('default_currency') error @enderror" name="default_currency" required>
-                                    <option value="DZD" {{ (old('default_currency', $settings->default_currency ?? 'DZD') == 'DZD') ? 'selected' : '' }}>DZD - Algerian Dinar</option>
-                                    <option value="EUR" {{ (old('default_currency', $settings->default_currency ?? 'DZD') == 'EUR') ? 'selected' : '' }}>EUR - Euro</option>
-                                    <option value="USD" {{ (old('default_currency', $settings->default_currency ?? 'DZD') == 'USD') ? 'selected' : '' }}>USD - US Dollar</option>
-                                </select>
-                                @error('default_currency')
-                                    <span class="form-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Timezone *</label>
-                                <select class="form-select @error('timezone') error @enderror" name="timezone" required>
-                                    <option value="Africa/Algiers" {{ (old('timezone', $settings->timezone ?? 'Africa/Algiers') == 'Africa/Algiers') ? 'selected' : '' }}>Algiers (GMT+1)</option>
-                                    <option value="UTC" {{ (old('timezone', $settings->timezone ?? 'Africa/Algiers') == 'UTC') ? 'selected' : '' }}>UTC</option>
-                                    <option value="Europe/Paris" {{ (old('timezone', $settings->timezone ?? 'Africa/Algiers') == 'Europe/Paris') ? 'selected' : '' }}>Paris (GMT+1)</option>
-                                </select>
-                                @error('timezone')
-                                    <span class="form-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Company Address</label>
+                            <label class="form-label">{{ __('settings.settings.company_address') }}</label>
                             <textarea name="company_address" class="form-input @error('company_address') error @enderror" 
-                                      rows="3" placeholder="Enter company address">{{ old('company_address', $settings->company_address ?? '') }}</textarea>
+                                      rows="3" placeholder="{{ __('settings.placeholders.enter_company_address') }}">{{ old('company_address', $settings->company_address ?? '') }}</textarea>
                             @error('company_address')
                                 <span class="form-error">{{ $message }}</span>
                             @enderror
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Email Signature</label>
+                            <label class="form-label">{{ __('settings.settings.email_signature') }}</label>
                             <textarea name="email_signature" class="form-input @error('email_signature') error @enderror" 
-                                      rows="3" placeholder="Enter email signature">{{ old('email_signature', $settings->email_signature ?? '') }}</textarea>
+                                      rows="3" placeholder="{{ __('settings.placeholders.enter_email_signature') }}">{{ old('email_signature', $settings->email_signature ?? '') }}</textarea>
                             @error('email_signature')
                                 <span class="form-error">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <button id="admin-settings-save" type="submit" class="btn btn-primary">
-                            <i class="ti ti-device-floppy"></i> Save Settings
+                            <i class="ti ti-device-floppy"></i> {{ __('settings.settings.save_settings') }}
                         </button>
                     </form>
                 </div>
@@ -276,7 +253,7 @@
         if (profileForm) {
             profileForm.addEventListener('submit', function(e) {
                 const saveButton = document.getElementById('admin-profile-save');
-                saveButton.innerHTML = '<i class="ti ti-loader"></i> Saving...';
+                saveButton.innerHTML = '<i class="ti ti-loader"></i> {{ __("settings.buttons.saving") }}';
                 saveButton.disabled = true;
             });
         }
@@ -290,12 +267,12 @@
                 
                 if (newPassword !== confirmPassword) {
                     e.preventDefault();
-                    alert('New password and confirmation do not match!');
+                    alert('{{ __("settings.error.password_mismatch") }}');
                     return;
                 }
 
                 const saveButton = document.getElementById('admin-password-save');
-                saveButton.innerHTML = '<i class="ti ti-loader"></i> Updating...';
+                saveButton.innerHTML = '<i class="ti ti-loader"></i> {{ __("settings.buttons.updating") }}';
                 saveButton.disabled = true;
             });
         }
@@ -305,7 +282,7 @@
         if (settingsForm) {
             settingsForm.addEventListener('submit', function(e) {
                 const saveButton = document.getElementById('admin-settings-save');
-                saveButton.innerHTML = '<i class="ti ti-loader"></i> Saving...';
+                saveButton.innerHTML = '<i class="ti ti-loader"></i> {{ __("settings.buttons.saving") }}';
                 saveButton.disabled = true;
             });
         }

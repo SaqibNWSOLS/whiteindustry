@@ -1,23 +1,18 @@
 @extends('layouts.app')
 
+@section('title', __('roles.management'))
+@section('page_title', __('roles.management'))
+
 @section('content')
     <div class="content">
         <div class="module-header">
-            <h1 class="text-2xl font-semibold">Roles Management</h1>
+            <h1 class="text-2xl font-semibold">{{ __('roles.management') }}</h1>
             <div>
-                <a href="{{ route('roles.create') }}" class="btn btn-primary">Create Role</a>
+                <a href="{{ route('roles.create') }}" class="btn btn-primary">{{ __('roles.create_role_button') }}</a>
             </div>
         </div>
 
         <div class="table-container">
-            <div class="table-header">
-                <h3>All Roles</h3>
-                <div>
-                    <form method="GET" action="{{ route('roles.index') }}">
-                        <input name="search" value="{{ request('search') }}" class="form-input" placeholder="Search roles..." style="width:220px;" />
-                    </form>
-                </div>
-            </div>
             
             @if(session('success'))
                 <div class="alert alert-success mb-4">
@@ -31,12 +26,12 @@
                 </div>
             @endif
 
-            <table>
+            <table id="quotesTable">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Permissions Count</th>
-                        <th style="width:160px; text-align:right;">Actions</th>
+                        <th>{{ __('roles.name') }}</th>
+                        <th>{{ __('roles.permissions_count') }}</th>
+                        <th style="width:160px; text-align:right;">{{ __('roles.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,27 +41,27 @@
                             <td>{{ $role->permissions->count() }}</td>
                             <td style="text-align: right;">
                                 <div style="display: flex; justify-content: flex-end; gap: 5px;">
-                                    <a href="{{ route('roles.show', $role) }}" class="btn btn-secondary">View</a>
-                                    <a href="{{ route('roles.edit', $role) }}" class="btn btn-primary">Edit</a>
+                                    <a href="{{ route('roles.show', $role) }}" class="btn btn-secondary" title="{{ __('roles.show_role') }}">
+                                        <i class="fas fa-eye"></i> 
+                                    </a>
+                                    <a href="{{ route('roles.edit', $role) }}" class="btn btn-primary" title="{{ __('roles.edit_role_button') }}">
+                                        <i class="fas fa-edit"></i> 
+                                    </a>
                                     <form action="{{ route('roles.destroy', $role) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this role?')">Delete</button>
+                                        <button type="submit" class="btn btn-danger" title="{{ __('roles.delete_role') }}" onclick="return confirm('{{ __('roles.delete_confirmation') }}')">
+                                            <i class="fas fa-trash"></i> 
+                                        </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5">No roles found</td>
-                        </tr>
                     @endforelse
                 </tbody>
             </table>
             
-            <div class="mt-4">
-                {{ $roles->links() }}
-            </div>
         </div>
     </div>
 @endsection

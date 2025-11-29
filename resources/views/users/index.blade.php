@@ -1,24 +1,18 @@
 @extends('layouts.app')
+@section('title', __('users.management'))
+@section('page_title', __('users.management'))
 
 @section('content')
     <div class="content">
         <div class="module-header">
-            <h1 class="text-2xl font-semibold">Users Management</h1>
+            <h1 class="text-2xl font-semibold">{{ __('users.management') }}</h1>
             <div>
-                <a href="{{ route('roles.index') }}" class="btn btn-primary">Roles</a>
-                <a href="{{ route('users.create') }}" class="btn btn-primary">Create user</a>
+                <a href="{{ route('roles.index') }}" class="btn btn-primary">{{ __('users.roles') }}</a>
+                <a href="{{ route('users.create') }}" class="btn btn-primary">{{ __('users.create_user') }}</a>
             </div>
         </div>
 
         <div class="table-container">
-            <div class="table-header">
-                <h3>All users</h3>
-                <div>
-                    <form method="GET" action="{{ route('users.index') }}">
-                        <input name="search" value="{{ request('search') }}" class="form-input" placeholder="Search users..." style="width:220px;" />
-                    </form>
-                </div>
-            </div>
             
             @if(session('success'))
                 <div class="alert alert-success mb-4">
@@ -32,14 +26,14 @@
                 </div>
             @endif
 
-            <table>
+            <table id="quotesTable">
                 <thead>
                     <tr>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Roles</th>
-                        <th>Status</th>
-                        <th style="width:160px; text-align:right;">Actions</th>
+                        <th>{{ __('users.email') }}</th>
+                        <th>{{ __('users.name') }}</th>
+                        <th>{{ __('users.roles') }}</th>
+                        <th>{{ __('users.status') }}</th>
+                        <th style="width:160px; text-align:right;">{{ __('users.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,31 +43,35 @@
                             <td>{{ $user->first_name }} {{ $user->last_name }}</td>
                             <td>{{ $user->roles->pluck('name')->join(', ') }}</td>
                             <td>
-                                <span class="status-badge status-{{ $user->status }}">{{ ucfirst($user->status) }}</span>
+                                <span class="status-badge status-{{ $user->status }}">
+                                    {{ __("users.{$user->status}") }}
+                                </span>
                             </td>
                             <td style="text-align: right;">
                                 <div style="display: flex; justify-content: flex-end; gap: 5px;">
-                                    <a href="{{ route('users.show', $user) }}" class="btn btn-secondary">View</a>
-                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Edit</a>
+                                    <a href="{{ route('users.show', $user) }}" class="btn btn-secondary" title="{{ __('users.view') }}">
+                                        <i class="fas fa-eye"></i> 
+                                    </a>
+                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-primary" title="{{ __('users.edit') }}">
+                                        <i class="fas fa-edit"></i> 
+                                    </a>
                                     <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                                        <button type="submit" class="btn btn-danger" title="{{ __('users.delete') }}" onclick="return confirm('{{ __('users.delete_confirmation') }}')">
+                                            <i class="fas fa-trash"></i> 
+                                        </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5">No users found</td>
+                            <td colspan="5">{{ __('users.no_users_found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-            
-            <div class="mt-4">
-                {{ $users->links() }}
-            </div>
         </div>
     </div>
 @endsection

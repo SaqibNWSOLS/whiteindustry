@@ -1,11 +1,13 @@
 @extends('layouts.app')
 
+@section('title', __('roles.create_role'))
+@section('page_title', __('roles.create_role'))
 @section('content')
     <div class="content">
         <div class="module-header">
-            <h1 class="text-2xl font-semibold">Create Role</h1>
+            <h1 class="text-2xl font-semibold">{{ __('roles.create_role') }}</h1>
             <div>
-                <a href="{{ route('roles.index') }}" class="btn btn-secondary">Back to Roles</a>
+                <a href="{{ route('roles.index') }}" class="btn btn-secondary">{{ __('roles.back_to_roles') }}</a>
             </div>
         </div>
 
@@ -14,7 +16,7 @@
                 @csrf
                 
                 <div class="form-group">
-                    <label for="name">Name *</label>
+                    <label for="name">{{ __('roles.role_name') }} *</label>
                     <input type="text" name="name" id="name" class="form-input" value="{{ old('name') }}" required>
                     @error('name')
                         <span class="text-danger">{{ $message }}</span>
@@ -23,16 +25,16 @@
 
                 
                 <div class="form-group">
-                    <label>Permissions</label>
+                    <label>{{ __('roles.permissions') }}</label>
                     <div class="permissions-grid">
                         @foreach($permissions as $group => $groupPermissions)
                             <div class="permission-group">
-                                <h4 class="permission-group-title">{{ $group ?: 'General' }}</h4>
+                                <h4 class="permission-group-title">{{ $group ?: __('roles.general') }}</h4>
                                 <div class="permission-list">
                                     @foreach($groupPermissions as $permission)
                                         <label class="permission-item">
                                             <input type="checkbox" name="permissions[]" value="{{ $permission->name }}">
-                                            <span>{{ $permission->name ?? $permission->name }}</span>
+                                            <span>{{ $permission->display_name ?? $permission->name }}</span>
                                         </label>
                                     @endforeach
                                 </div>
@@ -42,8 +44,8 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Create Role</button>
-                    <a href="{{ route('roles.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('roles.create_role_button') }}</button>
+                    <a href="{{ route('roles.index') }}" class="btn btn-secondary">{{ __('roles.cancel') }}</a>
                 </div>
             </form>
         </div>

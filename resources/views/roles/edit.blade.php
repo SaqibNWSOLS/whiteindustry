@@ -1,11 +1,13 @@
 @extends('layouts.app')
 
+@section('title', __('roles.edit_role'))
+@section('page_title', __('roles.edit_role'))
 @section('content')
     <div class="content">
         <div class="module-header">
-            <h1 class="text-2xl font-semibold">Edit Role: {{ $role->display_name }}</h1>
+            <h1 class="text-2xl font-semibold">{{ __('roles.edit_role') }}: {{ $role->display_name ?? $role->name }}</h1>
             <div>
-                <a href="{{ route('roles.index') }}" class="btn btn-secondary">Back to Roles</a>
+                <a href="{{ route('roles.index') }}" class="btn btn-secondary">{{ __('roles.back_to_roles') }}</a>
             </div>
         </div>
 
@@ -15,18 +17,18 @@
                 @method('PUT')
                 
                 <div class="form-group">
-                    <label for="name">Name</label>
+                    <label for="name">{{ __('roles.system_name') }}</label>
                     <input type="text" name="name" id="name" class="form-input" value="{{ $role->name }}" readonly>
-                    <small class="text-muted">Role name cannot be changed</small>
+                    <small class="text-muted">{{ __('roles.role_name_cannot_changed') }}</small>
                 </div>
 
                
                 <div class="form-group">
-                    <label>Permissions</label>
+                    <label>{{ __('roles.permissions') }}</label>
                     <div class="permissions-grid">
                         @foreach($permissions as $group => $groupPermissions)
                             <div class="permission-group">
-                                <h4 class="permission-group-title">{{ $group ?: 'General' }}</h4>
+                                <h4 class="permission-group-title">{{ $group ?: __('roles.general') }}</h4>
                                 <div class="permission-list">
                                     @foreach($groupPermissions as $permission)
                                         <label class="permission-item">
@@ -42,8 +44,8 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Update Role</button>
-                    <a href="{{ route('roles.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('roles.update_role') }}</button>
+                    <a href="{{ route('roles.index') }}" class="btn btn-secondary">{{ __('roles.cancel') }}</a>
                 </div>
             </form>
         </div>
