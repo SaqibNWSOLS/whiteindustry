@@ -25,8 +25,8 @@ class RoleSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         
-        $managerPermissions = Permission::whereNotIn('name', [
-            'Manage Users', 'Manage Roles', 'Assign Roles', 'Manage Settings'
+        $managerPermissions = Permission::whereNotIn('group', [
+            'Manage User', 'Manage Role'
         ])->get();
         
         $manager->givePermissionTo($managerPermissions);
@@ -37,14 +37,10 @@ class RoleSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         
-        $salesPermissions = Permission::whereIn('name', [
-            'View Customers', 'Manage Customers',
-            'View Leads', 'Manage Leads', 'Convert Leads',
-            'View Quotes', 'Manage Quotes',
-            'View Orders', 'Manage Orders',
-            'View Invoices',
-            'View Sales Reports',
-        ])->get();
+        $salesPermissions = Permission::whereIn('group', [
+            'Manage Customer', 'Manage Orders', 'Manage Quotes', 'Manage Invoices', 'Manage Payments'
+        ])->orWhere('name', 'View Products')
+          ->get();
         
         $sales->givePermissionTo($salesPermissions);
 
@@ -54,13 +50,11 @@ class RoleSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         
-        $productionPermissions = Permission::whereIn('name', [
-            'View Production', 'Manage Production', 'Update Production Status',
-            'View Inventory', 'Adjust Inventory',
-            'View Products',
-            'View Orders',
-            'View Production Reports',
-        ])->get();
+        $productionPermissions = Permission::whereIn('group', [
+            'Manage Production', 'Manage Inventory', 'Manage Product'
+        ])->orWhere('name', 'View Orders')
+          ->orWhere('name', 'View Tasks')
+          ->get();
         
         $production->givePermissionTo($productionPermissions);
 
@@ -70,12 +64,10 @@ class RoleSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         
-        $qcPermissions = Permission::whereIn('name', [
-            'View Production', 'Manage Quality Control',
-            'View Inventory',
-            'View Products',
-            'View Production Reports',
-        ])->get();
+        $qcPermissions = Permission::whereIn('group', [
+            'Manage Quality & Control', 'Manage Production', 'Manage Inventory', 'Manage Product'
+        ])->orWhere('name', 'View Orders')
+          ->get();
         
         $qc->givePermissionTo($qcPermissions);
 
@@ -85,12 +77,11 @@ class RoleSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         
-        $warehousePermissions = Permission::whereIn('name', [
-            'View Inventory', 'Manage Inventory', 'Adjust Inventory',
-            'View Products',
-            'View Orders',
-            'View Inventory Reports',
-        ])->get();
+        $warehousePermissions = Permission::whereIn('group', [
+            'Manage Inventory', 'Manage Product'
+        ])->orWhere('name', 'View Orders')
+          ->orWhere('name', 'View Production')
+          ->get();
         
         $warehouse->givePermissionTo($warehousePermissions);
 
@@ -100,13 +91,8 @@ class RoleSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         
-        $accountantPermissions = Permission::whereIn('name', [
-            'View Invoices', 'Manage Invoices', 'Void Invoices',
-            'View Payments', 'Manage Payments',
-            'View Orders',
-            'View Customers',
-            'View Financial Reports', 'View Sales Reports',
-            'Export Reports',
+        $accountantPermissions = Permission::whereIn('group', [
+            'Manage Invoices', 'Manage Payments', 'Manage Orders', 'Manage Customer'
         ])->get();
         
         $accountant->givePermissionTo($accountantPermissions);
@@ -120,5 +106,17 @@ class RoleSeeder extends Seeder
         $userPermissions = Permission::where('name', 'like', 'View%')->get();
         $user->givePermissionTo($userPermissions);
 
+        // R&D User Role (Additional role for R&D permissions)
+        $rd = Role::create([
+            'name' => 'R&D User',
+            'guard_name' => 'web',
+        ]);
+        
+        $rdPermissions = Permission::whereIn('group', [
+            'Manage R&D', 'Manage Product'
+        ])->orWhere('name', 'View Tasks')
+          ->get();
+        
+        $rd->givePermissionTo($rdPermissions);
     }
 }

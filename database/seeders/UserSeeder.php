@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'department' => 'Production',
             'status' => 'active',
         ]);
-        $admin->assignRole('administrator');
+        $admin->assignRole('Administrator');
 
         // Manager
         $manager = User::create([
@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
             'department' => 'Sales',
             'status' => 'active',
         ]);
-        $manager->assignRole('manager');
+        $manager->assignRole('Manager');
 
         // Sales User
         $sales = User::create([
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
             'department' => 'Sales',
             'status' => 'active',
         ]);
-        $sales->assignRole('sales_user');
+        $sales->assignRole('Sales User');
 
         // Production User
         $production = User::create([
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
             'department' => 'Production',
             'status' => 'active',
         ]);
-        $production->assignRole('production_user');
+        $production->assignRole('Production User');
 
         // Quality Control
         $qc = User::create([
@@ -73,7 +73,7 @@ class UserSeeder extends Seeder
             'department' => 'Quality Control',
             'status' => 'active',
         ]);
-        $qc->assignRole('quality_control');
+        $qc->assignRole('Quality Control');
 
         // Warehouse User
         $warehouse = User::create([
@@ -86,7 +86,7 @@ class UserSeeder extends Seeder
             'department' => 'Warehouse',
             'status' => 'active',
         ]);
-        $warehouse->assignRole('warehouse_user');
+        $warehouse->assignRole('Warehouse User');
 
         // Accountant
         $accountant = User::create([
@@ -99,6 +99,6 @@ class UserSeeder extends Seeder
             'department' => 'Finance',
             'status' => 'active',
         ]);
-        $accountant->assignRole('accountant');
+        $accountant->assignRole('Accountant');
     }
 }
