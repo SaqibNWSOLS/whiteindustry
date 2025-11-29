@@ -437,7 +437,7 @@
             <p><strong>Last Updated:</strong> {{ $order->updated_at->format('M d, Y H:i') }}</p>
         </div>
         
-        @if($order->status === 'pending')
+        {{-- @if($order->status === 'pending')
             <div class="action-buttons">
                 <form action="{{ route('orders.confirm', $order->id) }}" method="POST">
                     @csrf
@@ -446,9 +446,9 @@
                     </button>
                 </form>
             </div>
-        @endif
+        @endif --}}
 
-        @if($order->status === 'confirmed' && !$order->production)
+       {{--  @if($order->status === 'confirmed' && !$order->production)
             <div class="action-buttons">
                 <a href="{{ route('production.create', ['order_id' => $order->id]) }}" class="btn btn-primary">
                     <i class="bi bi-gear"></i> Create Production
@@ -460,7 +460,7 @@
                     <i class="bi bi-eye"></i> View Production
                 </a>
             </div>
-        @endif
+        @endif --}}
     </div>
     
     <div class="company-details">

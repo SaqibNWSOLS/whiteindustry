@@ -18,7 +18,7 @@
     
     <!-- Stats Cards with Bootstrap Grid -->
     <div class="row mb-4">
-        <div class="col-md-6 col-lg-3 mb-3">
+        <div class="col-md-6 col-lg-4 mb-3">
             <div class="card h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3" style="background-color: #e3f2fd; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -33,7 +33,7 @@
             </div>
         </div>
         
-        <div class="col-md-6 col-lg-3 mb-3">
+        <div class="col-md-6 col-lg-4 mb-3">
             <div class="card h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3" style="background-color: #fff3e0; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -48,7 +48,7 @@
             </div>
         </div>
         
-        <div class="col-md-6 col-lg-3 mb-3">
+        <div class="col-md-6 col-lg-4 mb-3">
             <div class="card h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3" style="background-color: #e8f5e9; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -63,7 +63,7 @@
             </div>
         </div>
         
-        <div class="col-md-6 col-lg-3 mb-3">
+        <div class="col-md-6 col-lg-4 mb-3">
             <div class="card h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3" style="background-color: #e1f5fe; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -78,7 +78,7 @@
             </div>
         </div>
         
-        <div class="col-md-6 col-lg-3 mb-3">
+        <div class="col-md-6 col-lg-4 mb-3">
             <div class="card h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3" style="background-color: #ffebee; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -93,7 +93,7 @@
             </div>
         </div>
         
-        <div class="col-md-6 col-lg-3 mb-3">
+        <div class="col-md-6 col-lg-4 mb-3">
             <div class="card h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3" style="background-color: #f3e5f5; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -189,12 +189,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
-                                    <p class="text-muted">{{ __('quotes.messages.no_quotes') }}</p>
-                                </td>
-                            </tr>
+                            
                         @endforelse
                     </tbody>
                 </table>

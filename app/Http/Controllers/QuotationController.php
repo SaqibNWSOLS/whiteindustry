@@ -339,8 +339,8 @@ public function calculate(Request $request, Quote $quote)
         $totalAmount = $totalBeforeTax + $taxAmount;
 
         // Calculate per-unit values
-        $priceUnit = $totalAmount / $quoteProduct->quantity;
-        $subtotalUnit = $subtotal / $quoteProduct->quantity;
+        $priceUnitTax = $totalAmount / $quoteProduct->quantity;
+        $price_unit = $totalBeforeTax / $quoteProduct->quantity;
         $manufacturingCostUnit = $manufacturingCost / $quoteProduct->quantity;
         $riskCostUnit = $riskCost / $quoteProduct->quantity;
         $taxAmountUnit = $taxAmount / $quoteProduct->quantity;
@@ -349,13 +349,13 @@ public function calculate(Request $request, Quote $quote)
         $quoteProduct->update([
             'raw_material_cost_unit' => $rawMaterialCost,
             'packaging_cost_unit' => $packagingCost,
-            'packaging_cost_unit' => $packagingCost / $quoteProduct->quantity,
+            'manufacturing_cost_unit' => $manufacturingCostUnit,
             'risk_cost_unit' => $riskCostUnit,
             'profit_margin_unit' => $profitPercent,
-            'subtotal' => $subtotalUnit,
+            'price_unit_tax' => $priceUnitTax,
             'tax_rate' => $taxRate,
             'tax_amount_unit' => $taxAmountUnit,
-            'price_unit' => $priceUnit,
+            'price_unit' => $price_unit,
             'total_amount' => $totalAmount
         ]);
 

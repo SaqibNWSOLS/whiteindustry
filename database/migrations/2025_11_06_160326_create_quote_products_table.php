@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('manufacturing_cost_unit', 15, 2)->default(0);
             $table->decimal('risk_cost_unit', 15, 2)->default(0);
             $table->decimal('profit_margin_unit', 5, 2)->default(0);
-            $table->decimal('subtotal', 15, 2)->default(0);
+            $table->decimal('price_unit_tax', 15, 2)->default(0);
             $table->decimal('tax_rate', 5, 2)->default(19.00);
             $table->decimal('tax_amount_unit', 15, 2)->default(0);
             $table->decimal('price_unit', 15, 2)->default(0);

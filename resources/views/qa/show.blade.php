@@ -140,16 +140,16 @@
             <div class="section">
                 <h4>@lang('quality_control.review_page.quotation_details')</h4>
                 <p><strong>@lang('quality_control.review_page.customer'):</strong> {{ $qa->order->customer->company_name }}</p>
-                <p><strong>@lang('quality_control.review_page.total_amount'):</strong> ${{ number_format($qa->order->total_amount, 2) }}</p>
+                <p><strong>@lang('quality_control.review_page.total_amount'):</strong> {{ priceFormat($qa->order->total_amount, 2) }}</p>
                 <p><strong>@lang('quality_control.review_page.rnd_status'):</strong> 
-                    <span class="badge badge-success">@lang('quality_control.status.' . $qa->rndQuote->status)</span>
+                    <span class="badge badge-success">@lang('quality_control.status.' . $qa?->rndQuote?->status)</span>
                 </p>
             </div>
 
             <!-- R&D Documents -->
             <div class="section">
                 <h4>@lang('quality_control.review_page.rnd_documents_review')</h4>
-
+                @if(isset($qa->rndQuote->documents))
                 @forelse($qa->rndQuote->documents as $doc)
                     <div class="document-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -162,6 +162,7 @@
                 @empty
                     <p>@lang('quality_control.review_page.no_rnd_documents')</p>
                 @endforelse
+                @endif
             </div>
 
             <!-- Upload QA docs -->

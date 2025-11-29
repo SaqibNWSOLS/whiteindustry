@@ -8,6 +8,9 @@ use App\Models\RndQuote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Order;
+use App\Models\Production;
+use App\Models\ProductionItem;
 
 class QaQuoteController extends Controller
 {
@@ -95,11 +98,34 @@ class QaQuoteController extends Controller
         ]);
 
         $qa = QaQuote::findOrFail($id);
+        $order=Order::where('id',$qa->orders_id)->first();
         $qa->update([
             'status' => 'approved',
             'approved_at' => now(),
             'qa_notes' => $request->qa_notes
         ]);
+
+        $production = Production::create([
+            'production_number' => 'PROD-' . Str::random(8),
+            'order_id' => $order->id,
+            'start_date' => $order->order_date,
+            'production_notes' => $order->order_notes,
+            'status' => 'pending'
+        ]);
+
+        // Create production items
+        foreach ($order->products as $item) {
+            ProductionItem::create([
+                'production_id' => $production->id,
+                'order_product_id' => $item->id,
+                'quantity_planned' => $item->quantity,
+                'quantity_produced' => 0,
+                'status' => 'pending'
+            ]);
+        }
+
+        $order->update(['status' => 'production']);
+
 
 
         return redirect()->route('qa.show', $qa->id)->with('success', 'QA approved successfully');

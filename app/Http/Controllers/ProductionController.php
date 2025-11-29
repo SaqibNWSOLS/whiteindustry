@@ -124,6 +124,7 @@ class ProductionController extends Controller
         );
 
         $product->increment('current_stock', $request->quantity_to_add);
+        $productionItem->update(['products_id'=>$product->id]);
 
 
         // Create inventory transaction record for the added quantity

@@ -44,7 +44,7 @@ class OrderController extends Controller
             'order_notes' => $request->notes,
             'order_date'=> date('Y-m-d'),
             'delivery_date'=> $request->delivery_date,
-            'status' => 'draft'
+            'status' => 'pending'
         ]);
 
         // Store quote ID in session for next steps
@@ -345,8 +345,8 @@ public function calculate(Request $request, Order $order)
         $totalAmount = $totalBeforeTax + $taxAmount;
 
         // Calculate per-unit values
-        $priceUnit = $totalAmount / $orderProduct->quantity;
-        $subtotalUnit = $subtotal / $orderProduct->quantity;
+         $priceUnitTax = $totalAmount / $orderProduct->quantity;
+        $price_unit = $totalBeforeTax / $orderProduct->quantity;
         $manufacturingCostUnit = $manufacturingCost / $orderProduct->quantity;
         $riskCostUnit = $riskCost / $orderProduct->quantity;
         $taxAmountUnit = $taxAmount / $orderProduct->quantity;
@@ -358,10 +358,10 @@ public function calculate(Request $request, Order $order)
             'packaging_cost_unit' => $packagingCost / $orderProduct->quantity,
             'risk_cost_unit' => $riskCostUnit,
             'profit_margin_unit' => $profitPercent,
-            'subtotal' => $subtotalUnit,
+            'price_unit_tax' => $priceUnitTax,
             'tax_rate' => $taxRate,
             'tax_amount_unit' => $taxAmountUnit,
-            'price_unit' => $priceUnit,
+            'price_unit' => $price_unit,
             'total_amount' => $totalAmount
         ]);
 
@@ -387,6 +387,12 @@ public function calculate(Request $request, Order $order)
         'total_amount' => round($quoteTotals['total'],2),
         'status'=>'confirmed'
     ]);
+
+    QaQuote::updateOrCreate([
+            'orders_id' => $order->id,
+        ]);
+
+
 
     session()->forget('current_order_id');
 

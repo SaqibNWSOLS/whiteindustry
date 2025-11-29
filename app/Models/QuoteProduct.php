@@ -16,7 +16,7 @@ class QuoteProduct extends Model
     'manufacturing_cost_unit',
     'risk_cost_unit',
     'profit_margin_unit',
-    'subtotal',
+    'price_unit_tax',
     'tax_rate',
     'tax_amount_unit',
     'price_unit',

@@ -21,7 +21,8 @@ return new class extends Migration
                 'adjustment',     // Manual inventory adjustment
                 'damage',         // Defective/damaged items
                 'return',         // Customer returns
-                'transfer'        // Transfer between locations
+                'transfer',        // Transfer between locations
+                'invoice',
             ])->default('production');
             $table->integer('quantity_change');
             $table->string('reference_type')->nullable();  // 'production_item', 'order', 'invoice', etc.

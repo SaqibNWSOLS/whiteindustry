@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', isset($order) ? 'Edit Quotation' : 'Create Quotation')
-@section('page_title', isset($order) ? 'Edit Quotation' : 'Create Quotation')
+@section('title', isset($order) ? __('orders.create_edit.title.edit') : __('orders.create_edit.title.create'))
+@section('page_title', isset($order) ? __('orders.create_edit.title.page_edit') : __('orders.create_edit.title.page_create'))
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/quotation.css') }}">
@@ -14,27 +14,27 @@
                 <a href="{{ isset($order) ? route('orders.edit', ['order' => $order->id, 'step' => 'basic']) : route('orders.create', 'basic') }}" 
                    class="step {{ $step == 'basic' ? 'active' : '' }} {{ (isset($order) && $order->id) ? 'completed' : '' }}">
                     <div class="step-number">1</div>
-                    <div class="step-label">Basic Info</div>
+                    <div class="step-label">{{ __('orders.create_edit.steps.basic') }}</div>
                 </a>
                 <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'products']) : '#' }}" 
                    class="step {{ $step == 'products' ? 'active' : '' }} {{ in_array($step, ['raw_materials', 'blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">2</div>
-                    <div class="step-label">Products</div>
+                    <div class="step-label">{{ __('orders.create_edit.steps.products') }}</div>
                 </a>
                 <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'raw_materials']) : '#' }}" 
                    class="step {{ $step == 'raw_materials' ? 'active' : '' }} {{ in_array($step, ['blend', 'packaging', 'calculation']) ? 'completed' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">3</div>
-                    <div class="step-label">Raw Materials & Blend</div>
+                    <div class="step-label">{{ __('orders.create_edit.steps.raw_materials') }}</div>
                 </a>
                 <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'packaging']) : '#' }}" 
                    class="step {{ $step == 'packaging' ? 'active' : '' }} {{ $step == 'calculation' ? 'completed' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">5</div>
-                    <div class="step-label">Packaging</div>
+                    <div class="step-label">{{ __('orders.create_edit.steps.packaging') }}</div>
                 </a>
                 <a href="{{ (isset($order) && $order->id) ? route('orders.edit', ['order' => $order->id, 'step' => 'calculation']) : '#' }}" 
                    class="step {{ $step == 'calculation' ? 'active' : '' }} {{ !isset($order) ? 'disabled' : '' }}">
                     <div class="step-number">6</div>
-                    <div class="step-label">Calculation</div>
+                    <div class="step-label">{{ __('orders.create_edit.steps.calculation') }}</div>
                 </a>
             </div>
         </div>
@@ -43,12 +43,12 @@
         <div class="content-card">
             <div class="card-header">
                 <h2>
-                    @if($step == 'basic') Basic Information
-                    @elseif($step == 'products') Add Products
-                    @elseif($step == 'raw_materials') Raw Materials Selection
-                    @elseif($step == 'blend') Blend Selection
-                    @elseif($step == 'packaging') Packaging Selection
-                    @elseif($step == 'calculation') Quotation Calculation
+                    @if($step == 'basic') {{ __('orders.create_edit.step_titles.basic') }}
+                    @elseif($step == 'products') {{ __('orders.create_edit.step_titles.products') }}
+                    @elseif($step == 'raw_materials') {{ __('orders.create_edit.step_titles.raw_materials') }}
+                    @elseif($step == 'blend') {{ __('orders.create_edit.step_titles.blend') }}
+                    @elseif($step == 'packaging') {{ __('orders.create_edit.step_titles.packaging') }}
+                    @elseif($step == 'calculation') {{ __('orders.create_edit.step_titles.calculation') }}
                     @endif
                 </h2>
             </div>
@@ -80,9 +80,9 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Customer *</label>
+                            <label class="form-label">{{ __('orders.create_edit.form.customer') }} *</label>
                             <select name="customer_id" class="form-control select2" required>
-                                <option value="">Select Customer</option>
+                                <option value="">{{ __('orders.create_edit.form.customer_placeholder') }}</option>
                                 @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}" 
                                         {{ (old('customer_id', isset($order) ? $order->customer_id : '') == $customer->id) ? 'selected' : '' }}>
@@ -95,17 +95,22 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ __('orders.create_edit.form.delivery_date') }}</label>
+                        <input type="date" class="form-control" value="{{ old('delivery_date', isset($order) ? $order->delivery_date : '') }}" name="delivery_date">
+                      
+                    </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea name="notes" class="form-control" rows="4" placeholder="Add any additional notes...">{{ old('notes', isset($order) ? $order->notes : '') }}</textarea>
+                        <label class="form-label">{{ __('orders.create_edit.form.notes') }}</label>
+                        <textarea name="notes" class="form-control" rows="4" placeholder="{{ __('orders.create_edit.form.notes_placeholder') }}">{{ old('notes', isset($order) ? $order->notes : '') }}</textarea>
                     </div>
                     
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
-                            {{ isset($order) ? 'Update & Continue' : 'Next: Add Products' }}
+                            {{ isset($order) ? __('orders.create_edit.buttons.update_continue') : __('orders.create_edit.buttons.next_products') }}
                         </button>
-                        <a href="{{ route('orders.index') }}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('orders.create_edit.buttons.cancel') }}</a>
                     </div>
                 </form>
                 @endif
@@ -120,12 +125,14 @@
                         <div class="dynamic-row header-row">
                             <div class="dynamic-fields">
                                 <div class="form-group">
-                                    <label class="form-label">Product Name *</label>
+                                    <label class="form-label">{{ __('orders.create_edit.form.product_name') }} *</label>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Product Type *</label>
+                                    <label class="form-label">{{ __('orders.create_edit.form.product_type') }} *</label>
                                 </div>
-                            
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('orders.create_edit.form.quantity') }} *</label>
+                                </div>
                             </div>
                             <div style="width: 100px;"></div>
                         </div>
@@ -141,29 +148,26 @@
                                 <div class="form-group">
                                     <input type="text" name="products[{{ $productIndex }}][product_name]" 
                                            class="form-control" value="{{ $product->product_name }}" 
-                                           placeholder="Enter product name" required>
+                                           placeholder="{{ __('orders.create_edit.form.product_name_placeholder') }}" required>
                                     <input type="hidden" name="products[{{ $productIndex }}][id]" value="{{ $product->id }}">
                                 </div>
                                 <div class="form-group">
                                     <select name="products[{{ $productIndex }}][product_type]" class="form-control" required>
-                                        <option value="cosmetic" {{ $product->product_type == 'cosmetic' ? 'selected' : '' }}>Cosmetic</option>
-                                        <option value="food_supplement" {{ $product->product_type == 'food_supplement' ? 'selected' : '' }}>Food Supplement</option>
+                                        <option value="cosmetic" {{ $product->product_type == 'cosmetic' ? 'selected' : '' }}>{{ __('orders.create_edit.product_types.cosmetic') }}</option>
+                                        <option value="food_supplement" {{ $product->product_type == 'food_supplement' ? 'selected' : '' }}>{{ __('orders.create_edit.product_types.food_supplement') }}</option>
                                     </select>
                                 </div>
-
                                 <div class="form-group">
                                     <input type="number" name="products[{{ $productIndex }}][quantity]" 
                                            class="form-control" value="{{ $product->quantity }}" 
-                                           placeholder="Enter product quantity" required>
-                                   
+                                           placeholder="{{ __('orders.create_edit.form.quantity_placeholder') }}" required>
                                 </div>
-                               
                             </div>
                             <div>
                                 <button type="button" class="btn btn-danger remove-product" 
                                         data-product-id="{{ $product->id }}"
                                         {{ $existingProducts->count() <= 1 ? 'disabled' : '' }}>
-                                    Remove
+                                    {{ __('orders.create_edit.buttons.remove') }}
                                 </button>
                             </div>
                         </div>
@@ -175,32 +179,30 @@
                             <div class="dynamic-fields">
                                 <div class="form-group">
                                     <input type="text" name="products[0][product_name]" class="form-control" 
-                                           placeholder="Enter product name" required>
+                                           placeholder="{{ __('orders.create_edit.form.product_name_placeholder') }}" required>
                                 </div>
                                 <div class="form-group">
                                     <select name="products[0][product_type]" class="form-control" required>
-                                        <option value="cosmetic">Cosmetic</option>
-                                        <option value="food_supplement">Food Supplement</option>
+                                        <option value="cosmetic">{{ __('orders.create_edit.product_types.cosmetic') }}</option>
+                                        <option value="food_supplement">{{ __('orders.create_edit.product_types.food_supplement') }}</option>
                                     </select>
                                 </div>
-
                                 <div class="form-group">
                                     <input type="number" name="products[0][quantity]" class="form-control" 
-                                           placeholder="Enter product quantity" required>
+                                           placeholder="{{ __('orders.create_edit.form.quantity_placeholder') }}" required>
                                 </div>
-                                
                             </div>
                             <div>
-                                <button type="button" class="btn btn-danger remove-product" disabled>Remove</button>
+                                <button type="button" class="btn btn-danger remove-product" disabled>{{ __('orders.create_edit.buttons.remove') }}</button>
                             </div>
                         </div>
                         @endif
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" id="add-product" class="btn btn-success">Add Another Product</button>
-                        <button type="submit" class="btn btn-primary">Next: Add Raw Materials</button>
-                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'basic']) }}" class="btn btn-secondary">Back</a>
+                        <button type="button" id="add-product" class="btn btn-success">{{ __('orders.create_edit.buttons.add_another_product') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('orders.create_edit.buttons.next_raw_materials') }}</button>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'basic']) }}" class="btn btn-secondary">{{ __('orders.create_edit.buttons.back') }}</a>
                     </div>
                 </form>
 
@@ -216,22 +218,21 @@
                                 <div class="dynamic-fields">
                                     <div class="form-group">
                                         <input type="text" name="products[${productCount}][product_name]" 
-                                               class="form-control" placeholder="Enter product name" required>
+                                               class="form-control" placeholder="{{ __('orders.create_edit.form.product_name_placeholder') }}" required>
                                     </div>
                                     <div class="form-group">
                                         <select name="products[${productCount}][product_type]" class="form-control" required>
-                                            <option value="cosmetic">Cosmetic</option>
-                                            <option value="food_supplement">Food Supplement</option>
+                                            <option value="cosmetic">{{ __('orders.create_edit.product_types.cosmetic') }}</option>
+                                            <option value="food_supplement">{{ __('orders.create_edit.product_types.food_supplement') }}</option>
                                         </select>
                                     </div>
-                                 <div class="form-group">
-                                        <input type="text" name="products[${productCount}][quantity]" 
-                                               class="form-control" placeholder="Enter product quantity" required>
+                                    <div class="form-group">
+                                        <input type="number" name="products[${productCount}][quantity]" 
+                                               class="form-control" placeholder="{{ __('orders.create_edit.form.quantity_placeholder') }}" required>
                                     </div>
-                                   
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                                    <button type="button" class="btn btn-danger remove-product">{{ __('orders.create_edit.buttons.remove') }}</button>
                                 </div>
                             `;
                             container.appendChild(newRow);
@@ -277,26 +278,24 @@
 
                 <!-- Step 3: Raw Materials -->
                 @if($step == 'raw_materials' && isset($order))
-                
                 <form method="POST" action="{{ route('orders.update-raw-materials', $order->id) }}">
                     @csrf
                     @method('PUT')
-                    
+
                     @foreach($order->products as $product)
                     <div class="product-section">
                         <div class="product-header">
                             <h3 class="product-title">{{ $product->product_name }}</h3>
-                            
                         </div>
 
                         <div class="dynamic-container raw-materials-container" data-product-id="{{ $product->id }}">
                             <div class="dynamic-row header-row">
                                 <div class="dynamic-fields">
                                     <div class="form-group">
-                                        <label class="form-label">Raw Material</label>
+                                        <label class="form-label">{{ __('orders.create_edit.form.raw_material') }}</label>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Percentage (%)</label>
+                                        <label class="form-label">{{ __('orders.create_edit.form.percentage') }}</label>
                                     </div>
                                 </div>
                                 <div style="width: 100px;"></div>
@@ -313,14 +312,14 @@
                                 <div class="dynamic-fields">
                                     <div class="form-group">
                                         <select name="raw_materials[{{ $product->id }}][materials][{{ $materialIndex }}][item_id]" 
-                                                class="form-control" >
-                                            <option value="">Select Material</option>
+                                                class="form-control select2" >
+                                            <option value="">{{ __('orders.create_edit.form.raw_material_placeholder') }}</option>
                                             @foreach($rawMaterials as $materialItem)
                                                 <option value="{{ $materialItem->id }}" 
                                                     {{ $material->item_id == $materialItem->id ? 'selected' : '' }}
                                                     data-price="{{ $materialItem->unit_price }}"
                                                     data-unit="{{ $materialItem->unit_of_measure }}">
-                                                    {{ $materialItem->name }} (€{{ $materialItem->unit_price }}/{{ $materialItem->unit_of_measure }})
+                                                    {{ $materialItem->name }} (DSD{{ $materialItem->unit_price }}/{{ $materialItem->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -335,7 +334,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-danger remove-material">Remove</button>
+                                    <button type="button" class="btn btn-danger remove-material">{{ __('orders.create_edit.buttons.remove') }}</button>
                                 </div>
                             </div>
                             @php $materialIndex++; @endphp
@@ -345,13 +344,13 @@
                             <div class="dynamic-row material-row">
                                 <div class="dynamic-fields">
                                     <div class="form-group">
-                                        <select name="raw_materials[{{ $product->id }}][materials][0][item_id]" class="form-control" >
-                                            <option value="">Select Material</option>
+                                        <select name="raw_materials[{{ $product->id }}][materials][0][item_id]" class="form-control select2" >
+                                            <option value="">{{ __('orders.create_edit.form.raw_material_placeholder') }}</option>
                                             @foreach($rawMaterials as $material)
                                                 <option value="{{ $material->id }}"
                                                         data-price="{{ $material->unit_price }}"
                                                         data-unit="{{ $material->unit_of_measure }}">
-                                                    {{ $material->name }} (€{{ $material->unit_price }}/{{ $material->unit_of_measure }})
+                                                    {{ $material->name }} (DSD{{ $material->unit_price }}/{{ $material->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -363,7 +362,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-danger remove-material">Remove</button>
+                                    <button type="button" class="btn btn-danger remove-material">{{ __('orders.create_edit.buttons.remove') }}</button>
                                 </div>
                             </div>
                             @endif
@@ -371,13 +370,13 @@
 
                         <div class="percentage-indicator">
                             <div>
-                                <strong>Total Percentage:</strong> 
+                                <strong>{{ __('orders.create_edit.alerts.total_percentage') }}</strong> 
                                 <span class="percentage-value total" data-product-id="{{ $product->id }}">
                                     {{ number_format($totalPercentage, 2) }}
                                 </span>%
                             </div>
                             <div>
-                                <strong>Remaining:</strong> 
+                                <strong>{{ __('orders.create_edit.alerts.remaining') }}</strong> 
                                 <span class="percentage-value remaining" data-product-id="{{ $product->id }}">
                                     {{ number_format(100 - $totalPercentage, 2) }}
                                 </span>%
@@ -386,7 +385,7 @@
 
                         <div class="form-actions" style="justify-content: flex-start; border-top: none; padding-top: 0;">
                             <button type="button" class="btn btn-success add-material" data-product-id="{{ $product->id }}">
-                                Add Another Material
+                                {{ __('orders.create_edit.buttons.add_another_material') }}
                             </button>
                         </div>
                     </div>
@@ -394,9 +393,9 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary" id="submit-materials">
-                            Next: Add Packaging
+                            {{ __('orders.create_edit.buttons.next_packaging') }}
                         </button>
-                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'products']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'products']) }}" class="btn btn-secondary">{{ __('orders.create_edit.buttons.back') }}</a>
                     </div>
                 </form>
 
@@ -414,13 +413,13 @@
                                 newRow.innerHTML = `
                                     <div class="dynamic-fields">
                                         <div class="form-group">
-                                            <select name="raw_materials[${productId}][materials][${materialCount}][item_id]" class="form-control" >
-                                                <option value="">Select Material</option>
+                                            <select name="raw_materials[${productId}][materials][${materialCount}][item_id]" class="form-control select2" >
+                                                <option value="">{{ __('orders.create_edit.form.raw_material_placeholder') }}</option>
                                                 @foreach($rawMaterials as $material)
                                                     <option value="{{ $material->id }}" 
                                                             data-price="{{ $material->unit_price }}"
                                                             data-unit="{{ $material->unit_of_measure }}">
-                                                        {{ $material->name }} (€{{ $material->unit_price }}/{{ $material->unit_of_measure }})
+                                                        {{ $material->name }} (DSD{{ $material->unit_price }}/{{ $material->unit_of_measure }})
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -431,7 +430,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button type="button" class="btn btn-danger remove-material">Remove</button>
+                                        <button type="button" class="btn btn-danger remove-material">{{ __('orders.create_edit.buttons.remove') }}</button>
                                     </div>
                                 `;
                                 container.appendChild(newRow);
@@ -502,7 +501,6 @@
                 </script>
                 @endif
 
-                
                 <!-- Step 5: Packaging -->
                 @if($step == 'packaging' && isset($order))
                 <form method="POST" action="{{ route('orders.update-packaging', $order->id) }}">
@@ -524,10 +522,7 @@
                             <div class="dynamic-row header-row">
                                 <div class="dynamic-fields">
                                     <div class="form-group">
-                                        <label class="form-label">Packaging</label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Quantity</label>
+                                        <label class="form-label">{{ __('orders.create_edit.form.packaging') }}</label>
                                     </div>
                                 </div>
                                 <div style="width: 100px;"></div>
@@ -538,25 +533,21 @@
                                 <div class="dynamic-fields">
                                     <div class="form-group">
                                         <select name="packaging[{{ $product->id }}][packaging][{{ $packagingIndex }}][item_id]" 
-                                                class="form-control" required>
-                                            <option value="">Select Packaging</option>
+                                                class="form-control select2" required>
+                                            <option value="">{{ __('orders.create_edit.form.packaging_placeholder') }}</option>
                                             @foreach($packagingMaterials as $packagingItem)
                                                 <option value="{{ $packagingItem->id }}" 
                                                     {{ $packaging->item_id == $packagingItem->id ? 'selected' : '' }}
                                                     data-price="{{ $packagingItem->unit_price }}"
                                                     data-unit="{{ $packagingItem->unit_of_measure }}">
-                                                    {{ $packagingItem->name }} (€{{ $packagingItem->unit_price }}/{{ $packagingItem->unit_of_measure }})
+                                                    {{ $packagingItem->name }} (DSD{{ $packagingItem->unit_price }}/{{ $packagingItem->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
                                         <input type="hidden" name="packaging[{{ $product->id }}][packaging][{{ $packagingIndex }}][id]" 
                                                value="{{ $packaging->id }}">
                                     </div>
-                                  
                                 </div>
-                                <div>
-{{--                                     <button type="button" class="btn btn-danger remove-packaging">Remove</button>
- --}}                                </div>
                             </div>
                             @php $packagingIndex++; @endphp
                             @endforeach
@@ -565,85 +556,29 @@
                             <div class="dynamic-row packaging-row">
                                 <div class="dynamic-fields">
                                     <div class="form-group">
-                                        <select name="packaging[{{ $product->id }}][packaging][0][item_id]" class="form-control" required>
-                                            <option value="">Select Packaging</option>
+                                        <select name="packaging[{{ $product->id }}][packaging][0][item_id]" class="form-control select2" required>
+                                            <option value="">{{ __('orders.create_edit.form.packaging_placeholder') }}</option>
                                             @foreach($packagingMaterials as $packaging)
                                                 <option value="{{ $packaging->id }}"
                                                         data-price="{{ $packaging->unit_price }}"
                                                         data-unit="{{ $packaging->unit_of_measure }}">
-                                                    {{ $packaging->name }} (€{{ $packaging->unit_price }}/{{ $packaging->unit_of_measure }})
+                                                    {{ $packaging->name }} (DSD{{ $packaging->unit_price }}/{{ $packaging->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                               {{--  <div>
-                                    <button type="button" class="btn btn-danger remove-packaging">Remove</button>
-                                </div> --}}
                             </div>
                             @endif
                         </div>
-
-                       {{--  <div class="form-actions" style="justify-content: flex-start; border-top: none; padding-top: 0;">
-                            <button type="button" class="btn btn-success add-packaging" data-product-id="{{ $product->id }}">
-                                Add Another Packaging
-                            </button>
-                        </div> --}}
                     </div>
                     @endforeach
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Next: Calculate Quotation</button>
-                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'blend']) }}" class="btn btn-secondary">Back</a>
+                        <button type="submit" class="btn btn-primary">{{ __('orders.create_edit.buttons.next_calculation') }}</button>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'raw_materials']) }}" class="btn btn-secondary">{{ __('orders.create_edit.buttons.back') }}</a>
                     </div>
                 </form>
-
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Add packaging row for specific product
-                        document.addEventListener('click', function(e) {
-                            if (e.target.classList.contains('add-packaging')) {
-                                const productId = e.target.getAttribute('data-product-id');
-                                const container = document.querySelector(`.packaging-container[data-product-id="${productId}"]`);
-                                const packagingCount = container.querySelectorAll('.packaging-row').length;
-                                
-                                const newRow = document.createElement('div');
-                                newRow.className = 'dynamic-row packaging-row';
-                                newRow.innerHTML = `
-                                    <div class="dynamic-fields">
-                                        <div class="form-group">
-                                            <select name="packaging[${productId}][packaging][${packagingCount}][item_id]" class="form-control" required>
-                                                <option value="">Select Packaging</option>
-                                                @foreach($packagingMaterials as $packaging)
-                                                    <option value="{{ $packaging->id }}"
-                                                            data-price="{{ $packaging->unit_price }}"
-                                                            data-unit="{{ $packaging->unit_of_measure }}">
-                                                        {{ $packaging->name }} (€{{ $packaging->unit_price }}/{{ $packaging->unit_of_measure }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                                                           </div>
-                                    <div>
-                                        <button type="button" class="btn btn-danger remove-packaging">Remove</button>
-                                    </div>
-                                `;
-                                container.appendChild(newRow);
-                            }
-                        });
-                        
-                        // Remove packaging row
-                        document.addEventListener('click', function(e) {
-                            if (e.target.classList.contains('remove-packaging')) {
-                                const row = e.target.closest('.packaging-row');
-                                const container = e.target.closest('.packaging-container');
-                                if (container.querySelectorAll('.packaging-row').length > 1) {
-                                    row.remove();
-                                }
-                            }
-                        });
-                    });
-                </script>
                 @endif
 
                 <!-- Step 6: Calculation -->
@@ -652,59 +587,58 @@
                     @csrf
                     <div class="form-row">
                         <div class="form-group">
-                            <h4>Cost Parameters</h4>
+                            <h4>{{ __('orders.create_edit.calculation.cost_parameters') }}</h4>
                             <div class="form-group">
-                                <label class="form-label">Manufacturing Cost %</label>
+                                <label class="form-label">{{ __('orders.create_edit.calculation.manufacturing_cost') }}</label>
                                 <input type="number" name="manufacturing_cost_percent" class="form-control" 
                                        value="{{ old('manufacturing_cost_percent', $order->manufacturing_cost_percent ?? 30) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Risk Cost %</label>
+                                <label class="form-label">{{ __('orders.create_edit.calculation.risk_cost') }}</label>
                                 <input type="number" name="risk_cost_percent" class="form-control" 
                                        value="{{ old('risk_cost_percent', $order->risk_cost_percent ?? 5) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Profit Margin %</label>
+                                <label class="form-label">{{ __('orders.create_edit.calculation.profit_margin') }}</label>
                                 <input type="number" name="profit_margin_percent" class="form-control" 
                                        value="{{ old('profit_margin_percent', $order->profit_margin_percent ?? 30) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                             <div class="form-group">
-{{--                                 <label class="form-label">Tax Rate %</label>
- --}}                                <input type="hidden" name="tax_rate" class="form-control" 
+                                <input type="hidden" name="tax_rate" class="form-control" 
                                        value="{{ old('tax_rate', $order->tax_rate ?? 19) }}" 
                                        min="0" max="100" step="0.1">
                             </div>
                         </div>
                         <div class="form-group">
-                            <h4>Summary</h4>
+                            <h4>{{ __('orders.create_edit.calculation.summary') }}</h4>
                             <div class="summary-grid">
                                 <div class="summary-card">
-                                    <p class="summary-label">Customer</p>
+                                    <p class="summary-label">{{ __('orders.create_edit.calculation.customer') }}</p>
                                     <p class="summary-value">{{ $order->customer->company_name ?: $order->customer->contact_person }}</p>
                                 </div>
                                 <div class="summary-card">
-                                    <p class="summary-label">Number of Products</p>
+                                    <p class="summary-label">{{ __('orders.create_edit.calculation.number_of_products') }}</p>
                                     <p class="summary-value">{{ $order->products->count() }}</p>
                                 </div>
                                 <div class="summary-card">
-                                    <p class="summary-label">Total Raw Materials</p>
+                                    <p class="summary-label">{{ __('orders.create_edit.calculation.total_raw_materials') }}</p>
                                     <p class="summary-value">{{ $order->products->sum(fn($product) => $product->rawMaterialItems->count()) }}</p>
                                 </div>
                                 <div class="summary-card">
-                                    <p class="summary-label">Total Packaging Items</p>
+                                    <p class="summary-label">{{ __('orders.create_edit.calculation.total_packaging_items') }}</p>
                                     <p class="summary-value">{{ $order->products->sum(fn($product) => $product->packagingItems->count()) }}</p>
                                 </div>
                             </div>
                             
                             @if($order->total_price)
                             <div class="alert alert-success mt-3">
-                                <h5>Current Calculation</h5>
-                                <p><strong>Total Price:</strong> €{{ number_format($order->total_price, 2) }}</p>
-                                <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
-                                <p><strong>Last Updated:</strong> {{ $order->updated_at->format('M j, Y H:i') }}</p>
+                                <h5>{{ __('orders.create_edit.calculation.current_calculation') }}</h5>
+                                <p><strong>{{ __('orders.create_edit.calculation.total_price') }}:</strong> DSD{{ number_format($order->total_price, 2) }}</p>
+                                <p><strong>{{ __('orders.create_edit.calculation.status') }}:</strong> {{ ucfirst($order->status) }}</p>
+                                <p><strong>{{ __('orders.create_edit.calculation.last_updated') }}:</strong> {{ $order->updated_at->format('M j, Y H:i') }}</p>
                             </div>
                             @endif
                         </div>
@@ -713,16 +647,16 @@
                     <div class="form-actions">
                         <button type="submit" class="btn btn-success">
                             @if($order->total_price)
-                                Recalculate & Update Quotation
+                                {{ __('orders.create_edit.buttons.recalculate_update') }}
                             @else
-                                Calculate & Save Quotation
+                                {{ __('orders.create_edit.buttons.calculate_save') }}
                             @endif
                         </button>
-                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'packaging']) }}" class="btn btn-secondary">Back</a>
+                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'packaging']) }}" class="btn btn-secondary">{{ __('orders.create_edit.buttons.back') }}</a>
                         
                         @if($order->total_price)
                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline" target="_blank">
-                            View Final Quotation
+                            {{ __('orders.create_edit.buttons.view_final_order') }}
                         </a>
                         @endif
                     </div>

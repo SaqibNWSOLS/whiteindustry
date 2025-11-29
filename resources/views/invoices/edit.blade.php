@@ -1,12 +1,11 @@
-<!-- resources/views/invoices/edit.blade.php -->
 @extends('layouts.app')
-@section('title', 'Edit Invoice')
+@section('title', __('invoice.edit.title'))
 
 @section('content')
 <div class="content">
     <div class="card">
         <div class="card-header">
-            <h2>Edit Invoice {{ $invoice->invoice_number }}</h2>
+            <h2>{{ __('invoice.edit.title') }} {{ $invoice->invoice_number }}</h2>
         </div>
 
         <div class="card-body">
@@ -26,58 +25,57 @@
 
                 <!-- PRODUCTION & ORDER INFO -->
                 <div class="form-section">
-                    <h4>Production & Order Information</h4>
+                    <h4>{{ __('invoice.edit.production_order_info') }}</h4>
                     <div class="row">
                         <div class="col-md-3">
-                            <p><strong>Production:</strong> {{ $invoice->production->production_number }}</p>
-                        </div>
-                   
-                        <div class="col-md-3">
-                            <p><strong>Customer:</strong> {{ $invoice->customer->company_name }}</p>
+                            <p><strong>{{ __('invoice.headers.production') }}:</strong> {{ $invoice->production->production_number }}</p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>Current Status:</strong> <span class="badge badge-warning">{{ ucfirst($invoice->status) }}</span></p>
+                            <p><strong>{{ __('invoice.headers.customer') }}:</strong> {{ $invoice->customer->company_name }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><strong>{{ __('invoice.edit.current_status') }}:</strong> <span class="badge badge-warning">{{ __("invoice.status.{$invoice->status}") }}</span></p>
                         </div>
                     </div>
                 </div>
 
                 <!-- INVOICE DETAILS -->
                 <div class="form-section">
-                    <h4>Invoice Details</h4>
+                    <h4>{{ __('invoice.create.invoice_details') }}</h4>
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label>Invoice Date</label>
+                            <label>{{ __('invoice.create.invoice_date') }}</label>
                             <input type="date" name="invoice_date" class="form-control" required value="{{ $invoice->invoice_date }}">
                         </div>
                         <div class="form-group col-md-6">
-                            <label>Due Date</label>
+                            <label>{{ __('invoice.create.due_date') }}</label>
                             <input type="date" name="due_date" class="form-control" required value="{{ $invoice->due_date }}">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Tax Percentage (%)</label>
+                        <label>{{ __('invoice.edit.tax_percentage') }}</label>
                         <input type="number" name="tax_percentage" class="form-control" step="0.01" value="{{ $invoice->getTaxPercentage() }}" required onchange="calculateTotals()">
                     </div>
 
                     <div class="form-group">
-                        <label>Notes</label>
+                        <label>{{ __('invoice.create.notes') }}</label>
                         <textarea name="notes" class="form-control" rows="3">{{ $invoice->notes }}</textarea>
                     </div>
                 </div>
 
                 <!-- INVOICE ITEMS -->
                 <div class="form-section">
-                    <h4>Invoice Items</h4>
+                    <h4>{{ __('invoice.create.invoice_items') }}</h4>
                     <div class="table-responsive">
                         <table class="table table-bordered" id="invoiceItemsTable">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Product Name</th>
-                                    <th>Produced Quantity</th>
-                                    <th>Invoice Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Amount</th>
+                                    <th>{{ __('invoice.create.product_name') }}</th>
+                                    <th>{{ __('invoice.create.produced_quantity') }}</th>
+                                    <th>{{ __('invoice.create.invoice_quantity') }}</th>
+                                    <th>{{ __('invoice.create.unit_price') }}</th>
+                                    <th>{{ __('invoice.create.amount') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="invoice-items-tbody">
@@ -117,23 +115,23 @@
                 <!-- TOTALS -->
                 <div class="form-section" style="max-width: 500px; margin-left: auto;">
                     <div class="row">
-                        <div class="col-6"><strong>Subtotal:</strong></div>
+                        <div class="col-6"><strong>{{ __('invoice.create.subtotal') }}:</strong></div>
                         <div class="col-6 text-right"><span id="subtotal">${{ number_format($invoice->subtotal, 2) }}</span></div>
                     </div>
                     <div class="row">
-                        <div class="col-6"><strong>Tax:</strong></div>
+                        <div class="col-6"><strong>{{ __('invoice.create.tax') }}:</strong></div>
                         <div class="col-6 text-right"><span id="tax-amount">${{ number_format($invoice->tax_amount, 2) }}</span></div>
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-6"><strong>Total:</strong></div>
+                        <div class="col-6"><strong>{{ __('invoice.create.total') }}:</strong></div>
                         <div class="col-6 text-right"><strong><span id="total-amount">${{ number_format($invoice->total_amount, 2) }}</span></strong></div>
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="submit" class="btn btn-primary">Update Invoice</button>
-                    <a href="{{ route('invoices.show', $invoice->id) }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('invoice.buttons.update_invoice') }}</button>
+                    <a href="{{ route('invoices.show', $invoice->id) }}" class="btn btn-secondary">{{ __('invoice.buttons.cancel') }}</a>
                 </div>
             </form>
         </div>

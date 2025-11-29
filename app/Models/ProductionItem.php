@@ -12,8 +12,10 @@ class ProductionItem extends Model
     protected $fillable = [
         'production_id',
         'order_product_id',
+        'products_id',
         'quantity_planned',
         'quantity_produced',
+        'quantity_deliverd',
         'notes',
         'status'
     ];

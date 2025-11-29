@@ -322,14 +322,14 @@
                                 <div class="dynamic-fields">
                                     <div class="form-group">
                                         <select name="raw_materials[{{ $product->id }}][materials][{{ $materialIndex }}][item_id]" 
-                                                class="form-control" >
+                                                class="form-control select2" >
                                             <option value="">{{ __('quotes.form.select_material') }}</option>
                                             @foreach($rawMaterials as $materialItem)
                                                 <option value="{{ $materialItem->id }}" 
                                                     {{ $material->item_id == $materialItem->id ? 'selected' : '' }}
                                                     data-price="{{ $materialItem->unit_price }}"
                                                     data-unit="{{ $materialItem->unit_of_measure }}">
-                                                    {{ $materialItem->name }} (€{{ $materialItem->unit_price }}/{{ $materialItem->unit_of_measure }})
+                                                    {{ $materialItem->name }} (DSD{{ $materialItem->unit_price }}/{{ $materialItem->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -356,13 +356,13 @@
                             <div class="dynamic-row material-row">
                                 <div class="dynamic-fields">
                                     <div class="form-group">
-                                        <select name="raw_materials[{{ $product->id }}][materials][0][item_id]" class="form-control" >
+                                        <select name="raw_materials[{{ $product->id }}][materials][0][item_id]" class="form-control select2" >
                                             <option value="">{{ __('quotes.form.select_material') }}</option>
                                             @foreach($rawMaterials as $material)
                                                 <option value="{{ $material->id }}"
                                                         data-price="{{ $material->unit_price }}"
                                                         data-unit="{{ $material->unit_of_measure }}">
-                                                    {{ $material->name }} (€{{ $material->unit_price }}/{{ $material->unit_of_measure }})
+                                                    {{ $material->name }} (DSD{{ $material->unit_price }}/{{ $material->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -415,60 +415,110 @@
                     </div>
                 </form>
 
-                <script>
-                    // ... (keep the existing JavaScript code, it will work with the translations)
-                </script>
-                @endif
-
-                <!-- Step 4: Blend -->
-                @if($step == 'blend' && isset($quote))
-                <form method="POST" action="{{ route('quotes.update-blend', $quote->id) }}">
-                    @csrf
-                    @method('PUT')
-                    
-                    @foreach($quote->products as $product)
-                    <div class="product-section">
-                        <div class="product-header">
-                            <h3 class="product-title">{{ $product->product_name }}</h3>
-                        </div>
-
-                        @php
-                            $existingBlend = $product->items()->where('item_type', 'blend')->first();
-                        @endphp
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Add material row for specific product
+                        document.addEventListener('click', function(e) {
+                            if (e.target.classList.contains('add-material')) {
+                                const productId = e.target.getAttribute('data-product-id');
+                                const container = document.querySelector(`.raw-materials-container[data-product-id="${productId}"]`);
+                                const materialCount = container.querySelectorAll('.material-row').length;
+                                
+                                const newRow = document.createElement('div');
+                                newRow.className = 'dynamic-row material-row';
+                                newRow.innerHTML = `
+                                    <div class="dynamic-fields">
+                                        <div class="form-group">
+                                            <select name="raw_materials[${productId}][materials][${materialCount}][item_id]" class="form-control select2" >
+                                                <option value="">{{ __('orders.create_edit.form.raw_material_placeholder') }}</option>
+                                                @foreach($rawMaterials as $material)
+                                                    <option value="{{ $material->id }}" 
+                                                            data-price="{{ $material->unit_price }}"
+                                                            data-unit="{{ $material->unit_of_measure }}">
+                                                        {{ $material->name }} (DSD{{ $material->unit_price }}/{{ $material->unit_of_measure }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="number" name="raw_materials[${productId}][materials][${materialCount}][percentage]" 
+                                                   class="form-control percentage-input" value="0" step="0.01" min="0" max="100" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-danger remove-material">{{ __('orders.create_edit.buttons.remove') }}</button>
+                                    </div>
+                                `;
+                                container.appendChild(newRow);
+                                
+                                // Add event listener to new percentage input
+                                newRow.querySelector('.percentage-input').addEventListener('input', function() {
+                                    calculateTotalPercentage(productId);
+                                });
+                            }
+                        });
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">{{ __('quotes.form.blend') }} *</label>
-                                <select name="blends[{{ $product->id }}][blend_id]" class="form-control" required>
-                                    <option value="">{{ __('quotes.form.select_blend') }}</option>
-                                    @foreach($blends as $blend)
-                                        <option value="{{ $blend->id }}" 
-                                            {{ $existingBlend && $existingBlend->item_id == $blend->id ? 'selected' : '' }}
-                                            data-price="{{ $blend->unit_price }}"
-                                            data-unit="{{ $blend->unit_of_measure }}">
-                                            {{ $blend->name }} (€{{ $blend->unit_price }}/{{ $blend->unit_of_measure }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if($existingBlend)
-                                    <input type="hidden" name="blends[{{ $product->id }}][id]" value="{{ $existingBlend->id }}">
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
+                        // Remove material row
+                        document.addEventListener('click', function(e) {
+                            if (e.target.classList.contains('remove-material')) {
+                                const row = e.target.closest('.material-row');
+                                const container = row.closest('.raw-materials-container');
+                                const productId = container.getAttribute('data-product-id');
+                                
+                                if (container.querySelectorAll('.material-row').length > 1) {
+                                    row.remove();
+                                    calculateTotalPercentage(productId);
+                                }
+                            }
+                        });
+                        
+                        // Calculate total percentage for a product
+                        function calculateTotalPercentage(productId) {
+                            const container = document.querySelector(`.raw-materials-container[data-product-id="${productId}"]`);
+                            let total = 0;
+                            
+                            container.querySelectorAll('.percentage-input').forEach(input => {
+                                total += parseFloat(input.value) || 0;
+                            });
+                            
+                            const totalElement = document.querySelector(`.percentage-value.total[data-product-id="${productId}"]`);
+                            const remainingElement = document.querySelector(`.percentage-value.remaining[data-product-id="${productId}"]`);
+                            
+                            if (totalElement && remainingElement) {
+                                totalElement.textContent = total.toFixed(2);
+                                remainingElement.textContent = (100 - total).toFixed(2);
+                                
+                                // Add warning class if total is not 100%
+                                if (Math.abs(total - 100) > 0.01) {
+                                    totalElement.style.color = 'var(--danger)';
+                                    remainingElement.style.color = 'var(--danger)';
+                                } else {
+                                    totalElement.style.color = 'var(--success)';
+                                    remainingElement.style.color = 'var(--success)';
+                                }
+                            }
+                        }
+                        
+                        // Initialize event listeners and calculations
+                        document.querySelectorAll('.percentage-input').forEach(input => {
+                            input.addEventListener('input', function() {
+                                const container = this.closest('.raw-materials-container');
+                                const productId = container.getAttribute('data-product-id');
+                                calculateTotalPercentage(productId);
+                            });
+                        });
+                        
+                        // Initialize calculations on page load
+                        document.querySelectorAll('.raw-materials-container').forEach(container => {
+                            const productId = container.getAttribute('data-product-id');
+                            calculateTotalPercentage(productId);
+                        });
+                    });
+                </script>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            {{ __('quotes.navigation.next_packaging') }}
-                        </button>
-                        <a href="{{ route('quotes.edit', ['quote' => $quote->id, 'step' => 'raw_materials']) }}" class="btn btn-secondary">
-                            {{ __('quotes.navigation.back') }}
-                        </a>
-                    </div>
-                </form>
                 @endif
 
+                
                 <!-- Step 5: Packaging -->
                 @if($step == 'packaging' && isset($quote))
                 <form method="POST" action="{{ route('quotes.update-packaging', $quote->id) }}">
@@ -508,7 +558,7 @@
                                                     {{ $packaging->item_id == $packagingItem->id ? 'selected' : '' }}
                                                     data-price="{{ $packagingItem->unit_price }}"
                                                     data-unit="{{ $packagingItem->unit_of_measure }}">
-                                                    {{ $packagingItem->name }} (€{{ $packagingItem->unit_price }}/{{ $packagingItem->unit_of_measure }})
+                                                    {{ $packagingItem->name }} (DSD{{ $packagingItem->unit_price }}/{{ $packagingItem->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -530,7 +580,7 @@
                                                 <option value="{{ $packaging->id }}"
                                                         data-price="{{ $packaging->unit_price }}"
                                                         data-unit="{{ $packaging->unit_of_measure }}">
-                                                    {{ $packaging->name }} (€{{ $packaging->unit_price }}/{{ $packaging->unit_of_measure }})
+                                                    {{ $packaging->name }} (DSD{{ $packaging->unit_price }}/{{ $packaging->unit_of_measure }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -608,7 +658,7 @@
                             @if($quote->total_price)
                             <div class="alert alert-success mt-3">
                                 <h5>{{ __('quotes.form.current_calculation') }}</h5>
-                                <p><strong>{{ __('quotes.form.total_price') }}:</strong> €{{ number_format($quote->total_price, 2) }}</p>
+                                <p><strong>{{ __('quotes.form.total_price') }}:</strong> DSD{{ number_format($quote->total_price, 2) }}</p>
                                 <p><strong>{{ __('quotes.table.status') }}:</strong> {{ __("quotes.status.{$quote->status}") }}</p>
                                 <p><strong>{{ __('quotes.form.last_updated') }}:</strong> {{ $quote->updated_at->format('M j, Y H:i') }}</p>
                             </div>

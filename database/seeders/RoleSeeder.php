@@ -12,7 +12,7 @@ class RoleSeeder extends Seeder
     {
         // Administrator Role - All permissions
         $admin = Role::create([
-            'name' => 'administrator',
+            'name' => 'Administrator',
             'guard_name' => 'web',
         ]);
         
@@ -21,7 +21,7 @@ class RoleSeeder extends Seeder
 
         // Manager Role - Most permissions except user/role management
         $manager = Role::create([
-            'name' => 'manager',
+            'name' => 'Manager',
             'guard_name' => 'web',
         ]);
         
@@ -33,7 +33,7 @@ class RoleSeeder extends Seeder
 
         // Sales User Role
         $sales = Role::create([
-            'name' => 'sales_user',
+            'name' => 'Sales User',
             'guard_name' => 'web',
         ]);
         
@@ -50,7 +50,7 @@ class RoleSeeder extends Seeder
 
         // Production User Role
         $production = Role::create([
-            'name' => 'production_user',
+            'name' => 'Production User',
             'guard_name' => 'web',
         ]);
         
@@ -66,7 +66,7 @@ class RoleSeeder extends Seeder
 
         // Quality Control Role
         $qc = Role::create([
-            'name' => 'quality_control',
+            'name' => 'Quality Control',
             'guard_name' => 'web',
         ]);
         
@@ -81,7 +81,7 @@ class RoleSeeder extends Seeder
 
         // Warehouse User Role
         $warehouse = Role::create([
-            'name' => 'warehouse_user',
+            'name' => 'Warehouse User',
             'guard_name' => 'web',
         ]);
         
@@ -96,7 +96,7 @@ class RoleSeeder extends Seeder
 
         // Accountant Role
         $accountant = Role::create([
-            'name' => 'accountant',
+            'name' => 'Accountant',
             'guard_name' => 'web',
         ]);
         
@@ -113,23 +113,12 @@ class RoleSeeder extends Seeder
 
         // Basic User Role - Read only
         $user = Role::create([
-            'name' => 'user',
+            'name' => 'User',
             'guard_name' => 'web',
         ]);
         
         $userPermissions = Permission::where('name', 'like', 'View%')->get();
         $user->givePermissionTo($userPermissions);
 
-        // Customer Role - limited to their own records
-        $customerRole = Role::create([
-            'name' => 'customer',
-            'guard_name' => 'web',
-        ]);
-        
-        $customerPermissions = Permission::whereIn('name', [
-            'View Orders', 'View Invoices', 'View Quotes'
-        ])->get();
-        
-        $customerRole->givePermissionTo($customerPermissions);
     }
 }

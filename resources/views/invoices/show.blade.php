@@ -106,10 +106,10 @@
                     @foreach($invoice->items as $key => $item)
                     <tr>
                         <td>{{ ++$key }}</td>
-                        <td>{{ $item->product_name }}</td>
+                        <td>{{ $item->productItem->name }}</td>
                         <td class="text-center">{{ $item->quantity }}</td>
                         <td class="text-right">{{ priceFormat($item->unit_price) }}</td>
-                        <td class="text-right">{{ priceFormat($item->total_price) }}</td>
+                        <td class="text-right">{{ priceFormat($item->unit_price*$item->quantity) }}</td>
                     </tr>
                     @endforeach
                 </tbody>

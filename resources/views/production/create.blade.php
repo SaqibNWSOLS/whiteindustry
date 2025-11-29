@@ -112,7 +112,7 @@ function loadOrderDetails(orderId) {
     const selected = document.querySelector(`option[value="${orderId}"]`);
     document.getElementById('order-num').textContent = selected.dataset.orderNum;
     document.getElementById('customer-name').textContent = selected.dataset.customer;
-    document.getElementById('order-total').textContent = '$' + parseFloat(selected.dataset.total).toFixed(2);
+    document.getElementById('order-total').textContent = 'DSD' + parseFloat(selected.dataset.total).toFixed(2);
 
     // Load production items
     const products = JSON.parse(selected.dataset.order);

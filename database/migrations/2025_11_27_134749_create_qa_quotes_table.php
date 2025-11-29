@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('qa_quotes', function (Blueprint $table) {
     $table->id();
     $table->foreignId('orders_id')->constrained('orders')->onDelete('cascade');
-    $table->foreignId('rnd_quotes_id')->constrained('rnd_quotes')->onDelete('cascade');
+    $table->foreignId('rnd_quotes_id')->nullable()->constrained('rnd_quotes')->onDelete('cascade');
     $table->timestamp('sent_at')->nullable();
     $table->timestamp('approved_at')->nullable();
     $table->text('qa_notes')->nullable();

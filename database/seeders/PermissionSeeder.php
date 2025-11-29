@@ -10,75 +10,55 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         $permissions = [
-            // User Management
-            ['name' => 'manage_users', 'display_name' => 'Manage Users', 'module' => 'user_management', 'description' => 'Create, edit, and delete users'],
-            ['name' => 'view_users', 'display_name' => 'View Users', 'module' => 'user_management', 'description' => 'View user list and details'],
-            ['name' => 'manage_roles', 'display_name' => 'Manage Roles', 'module' => 'user_management', 'description' => 'Create, edit, and delete roles'],
-            ['name' => 'assign_roles', 'display_name' => 'Assign Roles', 'module' => 'user_management', 'description' => 'Assign roles to users'],
-            ['name' => 'view_activity_logs', 'display_name' => 'View Activity Logs', 'module' => 'user_management', 'description' => 'View system activity logs'],
-
-            // CRM
-            ['name' => 'manage_customers', 'display_name' => 'Manage Customers', 'module' => 'crm', 'description' => 'Create, edit, and delete customers'],
-            ['name' => 'view_customers', 'display_name' => 'View Customers', 'module' => 'crm', 'description' => 'View customer list and details'],
-            ['name' => 'manage_leads', 'display_name' => 'Manage Leads', 'module' => 'crm', 'description' => 'Create, edit, and delete leads'],
-            ['name' => 'view_leads', 'display_name' => 'View Leads', 'module' => 'crm', 'description' => 'View lead list and details'],
-            ['name' => 'convert_leads', 'display_name' => 'Convert Leads', 'module' => 'crm', 'description' => 'Convert leads to customers'],
-            ['name' => 'manage_quotes', 'display_name' => 'Manage Quotes', 'module' => 'crm', 'description' => 'Create, edit, and delete quotes'],
-            ['name' => 'view_quotes', 'display_name' => 'View Quotes', 'module' => 'crm', 'description' => 'View quote list and details'],
-            ['name' => 'approve_quotes', 'display_name' => 'Approve Quotes', 'module' => 'crm', 'description' => 'Approve or reject quotes'],
-
-            // Orders
-            ['name' => 'manage_orders', 'display_name' => 'Manage Orders', 'module' => 'orders', 'description' => 'Create, edit, and delete orders'],
-            ['name' => 'view_orders', 'display_name' => 'View Orders', 'module' => 'orders', 'description' => 'View order list and details'],
-            ['name' => 'cancel_orders', 'display_name' => 'Cancel Orders', 'module' => 'orders', 'description' => 'Cancel orders'],
-
-            // Production
-            ['name' => 'manage_production', 'display_name' => 'Manage Production', 'module' => 'production', 'description' => 'Create and edit production orders'],
-            ['name' => 'view_production', 'display_name' => 'View Production', 'module' => 'production', 'description' => 'View production orders'],
-            ['name' => 'update_production_status', 'display_name' => 'Update Production Status', 'module' => 'production', 'description' => 'Update production order status'],
-            ['name' => 'manage_qc', 'display_name' => 'Manage Quality Control', 'module' => 'production', 'description' => 'Perform quality control checks'],
-
-            // Inventory
-            ['name' => 'manage_inventory', 'display_name' => 'Manage Inventory', 'module' => 'inventory', 'description' => 'Create, edit, and delete inventory items'],
-            ['name' => 'view_inventory', 'display_name' => 'View Inventory', 'module' => 'inventory', 'description' => 'View inventory list and details'],
-            ['name' => 'adjust_inventory', 'display_name' => 'Adjust Inventory', 'module' => 'inventory', 'description' => 'Adjust inventory quantities'],
-            ['name' => 'view_inventory_reports', 'display_name' => 'View Inventory Reports', 'module' => 'inventory', 'description' => 'View inventory reports'],
-
-            // Products
-            ['name' => 'manage_products', 'display_name' => 'Manage Products', 'module' => 'products', 'description' => 'Create, edit, and delete products'],
-            ['name' => 'view_products', 'display_name' => 'View Products', 'module' => 'products', 'description' => 'View product list and details'],
-
-            // Invoicing
-            ['name' => 'manage_invoices', 'display_name' => 'Manage Invoices', 'module' => 'invoicing', 'description' => 'Create, edit, and delete invoices'],
-            ['name' => 'view_invoices', 'display_name' => 'View Invoices', 'module' => 'invoicing', 'description' => 'View invoice list and details'],
-            ['name' => 'void_invoices', 'display_name' => 'Void Invoices', 'module' => 'invoicing', 'description' => 'Void or cancel invoices'],
-
-            // Payments
-            ['name' => 'manage_payments', 'display_name' => 'Manage Payments', 'module' => 'payments', 'description' => 'Record and manage payments'],
-            ['name' => 'view_payments', 'display_name' => 'View Payments', 'module' => 'payments', 'description' => 'View payment list and details'],
-
-            // Reports
-            ['name' => 'view_sales_reports', 'display_name' => 'View Sales Reports', 'module' => 'reports', 'description' => 'View sales reports'],
-            ['name' => 'view_financial_reports', 'display_name' => 'View Financial Reports', 'module' => 'reports', 'description' => 'View financial reports'],
-            ['name' => 'view_production_reports', 'display_name' => 'View Production Reports', 'module' => 'reports', 'description' => 'View production reports'],
-            ['name' => 'export_reports', 'display_name' => 'Export Reports', 'module' => 'reports', 'description' => 'Export reports to PDF/Excel'],
-
-            // Tasks
-            ['name' => 'manage_tasks', 'display_name' => 'Manage Tasks', 'module' => 'workflow', 'description' => 'Create, edit, and delete tasks'],
-            ['name' => 'view_tasks', 'display_name' => 'View Tasks', 'module' => 'workflow', 'description' => 'View task list and details'],
-            ['name' => 'assign_tasks', 'display_name' => 'Assign Tasks', 'module' => 'workflow', 'description' => 'Assign tasks to users'],
-
-            // Documents
-            ['name' => 'manage_documents', 'display_name' => 'Manage Documents', 'module' => 'documents', 'description' => 'Upload, edit, and delete documents'],
-            ['name' => 'view_documents', 'display_name' => 'View Documents', 'module' => 'documents', 'description' => 'View and download documents'],
-
-            // System
-            ['name' => 'access_admin_panel', 'display_name' => 'Access Admin Panel', 'module' => 'system', 'description' => 'Access administration panel'],
-            ['name' => 'manage_settings', 'display_name' => 'Manage Settings', 'module' => 'system', 'description' => 'Modify system settings'],
+            ['name' => 'View Users', 'group' => 'Manage User'],
+            ['name' => 'Create Users', 'group' => 'Manage User'],
+            ['name' => 'Edit Users', 'group' => 'Manage User'],
+            ['name' => 'Delete Users', 'group' => 'Manage User'],
+            ['name' => 'View Customer', 'group' => 'Manage Customer'],
+            ['name' => 'Create Customer', 'group' => 'Manage Customer'],
+            ['name' => 'Edit Customer', 'group' => 'Manage Customer'],
+            ['name' => 'Delete Customer', 'group' => 'Manage Customer'],
+            ['name' => 'View Roles',   'group' => 'Manage Role'],
+            ['name' => 'Create Roles', 'group' => 'Manage Role'],
+            ['name' => 'Edit Roles',   'group' => 'Manage Role'],
+            ['name' => 'Delete Roles', 'group' => 'Manage Role'],
+            ['name' => 'View Products',   'group' => 'Manage Product'],
+            ['name' => 'Create Products', 'group' => 'Manage Product'],
+            ['name' => 'Edit Products',   'group' => 'Manage Product'],
+            ['name' => 'Delete Products', 'group' => 'Manage Product'],
+            ['name' => 'View Inventory',   'group' => 'Manage Inventory'],
+            ['name' => 'View Tasks', 'group' => 'Manage Tasks'],
+            ['name' => 'Create Tasks', 'group' => 'Manage Tasks'],
+            ['name' => 'Edit Tasks', 'group' => 'Manage Tasks'],
+            ['name' => 'Delete Tasks', 'group' => 'Manage Tasks'],
+            ['name' => 'View Orders',   'group' => 'Manage Orders'],
+            ['name' => 'Create Orders', 'group' => 'Manage Orders'],
+            ['name' => 'Edit Orders',   'group' => 'Manage Orders'],
+            ['name' => 'Delete Orders', 'group' => 'Manage Orders'],
+            ['name' => 'View Quotes',   'group' => 'Manage Quotes'],
+            ['name' => 'Create Quotes', 'group' => 'Manage Quotes'],
+            ['name' => 'Edit Quotes',   'group' => 'Manage Quotes'],
+            ['name' => 'Delete Quotes', 'group' => 'Manage Quotes'],
+            ['name' => 'View Invoices',   'group' => 'Manage Invoices'],
+            ['name' => 'Create Invoices', 'group' => 'Manage Invoices'],
+            ['name' => 'Edit Invoices',   'group' => 'Manage Invoices'],
+            ['name' => 'Delete Invoices', 'group' => 'Manage Invoices'],
+            ['name' => 'View Payments',   'group' => 'Manage Payments'],
+            ['name' => 'Create Payments', 'group' => 'Manage Payments'],
+            ['name' => 'Edit Payments',   'group' => 'Manage Payments'],
+            ['name' => 'Delete Payments', 'group' => 'Manage Payments'],
+            ['name' => 'View Production',   'group' => 'Manage Production'],
+            ['name' => 'Create Production', 'group' => 'Manage Production'],
+            ['name' => 'Edit Production',   'group' => 'Manage Production'],
+            ['name' => 'Delete Production', 'group' => 'Manage Production'],
+            ['name' => 'View R&D',   'group' => 'Manage R&D'],
+            ['name' => 'Approve R&D',   'group' => 'Manage R&D'],
+            ['name' => 'View Quality & Control',   'group' => 'Manage Quality & Control'],
+            ['name' => 'Approve Quality & Control',   'group' => 'Manage Quality & Control']
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name'=>$permission['display_name'],'guard_name'=>'web']);
+            Permission::create(['name'=>$permission['name'],'group'=>$permission['group'],'guard_name'=>'web']);
         }
     }
 }

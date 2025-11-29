@@ -5,6 +5,7 @@
         <div class="module-header">
             <h1 class="text-2xl font-semibold">Users Management</h1>
             <div>
+                <a href="{{ route('roles.index') }}" class="btn btn-primary">Roles</a>
                 <a href="{{ route('users.create') }}" class="btn btn-primary">Create user</a>
             </div>
         </div>
@@ -46,7 +47,7 @@
                         <tr>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->first_name }} {{ $user->last_name }}</td>
-                            <td>{{ $user->roles->pluck('display_name')->join(', ') }}</td>
+                            <td>{{ $user->roles->pluck('name')->join(', ') }}</td>
                             <td>
                                 <span class="status-badge status-{{ $user->status }}">{{ ucfirst($user->status) }}</span>
                             </td>

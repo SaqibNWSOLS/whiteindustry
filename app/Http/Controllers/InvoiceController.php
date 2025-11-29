@@ -6,9 +6,13 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Production;
 use App\Models\Order;
+use App\Models\ProductionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use PDF;
+use DB;
+use App\Models\Product;
+use App\Models\InventoryTransaction;
 
 class InvoiceController extends Controller
 {
@@ -41,69 +45,71 @@ class InvoiceController extends Controller
         return view('invoices.index', compact('invoices', 'stats'));
     }
 
-    public function create($production_id = null)
+    public function create(Request $request)
     {
-        $productions = Production::where('status', 'completed')
-            ->doesntHave('invoices')
+        $productions = Production::whereIn('status', ['completed','in_progress'])
             ->with(['order.quote.customer', 'items.orderProduct'])
             ->get();
 
-        $selectedProduction = null;
-        if ($production_id) {
+        $selectedProduction = $request->production_id;
+        if ($selectedProduction) {
             $selectedProduction = Production::with(['order.quote.customer', 'items.orderProduct'])
-                ->findOrFail($production_id);
+                ->findOrFail($selectedProduction);
         }
 
         return view('invoices.create', compact('productions', 'selectedProduction'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'production_id' => 'required|exists:productions,id',
-            'invoice_date' => 'required|date',
-            'due_date' => 'required|date|after:invoice_date',
-            'tax_percentage' => 'required|numeric|min:0|max:100',
-            'notes' => 'nullable|string',
-            'invoice_items' => 'required|array',
-            'invoice_items.*.production_item_id' => 'required|exists:production_items,id',
-            'invoice_items.*.quantity' => 'required|integer|min:1',
-            'invoice_items.*.unit_price' => 'required|numeric|min:0',
-        ]);
+ public function store(Request $request)
+{
+    $request->validate([
+        'production_id' => 'required|exists:productions,id',
+        'invoice_date' => 'required|date',
+        'due_date' => 'required|date|after:invoice_date',
+        'tax_percentage' => 'required|numeric|min:0|max:100',
+        'notes' => 'nullable|string',
+        'invoice_items' => 'required|array',
+        'invoice_items.*.production_item_id' => 'required|exists:production_items,id',
+        'invoice_items.*.quantity' => 'required|integer|min:1',
+        'invoice_items.*.unit_price' => 'required|numeric|min:0',
+    ]);
 
-        $production = Production::findOrFail($request->production_id);
-        $order = $production->order;
+    $production = Production::findOrFail($request->production_id);
+    $order = $production->order;
 
-        // Calculate totals
-        $subtotal = 0;
-        $invoiceItemsData = [];
+    // Calculate totals
+    $subtotal = 0;
+    $invoiceItemsData = [];
 
-        foreach ($request->invoice_items as $item) {
-            if ($item['quantity'] <= 0 || $item['unit_price'] < 0) {
-                continue;
-            }
-
-            $amount = $item['quantity'] * $item['unit_price'];
-            $subtotal += $amount;
-
-            $invoiceItemsData[] = [
-                'production_item_id' => $item['production_item_id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'amount' => $amount
-            ];
+    foreach ($request->invoice_items as $item) {
+        if ($item['quantity'] <= 0 || $item['unit_price'] < 0) {
+            continue;
         }
 
-        if (empty($invoiceItemsData)) {
-            return back()->withErrors(['invoice_items' => 'At least one valid invoice item is required']);
-        }
+        $amount = $item['quantity'] * $item['unit_price'];
+        $subtotal += $amount;
 
-        $taxAmount = ($subtotal * $request->tax_percentage) / 100;
-        $totalAmount = $subtotal + $taxAmount;
+        $invoiceItemsData[] = [
+            'production_item_id' => $item['production_item_id'],
+            'quantity' => $item['quantity'],
+            'unit_price' => $item['unit_price'],
+            'amount' => $amount
+        ];
+    }
 
+    if (empty($invoiceItemsData)) {
+        return back()->withErrors(['invoice_items' => 'At least one valid invoice item is required']);
+    }
+
+    $taxAmount = ($subtotal * $request->tax_percentage) / 100;
+    $totalAmount = $subtotal + $taxAmount;
+
+    DB::beginTransaction();
+
+    try {
         // Create invoice
         $invoice = Invoice::create([
-            'customer_id'=>$production->order->customer_id,
+            'customer_id' => $production->order->customer_id,
             'invoice_number' => 'INV-' . Str::random(10),
             'production_id' => $production->id,
             'order_id' => $order->id,
@@ -116,29 +122,66 @@ class InvoiceController extends Controller
             'notes' => $request->notes
         ]);
 
-        // Create invoice items
-
+        // Create invoice items and inventory transactions
         foreach ($invoiceItemsData as $itemData) {
-            $productionItem = Production::find($production->id)
-                ->items()
-                ->find($itemData['production_item_id']);
+            $productionItem = ProductionItem::
+                find($itemData['production_item_id']);
 
             $description = $productionItem->orderProduct->product_name . 
                           ' (' . $productionItem->orderProduct->product_type . ')';
 
-            InvoiceItem::create([
+            $invoiceItem = InvoiceItem::create([
                 'invoice_id' => $invoice->id,
+                'products_id' => $productionItem->products_id,
                 'production_item_id' => $itemData['production_item_id'],
                 'item_description' => $description,
                 'quantity' => $itemData['quantity'],
                 'unit_price' => $itemData['unit_price'],
                 'amount' => $itemData['amount']
             ]);
+
+            // Check if there's enough stock for this product
+            $product = Product::find($productionItem->products_id);
+            if ($product && $product->current_stock < $itemData['quantity']) {
+                throw new \Exception("Insufficient stock for {$product->name}. Available: {$product->current_stock}, Required: {$itemData['quantity']}");
+            }
+
+            // Create inventory transaction for sales
+            if ($product) {
+                // Reduce stock for sold items
+                $product->decrement('current_stock', $itemData['quantity']);
+
+                InventoryTransaction::create([
+                    'product_id' => $product->id,
+                    'invoice_item_id' => $invoiceItem->id,
+                    'production_item_id'=> $itemData['production_item_id'],
+                    'transaction_type' => 'invoice',
+                    'quantity_change' => -$itemData['quantity'], // Negative for sales
+                    'reference_type' => 'invoice',
+                    'reference_id' => $invoice->id,
+                    'status' => 'completed',
+                    'notes' => 'Stock reduced for invoice ' . $invoice->invoice_number,
+                    'created_by' => auth()->id(),
+                    'transaction_date' => now()
+                ]);
+
+            }
         }
 
+        DB::commit();
+
         return redirect()->route('invoices.show', $invoice->id)
-            ->with('success', 'Invoice created successfully');
+            ->with('success', 'Invoice created successfully and inventory updated');
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return back()->withErrors(['error' => 'Failed to create invoice: ' . $e->getMessage()]);
     }
+}
+
+/**
+ * Update inventory balance for a product
+ */
 
     public function show($id)
     {

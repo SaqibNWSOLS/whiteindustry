@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Production Inventory History')
+@section('title', __('production.inventory_history.title'))
 
 @section('content')
 <div class="content">
@@ -9,9 +9,9 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="card-title">Inventory Transaction History - {{ $production->production_number }}</h4>
+                            <h4 class="card-title">@lang('production.inventory_history.header', ['number' => $production->production_number])</h4>
                             <a href="{{ route('production.show', $production->id) }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to Production
+                                <i class="fas fa-arrow-left"></i> @lang('production.inventory_history.buttons.back_to_production')
                             </a>
                         </div>
                     </div>
@@ -20,25 +20,25 @@
                         <div class="row mb-4">
                             <div class="col-md-3">
                                 <div class="info-box bg-light p-3 rounded">
-                                    <h6>Production Number</h6>
+                                    <h6>@lang('production.inventory_history.summary.production_number')</h6>
                                     <p class="mb-0 font-weight-bold">{{ $production->production_number }}</p>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="info-box bg-light p-3 rounded">
-                                    <h6>Order Number</h6>
+                                    <h6>@lang('production.inventory_history.summary.order_number')</h6>
                                     <p class="mb-0 font-weight-bold">{{ $production->order->order_number }}</p>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="info-box bg-light p-3 rounded">
-                                    <h6>Customer</h6>
-                                    <p class="mb-0 font-weight-bold">{{ $production->order->quote->customer->company_name }}</p>
+                                    <h6>@lang('production.inventory_history.summary.customer')</h6>
+                                    <p class="mb-0 font-weight-bold">{{ $production->order->customer->company_name }}</p>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="info-box bg-light p-3 rounded">
-                                    <h6>Total Transactions</h6>
+                                    <h6>@lang('production.inventory_history.summary.total_transactions')</h6>
                                     <p class="mb-0 font-weight-bold">{{ $production->inventoryTransactions->count() }}</p>
                                 </div>
                             </div>
@@ -49,15 +49,15 @@
                             <table class="table table-bordered table-hover">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Product</th>
-                                        <th>Production Item</th>
-                                        <th>Transaction Type</th>
-                                        <th>Quantity Change</th>
-                                        <th>Stock After</th>
-                                        <th>Created By</th>
-                                        <th>Notes</th>
-                                        <th>Status</th>
+                                        <th>@lang('production.inventory_history.table.date')</th>
+                                        <th>@lang('production.inventory_history.table.product')</th>
+                                        <th>@lang('production.inventory_history.table.production_item')</th>
+                                        <th>@lang('production.inventory_history.table.transaction_type')</th>
+                                        <th>@lang('production.inventory_history.table.quantity_change')</th>
+                                        <th>@lang('production.inventory_history.table.stock_after')</th>
+                                        <th>@lang('production.inventory_history.table.created_by')</th>
+                                        <th>@lang('production.inventory_history.table.notes')</th>
+                                        <th>@lang('production.inventory_history.table.status')</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -68,9 +68,9 @@
                                                 @if($transaction->product)
                                                     <strong>{{ $transaction->product->name }}</strong>
                                                     <br>
-                                                    <small class="text-muted">Code: {{ $transaction->product->product_code }}</small>
+                                                    <small class="text-muted">@lang('production.inventory_history.table.product_code'): {{ $transaction->product->product_code }}</small>
                                                 @else
-                                                    <span class="text-muted">N/A</span>
+                                                    <span class="text-muted">@lang('production.inventory_history.table.not_available')</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -78,16 +78,16 @@
                                                     {{ $transaction->productionItem->orderProduct->product_name }}
                                                     <br>
                                                     <small class="text-muted">
-                                                        Planned: {{ $transaction->productionItem->quantity_planned }} | 
-                                                        Produced: {{ $transaction->productionItem->quantity_produced }}
+                                                        @lang('production.inventory_history.table.planned'): {{ $transaction->productionItem->quantity_planned }} | 
+                                                        @lang('production.inventory_history.table.produced'): {{ $transaction->productionItem->quantity_produced }}
                                                     </small>
                                                 @else
-                                                    <span class="text-muted">N/A</span>
+                                                    <span class="text-muted">@lang('production.inventory_history.table.not_available')</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 <span class="badge badge-info text-uppercase">
-                                                    {{ $transaction->transaction_type }}
+                                                    @lang('production.inventory_history.transaction_types.' . $transaction->transaction_type)
                                                 </span>
                                             </td>
                                             <td>
@@ -99,27 +99,27 @@
                                                 @if($transaction->product)
                                                     {{ $transaction->product->current_stock }}
                                                 @else
-                                                    <span class="text-muted">N/A</span>
+                                                    <span class="text-muted">@lang('production.inventory_history.table.not_available')</span>
                                                 @endif
                                             </td>
                                             <td>
-                                                {{ $transaction->createdBy->name ?? 'System' }}
+                                                {{ $transaction->createdBy->name ?? __('production.inventory_history.table.system') }}
                                             </td>
                                             <td>
                                                 @if($transaction->notes)
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
                                                             data-toggle="popover" 
-                                                            title="Transaction Notes" 
+                                                            title="@lang('production.inventory_history.table.notes_title')" 
                                                             data-content="{{ $transaction->notes }}">
-                                                        View Notes
+                                                        @lang('production.inventory_history.table.view_notes')
                                                     </button>
                                                 @else
-                                                    <span class="text-muted">No notes</span>
+                                                    <span class="text-muted">@lang('production.inventory_history.table.no_notes')</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 <span class="badge badge-{{ $transaction->status === 'completed' ? 'success' : 'warning' }}">
-                                                    {{ ucfirst($transaction->status) }}
+                                                    @lang('production.inventory_history.status.' . $transaction->status)
                                                 </span>
                                             </td>
                                         </tr>
@@ -128,7 +128,7 @@
                                             <td colspan="9" class="text-center py-4">
                                                 <div class="text-muted">
                                                     <i class="fas fa-history fa-2x mb-3"></i>
-                                                    <p>No inventory transactions found for this production.</p>
+                                                    <p>@lang('production.inventory_history.messages.no_transactions')</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -143,26 +143,26 @@
                             <div class="col-md-12">
                                 <div class="card bg-light">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Transaction Summary</h5>
+                                        <h5 class="mb-0">@lang('production.inventory_history.summary_title')</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-md-3 text-center">
-                                                <h6>Total Added to Stock</h6>
+                                                <h6>@lang('production.inventory_history.summary.total_added')</h6>
                                                 <h3 class="text-success">
                                                     +{{ $production->inventoryTransactions->where('quantity_change', '>', 0)->sum('quantity_change') }}
                                                 </h3>
                                             </div>
                                             <div class="col-md-3 text-center">
-                                                <h6>Total Transactions</h6>
+                                                <h6>@lang('production.inventory_history.summary.total_transactions')</h6>
                                                 <h3>{{ $production->inventoryTransactions->count() }}</h3>
                                             </div>
                                             <div class="col-md-3 text-center">
-                                                <h6>Unique Products</h6>
+                                                <h6>@lang('production.inventory_history.summary.unique_products')</h6>
                                                 <h3>{{ $production->inventoryTransactions->pluck('product_id')->unique()->count() }}</h3>
                                             </div>
                                             <div class="col-md-3 text-center">
-                                                <h6>Completed</h6>
+                                                <h6>@lang('production.inventory_history.summary.completed')</h6>
                                                 <h3 class="text-success">
                                                     {{ $production->inventoryTransactions->where('status', 'completed')->count() }}
                                                 </h3>

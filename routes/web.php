@@ -17,6 +17,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RoleController;
+
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
@@ -35,6 +37,9 @@ Route::middleware('auth')->group(function () {
 });
 // Protected pages
 Route::middleware('auth')->group(function () {
+Route::resource('roles', RoleController::class);
+Route::post('roles/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
+Route::delete('roles/{role}/revoke-permission/{permission}', [RoleController::class, 'revokePermission'])->name('roles.revoke-permission');
 
 Route::get('/production/{id}/inventory-history', [ProductionController::class, 'inventoryHistory'])->name('production.inventory-history');
 Route::get('/production/{productionId}/item/{itemId}/inventory-history', [ProductionController::class, 'itemInventoryHistory'])->name('production.item-inventory-history');

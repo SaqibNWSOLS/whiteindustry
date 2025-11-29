@@ -162,9 +162,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" class="text-center">No R&D quotes found</td>
-                            </tr>
+                            
                         @endforelse
                     </tbody>
                 </table>
@@ -193,10 +191,7 @@
         padding: 20px;
     }
     
-    .card {
-        border: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    
     
     .table th {
         border-top: none;
