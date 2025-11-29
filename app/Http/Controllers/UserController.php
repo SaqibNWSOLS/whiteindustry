@@ -10,21 +10,10 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    protected function authorizeAdminManager(Request $request)
-    {
-        $user = $request->user();
-        if (!$user) {
-            abort(401, 'Unauthenticated.');
-        }
-
-        if (!($user->hasRole('administrator') || $user->hasRole('manager'))) {
-            abort(403, 'Forbidden');
-        }
-    }
-
+    
     public function index(Request $request): View
     {
-        $this->authorizeAdminManager($request);
+        
 
         $query = User::with('roles')->whereDoesntHave('roles', function ($q) {
             $q->where('name', 'customer');
@@ -47,7 +36,7 @@ class UserController extends Controller
 
     public function create(Request $request): View
     {
-        $this->authorizeAdminManager($request);
+        
         
         $roles = Role::all();
         return view('users.create', compact('roles'));
@@ -55,7 +44,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorizeAdminManager($request);
+        
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
@@ -100,13 +89,13 @@ class UserController extends Controller
 
     public function show(Request $request, User $user): View
     {
-        $this->authorizeAdminManager($request);
+        
         return view('users.show', compact('user'));
     }
 
     public function edit(Request $request, User $user): View
     {
-        $this->authorizeAdminManager($request);
+        
         
         $roles = Role::all();
         return view('users.edit', compact('user', 'roles'));
@@ -114,7 +103,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $this->authorizeAdminManager($request);
+        
 
         $validated = $request->validate([
             'first_name' => 'sometimes|required|string|max:255',
@@ -159,7 +148,7 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user)
     {
-        $this->authorizeAdminManager($request);
+        
 
         if ($user->isAdmin()) {
             return redirect()->back()->with('error', 'Cannot delete administrator user');
