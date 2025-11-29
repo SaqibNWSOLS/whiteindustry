@@ -19,6 +19,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RoleController;
 
+
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
@@ -155,11 +156,8 @@ Route::get('api/qa/{id}/products', function($id) {
 
     Route::resource('/users', UserController::class);
     Route::get('/inventory', [InventoryController::class,'index']);
-    // Render reports view and inject initial sales stats so the page loads server-side data
-    Route::get('/reports', [ReportingController::class, 'index']);
-    // Export reports as PDF
-    Route::get('/reports/export', [ReportingController::class, 'exportPdf'])->name('reports.export');
-    Route::view('/workflow', 'modules.workflow_functional');
+   
+       Route::view('/workflow', 'modules.workflow_functional');
     // Task endpoints
     Route::post('/tasks', [\App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
     Route::get('/tasks/{task}', [\App\Http\Controllers\TaskController::class, 'show'])->name('tasks.show');

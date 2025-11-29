@@ -9,7 +9,7 @@
         body { font-family: 'Inter', sans-serif; background: #f3f4f6; color: #111827; }
         .center { min-height: 100vh; display:flex; align-items:center; justify-content:center; }
         .card { background:white; padding:24px; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.08); width:100%; max-width:420px; }
-        .form-input { width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:6px; }
+        .form-input { width:-webkit-fill-available; padding:10px 12px; border:1px solid #e5e7eb; border-radius:6px; }
         .btn { background:#163f2a; color:white; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
     </style>
 </head>

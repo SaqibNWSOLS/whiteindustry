@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\Lead;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -40,13 +39,13 @@ class ReportingController extends Controller
                 break;
         }
         $ordersQuery = Order::query()->whereBetween('created_at', [$start, $end]);
-        $totalSales = (float) $ordersQuery->sum('total_value');
+        $totalSales = (float) $ordersQuery->sum('subtotal');
         $totalOrders = (int) $ordersQuery->count();
         $averageOrderValue = $totalOrders > 0 ? round($totalSales / $totalOrders, 2) : 0;
 
         $conversionRate = null;
-        if (class_exists(Lead::class)) {
-            $leads = Lead::whereBetween('created_at', [$start, $end])->count();
+        if (class_exists(Customer::class)) {
+            $leads = Customer::whereBetween('created_at', [$start, $end])->count();
             if ($leads > 0) {
                 $conversionRate = round(($totalOrders / $leads) * 100, 2);
             }
@@ -58,7 +57,7 @@ class ReportingController extends Controller
         // previous period for change text
         $previousEnd = (clone $start)->subSecond();
         $previousStart = (clone $start)->subSeconds($end->diffInSeconds($start));
-        $previousTotal = Order::whereBetween('created_at', [$previousStart, $previousEnd])->sum('total_value');
+        $previousTotal = Order::whereBetween('created_at', [$previousStart, $previousEnd])->sum('subtotal');
         $changeText = '';
         if ($previousTotal > 0) {
             $pct = round((($totalSales - $previousTotal) / $previousTotal) * 100, 2);
@@ -119,15 +118,15 @@ class ReportingController extends Controller
         }
 
         $ordersQuery = Order::query()->whereBetween('created_at', [$start, $end]);
-        $totalSales = (float) $ordersQuery->sum('total_value');
+        $totalSales = (float) $ordersQuery->sum('subtotal');
         $totalOrders = (int) $ordersQuery->count();
         $averageOrderValue = $totalOrders > 0 ? round($totalSales / $totalOrders, 2) : 0;
 
         // Try to compute a conversion rate using leads if model exists
         $conversionRate = null;
         try {
-            if (class_exists(Lead::class)) {
-                $leads = Lead::whereBetween('created_at', [$start, $end])->count();
+            if (class_exists(Customer::class)) {
+                $leads = Customer::whereBetween('created_at', [$start, $end])->count();
                 if ($leads > 0) {
                     $conversionRate = round(($totalOrders / $leads) * 100, 2);
                 }
@@ -143,7 +142,7 @@ class ReportingController extends Controller
         // Compare to previous same-length period
         $previousEnd = (clone $start)->subSecond();
         $previousStart = (clone $start)->subSeconds($end->diffInSeconds($start));
-        $previousTotal = Order::whereBetween('created_at', [$previousStart, $previousEnd])->sum('total_value');
+        $previousTotal = Order::whereBetween('created_at', [$previousStart, $previousEnd])->sum('subtotal');
         $changeText = '';
         if ($previousTotal > 0) {
             $delta = $totalSales - $previousTotal;
@@ -197,7 +196,7 @@ class ReportingController extends Controller
         }
 
         // reuse existing helper formatting functions
-        $totalSales = (float) Order::whereBetween('created_at', [$start, $end])->sum('total_value');
+        $totalSales = (float) Order::whereBetween('created_at', [$start, $end])->sum('subtotal');
         $totalOrders = (int) Order::whereBetween('created_at', [$start, $end])->count();
         $averageOrderValue = $totalOrders > 0 ? round($totalSales / $totalOrders, 2) : 0;
 
@@ -230,7 +229,7 @@ class ReportingController extends Controller
         $top = Customer::withCount('orders')
             ->withSum(['orders as revenue' => function ($q) use ($start, $end) {
                 $q->whereBetween('created_at', [$start, $end]);
-            }], 'total_value')
+            }], 'subtotal')
             ->orderByDesc('revenue')
             ->take(5)
             ->get();
@@ -253,10 +252,10 @@ class ReportingController extends Controller
         $top = Product::withCount('orders')
             ->withSum(['orders as revenue' => function ($q) use ($start, $end) {
                 $q->whereBetween('created_at', [$start, $end]);
-            }], 'total_value')
+            }], 'subtotal')
             ->withSum(['orders as units' => function ($q) use ($start, $end) {
                 $q->whereBetween('created_at', [$start, $end]);
-            }], 'quantity')
+            }], 'subtotal')
             ->orderByDesc('revenue')
             ->take(5)
             ->get();
@@ -282,10 +281,10 @@ class ReportingController extends Controller
     protected function formatCategoryBreakdown($start, $end, $totalSales = 0)
     {
         // current period aggregations grouped by product category
-        $rows = DB::table('orders')
-            ->join('products', 'orders.product_id', '=', 'products.id')
-            ->selectRaw('products.category as category, SUM(orders.quantity) as units_sold, SUM(orders.total_value) as revenue')
-            ->whereBetween('orders.created_at', [$start, $end])
+        $rows = DB::table('order_products')
+            ->join('products', 'order_products.products_id', '=', 'products.id')
+            ->selectRaw('products.category as category, SUM(order_products.price_unit) as units_sold, SUM(order_products.price_unit) as revenue')
+            ->whereBetween('order_products.created_at', [$start, $end])
             ->groupBy('products.category')
             ->orderByDesc('revenue')
             ->get();
@@ -294,10 +293,10 @@ class ReportingController extends Controller
         $previousEnd = (clone $start)->subSecond();
         $previousStart = (clone $start)->subSeconds($end->diffInSeconds($start));
 
-        $prevRows = DB::table('orders')
-            ->join('products', 'orders.product_id', '=', 'products.id')
-            ->selectRaw('products.category as category, SUM(orders.total_value) as revenue')
-            ->whereBetween('orders.created_at', [$previousStart, $previousEnd])
+        $prevRows = DB::table('order_products')
+            ->join('products', 'orders.products_id', '=', 'products.id')
+            ->selectRaw('products.category as category, SUM(order_products.price_unit) as revenue')
+            ->whereBetween('order_products.created_at', [$previousStart, $previousEnd])
             ->groupBy('products.category')
             ->get()
             ->keyBy('category');

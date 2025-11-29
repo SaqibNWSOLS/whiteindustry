@@ -26,21 +26,21 @@ class ReportController extends Controller
         }
 
         return response()->json([
-            'total_sales' => $query->sum('total_value'),
+            'total_sales' => $query->sum('subtotal'),
             'total_orders' => $query->count(),
-            'average_order_value' => $query->avg('total_value'),
+            'average_order_value' => $query->avg('subtotal'),
             'conversion_rate' => 68, // Calculate from quotes to orders
             'top_customers' => Customer::withCount('orders')
-                ->withSum('orders', 'total_value')
-                ->orderBy('orders_sum_orders_total_value', 'desc')
+                ->withSum('orders', 'subtotal')
+                ->orderBy('orders_sum_orders_subtotal', 'desc')
                 ->take(5)
                 ->get(),
             'top_products' => Product::withCount('orders')
-                ->withSum('orders', 'total_value')
-                ->orderBy('orders_sum_orders_total_value', 'desc')
+                ->withSum('orders', 'subtotal')
+                ->orderBy('orders_sum_orders_subtotal', 'desc')
                 ->take(5)
                 ->get(),
-            'monthly_trend' => Order::selectRaw('MONTH(created_at) as month, SUM(total_value) as revenue')
+            'monthly_trend' => Order::selectRaw('MONTH(created_at) as month, SUM(subtotal) as revenue')
                 ->whereYear('created_at', date('Y'))
                 ->groupBy('month')
                 ->orderBy('month')
@@ -51,7 +51,7 @@ class ReportController extends Controller
     public function inventory(Request $request)
     {
         return response()->json([
-            'total_value' => Inventory::sum(DB::raw('current_stock * unit_cost')),
+            'subtotal' => Inventory::sum(DB::raw('current_stock * unit_cost')),
             'low_stock_items' => Inventory::where('status', 'low_stock')->get(),
             'out_of_stock_items' => Inventory::where('status', 'out_of_stock')->get(),
             'inventory_by_category' => Inventory::select('type', DB::raw('SUM(current_stock * unit_cost) as value'))
@@ -65,7 +65,7 @@ class ReportController extends Controller
                     ELSE "181+ days"
                 END as age_range,
                 COUNT(*) as items_count,
-                SUM(current_stock * unit_cost) as total_value
+                SUM(current_stock * unit_cost) as subtotal
             ')
                 ->groupBy('age_range')
                 ->get(),
@@ -77,7 +77,7 @@ class ReportController extends Controller
         $year = $request->get('year', date('Y'));
 
         return response()->json([
-            'total_revenue' => Order::whereYear('created_at', $year)->sum('total_value'),
+            'total_revenue' => Order::whereYear('created_at', $year)->sum('subtotal'),
             'accounts_receivable' => Invoice::whereIn('status', ['unpaid', 'partial'])->sum('balance'),
             'overdue_invoices' => Invoice::where('status', 'overdue')->sum('balance'),
             'gross_profit_margin' => 38, // Calculate from costs
@@ -121,21 +121,21 @@ class ReportController extends Controller
             'total_customers' => Customer::count(),
             'active_customers' => Customer::where('status', 'active')->count(),
             'retention_rate' => 89,
-            'average_customer_value' => Customer::withSum('orders', 'total_value')
+            'average_customer_value' => Customer::withSum('orders', 'subtotal')
                 ->get()
-                ->avg('orders_sum_orders_total_value'),
+                ->avg('orders_sum_orders_subtotal'),
             'customer_segmentation' => [
-                'platinum' => Customer::withSum('orders', 'total_value')
-                    ->having('orders_sum_orders_total_value', '>=', 100000)
+                'platinum' => Customer::withSum('orders', 'subtotal')
+                    ->having('orders_sum_orders_subtotal', '>=', 100000)
                     ->count(),
-                'gold' => Customer::withSum('orders', 'total_value')
-                    ->havingBetween('orders_sum_orders_total_value', [50000, 99999])
+                'gold' => Customer::withSum('orders', 'subtotal')
+                    ->havingBetween('orders_sum_orders_subtotal', [50000, 99999])
                     ->count(),
-                'silver' => Customer::withSum('orders', 'total_value')
-                    ->havingBetween('orders_sum_orders_total_value', [20000, 49999])
+                'silver' => Customer::withSum('orders', 'subtotal')
+                    ->havingBetween('orders_sum_orders_subtotal', [20000, 49999])
                     ->count(),
-                'bronze' => Customer::withSum('orders', 'total_value')
-                    ->having('orders_sum_orders_total_value', '<', 20000)
+                'bronze' => Customer::withSum('orders', 'subtotal')
+                    ->having('orders_sum_orders_subtotal', '<', 20000)
                     ->count(),
             ],
         ]);
