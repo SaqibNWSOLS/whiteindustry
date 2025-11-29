@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Setting;
 
 if (! function_exists('priceFormat')) {
    function priceFormat($price)
@@ -68,5 +69,29 @@ if (!function_exists('route_if_exists')) {
         }
 
         return '#';
+    }
+}
+
+if (!function_exists('setting')) {
+    /**
+     * Get / set the specified setting value.
+     *
+     * If an array is passed as the key, we will assume you want to set an array of values.
+     *
+     * @param string|array $key
+     * @param mixed $default
+     * @return mixed|Setting
+     */
+    function setting($key = null, $default = null)
+    {
+        if (is_null($key)) {
+            return app('settings');
+        }
+
+        if (is_array($key)) {
+            return Setting::setValue($key[0], $key[1]);
+        }
+
+        return Setting::getValue($key, $default);
     }
 }

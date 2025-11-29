@@ -166,8 +166,9 @@ Route::get('api/qa/{id}/products', function($id) {
     Route::delete('/tasks/{task}', [\App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::view('/documents', 'modules.documents');
     Route::view('/notifications', 'modules.notifications');
-    Route::view('/admin', 'modules.admin');
+    Route::get('/admin', [AdminController::class,'index']);
     // Admin update endpoints (AJAX-friendly) - accept POST and PUT so forms with _method work and AJAX can POST
-    Route::match(['post', 'put'], '/admin/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
-    Route::match(['post', 'put'], '/admin/settings', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
+     Route::put('/profile', [App\Http\Controllers\AdminController::class, 'updateProfile'])->name('admin.profile.update');
+    Route::put('/password', [App\Http\Controllers\AdminController::class, 'updatePassword'])->name('admin.password.update');
+    Route::put('/settings', [App\Http\Controllers\AdminController::class, 'updateSettings'])->name('admin.settings.update');
 });

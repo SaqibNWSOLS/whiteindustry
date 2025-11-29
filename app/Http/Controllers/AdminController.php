@@ -2,82 +2,90 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Controller;
-use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Setting;
 
 class AdminController extends Controller
 {
-    /**
-     * Update the authenticated user's profile.
-     */
+
+    public function index()
+{
+    $settings = Setting::getCompanySettings();
+    return view('settings.index', compact('settings'));
+}
+
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-            'first_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:50',
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $validated = $validator->validated();
+        $user = Auth::user();
+        $user->update($validator->validated());
 
-        $user->first_name = $validated['first_name'] ?? $user->first_name;
-        $user->last_name = $validated['last_name'] ?? $user->last_name;
-        $user->email = $validated['email'];
-        $user->phone = $validated['phone'] ?? $user->phone;
-        $user->save();
-
-        return back()->with('success','Profile Updated successfully!');
+        return redirect()->back()->with('profile_success', 'Profile updated successfully!');
     }
 
-    /**
-     * Save system settings.
-     * We'll persist to storage/app/settings.json for simplicity.
-     */
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
+        ]);
+
+        $validator->after(function ($validator) use ($request) {
+            if (!Hash::check($request->current_password, Auth::user()->password)) {
+                $validator->errors()->add('current_password', 'The current password is incorrect.');
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return redirect()->back()->with('password_success', 'Password updated successfully!');
+    }
+
     public function updateSettings(Request $request)
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-            'company_name' => 'nullable|string|max:255',
-            'tax_id' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:50',
-            'default_currency' => 'nullable|string|max:10',
+        $validator = Validator::make($request->all(), [
+            'company_name' => 'required|string|max:255',
+            'tax_id' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:20',
+            'default_currency' => 'required|string|in:DZD,EUR,USD',
+            'timezone' => 'required|string',
+            'company_address' => 'nullable|string|max:500',
+            'email_signature' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $validated = $validator->validated();
-
-        // Keep minimal persistent storage in storage/app/settings.json
-        $existing = [];
-        if (Storage::exists('settings.json')) {
-            try {
-                $existing = json_decode(Storage::get('settings.json'), true) ?: [];
-            } catch (\Exception $e) {
-                $existing = [];
-            }
+        foreach ($validator->validated() as $key => $value) {
+            Setting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value]
+            );
         }
 
-        $settings = array_merge($existing, $validated);
-        Storage::put('settings.json', json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
-        return back()->with('success','Settings Updated successfully!');
+        return redirect()->back()->with('settings_success', 'Settings updated successfully!');
     }
 }
