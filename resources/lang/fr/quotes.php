@@ -1,0 +1,142 @@
+<?php
+
+return [
+    'title' => 'Devis',
+    'page_title' => 'Devis',
+    'new_quote' => 'Nouveau Devis',
+    'quotes_list' => 'Liste des Devis',
+    
+    'stats' => [
+        'total_quotes' => 'Total Devis',
+        'draft' => 'Brouillon',
+        'sent' => 'Envoyé',
+        'accepted' => 'Accepté',
+        'rejected' => 'Rejeté',
+        'completed' => 'Terminé',
+        'all_quotes' => 'Tous les devis',
+        'in_draft_status' => 'En statut brouillon',
+        'sent_to_customers' => 'Envoyé aux clients',
+        'accepted_by_customers' => 'Accepté par les clients',
+        'rejected_by_customers' => 'Rejeté par les clients',
+        'completed_quotes' => 'Devis terminés',
+    ],
+    
+    'table' => [
+        'quotation_number' => 'N° Devis',
+        'customer' => 'Client',
+        'total_amount' => 'Montant Total',
+        'status' => 'Statut',
+        'actions' => 'Actions',
+        'search_quotes' => 'Rechercher des devis :',
+        'show_entries' => 'Afficher _MENU_ entrées',
+    ],
+    
+    'status' => [
+        'draft' => 'Brouillon',
+        'sent' => 'Envoyé',
+        'accepted' => 'Accepté',
+        'rejected' => 'Rejeté',
+        'completed' => 'Terminé',
+        'expired' => 'Expiré',
+    ],
+    
+    'actions' => [
+        'view' => 'Voir',
+        'edit' => 'Modifier',
+        'delete' => 'Supprimer',
+        'send_to_rnd' => 'Envoyer à R&D',
+        'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer ce devis ?',
+    ],
+    
+    'messages' => [
+        'success' => 'Succès',
+        'no_quotes' => 'Aucun devis trouvé',
+        'customer_not_found' => 'N/A',
+    ],
+    
+    'buttons' => [
+        'create' => 'Créer un Devis',
+        'edit' => 'Modifier le Devis',
+        'update' => 'Mettre à jour le Devis',
+        'cancel' => 'Annuler',
+        'save' => 'Enregistrer le Devis',
+        'send' => 'Envoyer le Devis',
+    ],
+
+    // ADD THESE NEW SECTIONS FOR THE FORM
+    'form' => [
+        'create_title' => 'Créer un Devis',
+        'edit_title' => 'Modifier le Devis',
+        'steps' => [
+            'basic' => 'Informations de Base',
+            'products' => 'Ajouter des Produits',
+            'raw_materials' => 'Sélection des Matières Premières',
+            'blend' => 'Sélection du Mélange',
+            'packaging' => 'Sélection de l\'Emballage',
+            'calculation' => 'Calcul du Devis',
+        ],
+        'step_labels' => [
+            'basic' => 'Infos de Base',
+            'products' => 'Produits',
+            'raw_materials' => 'Matières Premières & Mélange',
+            'packaging' => 'Emballage',
+            'calculation' => 'Calcul',
+        ],
+        'customer' => 'Client',
+        'select_customer' => 'Sélectionner un Client',
+        'notes' => 'Notes',
+        'add_notes' => 'Ajouter des notes supplémentaires...',
+        'product_name' => 'Nom du Produit',
+        'product_type' => 'Type de Produit',
+        'quantity' => 'Quantité',
+        'enter_product_name' => 'Entrer le nom du produit',
+        'enter_quantity' => 'Entrer la quantité du produit',
+        'add_another_product' => 'Ajouter un Autre Produit',
+        'remove' => 'Supprimer',
+        'raw_material' => 'Matière Première',
+        'percentage' => 'Pourcentage (%)',
+        'select_material' => 'Sélectionner une Matière',
+        'blend' => 'Mélange',
+        'select_blend' => 'Sélectionner un Mélange',
+        'packaging' => 'Emballage',
+        'select_packaging' => 'Sélectionner un Emballage',
+        'total_percentage' => 'Pourcentage Total',
+        'remaining' => 'Restant',
+        'cost_parameters' => 'Paramètres de Coût',
+        'manufacturing_cost' => 'Coût de Fabrication %',
+        'risk_cost' => 'Coût de Risque %',
+        'profit_margin' => 'Marge Bénéficiaire %',
+        'tax_rate' => 'Taux de Taxe %',
+        'summary' => 'Résumé',
+        'number_of_products' => 'Nombre de Produits',
+        'total_raw_materials' => 'Total Matières Premières',
+        'total_packaging_items' => 'Total Articles d\'Emballage',
+        'current_calculation' => 'Calcul Actuel',
+        'total_price' => 'Prix Total',
+        'last_updated' => 'Dernière Mise à Jour',
+    ],
+    
+    'product_types' => [
+        'cosmetic' => 'Cosmétique',
+        'food_supplement' => 'Complément Alimentaire',
+    ],
+    
+    'navigation' => [
+        'next' => 'Suivant',
+        'back' => 'Retour',
+        'update_continue' => 'Mettre à jour & Continuer',
+        'next_add_products' => 'Suivant : Ajouter des Produits',
+        'next_raw_materials' => 'Suivant : Ajouter des Matières Premières',
+        'next_packaging' => 'Suivant : Ajouter l\'Emballage',
+        'next_calculation' => 'Suivant : Calculer le Devis',
+        'recalculate_update' => 'Recalculer & Mettre à Jour le Devis',
+        'calculate_save' => 'Calculer & Enregistrer le Devis',
+        'view_final_quotation' => 'Voir le Devis Final',
+    ],
+    
+    'alerts' => [
+        'success' => 'Succès',
+        'error' => 'Erreur',
+        'warning' => 'Avertissement',
+    ],
+];

@@ -36,7 +36,8 @@ Route::middleware('auth')->group(function () {
 // Protected pages
 Route::middleware('auth')->group(function () {
 
-
+Route::get('/production/{id}/inventory-history', [ProductionController::class, 'inventoryHistory'])->name('production.inventory-history');
+Route::get('/production/{productionId}/item/{itemId}/inventory-history', [ProductionController::class, 'itemInventoryHistory'])->name('production.item-inventory-history');
 
 
 // Quotation Routes

@@ -1,5 +1,6 @@
+
 @extends('layouts.app')
-@section('title', 'R&D Review')
+@section('title', __('r_d.title'))
 
 @section('content')
 
@@ -121,15 +122,14 @@
     }
 </style>
 
-
 <div class="rnd-wrapper">
     <div class="rnd-card">
 
         <!-- Header -->
         <div class="rnd-header">
-            <h2>R&D Review — {{ $rnd->quote->quotation_number }}</h2>
+            <h2>@lang('r_d.review_page.title', ['quotation_number' => $rnd->quote->quotation_number])</h2>
             <span class="badge {{ $rnd->status === 'approved' ? 'badge-success' : 'badge-warning' }}">
-                {{ ucfirst($rnd->status) }}
+                @lang('r_d.status.' . $rnd->status)
             </span>
         </div>
 
@@ -138,51 +138,51 @@
 
             <!-- Quotation Info Section -->
             <div class="section">
-                <h4>Quotation Details</h4>
+                <h4>@lang('r_d.review_page.quotation_details')</h4>
 
-                <p><strong>Customer:</strong> {{ $rnd->quote->customer->company_name }}</p>
-                <p><strong>Total Amount:</strong> ${{ number_format($rnd->quote->total_amount, 2) }}</p>
-                <p><strong>Products:</strong> {{ $rnd->quote->products->count() }}</p>
+                <p><strong>@lang('r_d.review_page.customer'):</strong> {{ $rnd->quote->customer->company_name }}</p>
+                <p><strong>@lang('r_d.review_page.total_amount'):</strong> ${{ number_format($rnd->quote->total_amount, 2) }}</p>
+                <p><strong>@lang('r_d.review_page.products_count'):</strong> {{ $rnd->quote->products->count() }}</p>
             </div>
 
             <!-- Upload Documents -->
             <div class="section">
-                <h4>Upload R&D Documents</h4>
+                <h4>@lang('r_d.review_page.upload_documents')</h4>
 
                 @if($rnd->status !== 'approved')
                 <form action="{{ route('rnd.upload', $rnd->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <label><strong>Select Files (PDF, DOC, Excel)</strong></label>
+                    <label><strong>@lang('r_d.review_page.select_files')</strong></label>
                     <input type="file" name="documents[]" multiple class="form-control" required>
-                    <small class="text-muted">Max 5MB per file</small>
+                    <small class="text-muted">@lang('r_d.review_page.max_size')</small>
                     <br><br>
-                    <button class="btn btn-primary">Upload Documents</button>
+                    <button class="btn btn-primary">@lang('r_d.review_page.upload_button')</button>
                 </form>
                 @endif
             </div>
 
             <!-- Documents List -->
             <div class="section">
-                <h4>Documents Uploaded ({{ $rnd->documents->count() }})</h4>
+                <h4>@lang('r_d.review_page.documents_uploaded', ['count' => $rnd->documents->count()])</h4>
 
                 @forelse($rnd->documents as $doc)
                     <div class="document-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <strong>{{ $doc->document_name }}</strong><br>
-                                <small>{{ $doc->file_type }} • {{ number_format($doc->file_size / 1024, 2) }} KB • Uploaded by {{ $doc->uploadedBy->name }}</small>
+                                <small>{{ $doc->file_type }} • @lang('r_d.document_info.file_size', ['size' => number_format($doc->file_size / 1024, 2)]) • @lang('r_d.document_info.uploaded_by', ['name' => $doc->uploadedBy->name])</small>
                             </div>
                             <div class="document-actions">
                                 <a href="{{ Storage::url($doc->file_path) }}" download class="btn btn-sm btn-secondary">
-                                    Download
+                                    @lang('r_d.review_page.download')
                                 </a>
                                 @if($rnd->status !== 'approved')
                                 <form action="{{ route('rnd.document.delete', $doc->id) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" 
-                                            onclick="return confirm('Are you sure you want to delete this document?')">
-                                        Delete
+                                            onclick="return confirm('@lang('r_d.confirmations.delete_document')')">
+                                        @lang('r_d.review_page.delete')
                                     </button>
                                 </form>
                                 @endif
@@ -190,35 +190,35 @@
                         </div>
                     </div>
                 @empty
-                    <p>No documents uploaded yet.</p>
+                    <p>@lang('r_d.review_page.no_documents')</p>
                 @endforelse
             </div>
 
             <!-- Approve / Reject -->
             @if($rnd->status !== 'approved' && $rnd->documents->count() > 0)
             <div class="section">
-                <h4>Approve or Reject</h4>
+                <h4>@lang('r_d.review_page.approve_reject')</h4>
 
                 <div class="action-row">
                     <!-- Approve -->
                     <form action="{{ route('rnd.approve', $rnd->id) }}" method="POST" style="flex: 1;">
                         @csrf
-                        <label><strong>R&D Notes (Optional)</strong></label>
-                        <textarea name="rnd_notes" class="form-control" rows="3" placeholder="Add notes..."></textarea>
+                        <label><strong>@lang('r_d.review_page.rnd_notes_optional')</strong></label>
+                        <textarea name="rnd_notes" class="form-control" rows="3" placeholder="@lang('r_d.review_page.add_notes_placeholder')"></textarea>
                         <br>
-                        <button class="btn btn-success" onclick="return confirm('Approve this R&D review?')">
-                            Approve
+                        <button class="btn btn-success" onclick="return confirm('@lang('r_d.confirmations.approve_review')')">
+                            @lang('r_d.review_page.approve_button')
                         </button>
                     </form>
 
                     <!-- Reject -->
                     <form action="{{ route('rnd.reject', $rnd->id) }}" method="POST" style="flex: 1;">
                         @csrf
-                        <label><strong>Rejection Reason</strong></label>
-                        <textarea name="rnd_notes" class="form-control" rows="3" required placeholder="Reason..."></textarea>
+                        <label><strong>@lang('r_d.review_page.rejection_reason')</strong></label>
+                        <textarea name="rnd_notes" class="form-control" rows="3" required placeholder="@lang('r_d.review_page.reason_placeholder')"></textarea>
                         <br>
-                        <button class="btn btn-danger" onclick="return confirm('Reject this R&D review?')">
-                            Reject
+                        <button class="btn btn-danger" onclick="return confirm('@lang('r_d.confirmations.reject_review')')">
+                            @lang('r_d.review_page.reject_button')
                         </button>
                     </form>
                 </div>
@@ -228,7 +228,7 @@
             <!-- Notes -->
             @if($rnd->rnd_notes)
             <div class="section">
-                <h4>R&D Notes</h4>
+                <h4>@lang('r_d.review_page.rnd_notes')</h4>
                 <p>{{ $rnd->rnd_notes }}</p>
             </div>
             @endif

@@ -118,10 +118,17 @@ class ProductionController extends Controller
             'status' => 'completed',
             'notes' => $request->notes
         ]);
+         $product = Product::firstOrCreate(
+            ['name' => $productionItem->orderProduct->product_name],
+            ['minimum_stock' => 0, 'current_stock' => 0,'category'=>'final_product','product_code'=>Str::random(5),'unit_price'=>$productionItem->orderProduct->price_unit,'unit_of_measure'=>$productionItem->orderProduct->volume_unit]
+        );
+
+        $product->increment('current_stock', $request->quantity_to_add);
+
 
         // Create inventory transaction record for the added quantity
         InventoryTransaction::create([
-            'product_id' => $productionItem->orderProduct->id,
+            'product_id' => $product->id,
             'production_item_id' => $productionItem->id,
             'transaction_type' => 'production',
             'quantity_change' => $request->quantity_to_add,
@@ -134,13 +141,7 @@ class ProductionController extends Controller
         ]);
 
         // Update or create inventory balance
-        $product = Product::firstOrCreate(
-            ['name' => $productionItem->orderProduct->product_name],
-            ['minimum_stock' => 0, 'current_stock' => 0,'category'=>'final_product','product_code'=>Str::random(5),'unit_price'=>$productionItem->orderProduct->price_unit,'unit_of_measure'=>$productionItem->orderProduct->volume_unit]
-        );
-
-        $product->increment('current_stock', $request->quantity_to_add);
-
+       
         DB::commit();
 
         return redirect()->back()->with('success', 'Added ' . $request->quantity_to_add . ' units to production. Total produced: ' . $productionItem->quantity_produced);
@@ -157,11 +158,69 @@ class ProductionController extends Controller
         return redirect()->back()->with('success', 'Production started');
     }
 
-    public function completeProduction($id)
-    {
-        $production = Production::findOrFail($id);
-        $production->update(['status' => 'completed']);
-        $production->order->update(['status' => 'completed']);
-        return redirect()->back()->with('success', 'Production completed');
+   public function completeProduction($id)
+{
+    $production = Production::findOrFail($id);
+    
+    // Check if production is already completed
+    if ($production->status === 'completed') {
+        return redirect()->back()->with('error', 'Production is already completed.');
     }
+    
+    // Check if production is fully fulfilled
+    if (!$this->isProductionFulfilled($production)) {
+        return redirect()->back()->with('error', 'Cannot complete production. Not all items are fully produced.');
+    }
+    
+    // Update production and order status
+    $production->update(['status' => 'completed']);
+    $production->order->update(['status' => 'completed']);
+    
+    return redirect()->back()->with('success', 'Production completed successfully.');
+}
+
+/**
+ * Check if production is fully fulfilled
+ */
+private function isProductionFulfilled(Production $production): bool
+{
+    // Check if all production items are fulfilled
+    foreach ($production->items as $item) {
+        if ($item->quantity_produced < $item->quantity_planned) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+public function inventoryHistory($id)
+    {
+        $production = Production::with([
+            'inventoryTransactions.product',
+            'inventoryTransactions.productionItem.orderProduct',
+            'inventoryTransactions.createdBy'
+        ])->findOrFail($id);
+
+        return view('production.inventory-history', compact('production'));
+    }
+
+    /**
+     * Show inventory transaction history for a specific production item
+     */
+    public function itemInventoryHistory($productionId, $itemId)
+    {
+        $productionItem = ProductionItem::with([
+            'inventoryTransactions.product',
+            'inventoryTransactions.createdBy',
+            'orderProduct'
+        ])->where('production_id', $productionId)
+          ->where('id', $itemId)
+          ->firstOrFail();
+
+        $production = Production::findOrFail($productionId);
+
+        return view('production.item-inventory-history', compact('productionItem', 'production'));
+    }
+    
 }

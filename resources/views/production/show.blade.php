@@ -7,15 +7,20 @@
         <div class="col-md-9">
             <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h2>Production {{ $production->production_number }}</h2>
-            <div>
-                @if($production->status === 'pending')
-                    <a href="{{ route('production.start', $production->id) }}" class="btn btn-primary" onclick="return confirm('Start production?')">Start Production</a>
-                @elseif($production->status === 'in_progress')
-                    <a href="{{ route('production.complete', $production->id) }}" class="btn btn-success" onclick="return confirm('Complete production?')">Complete Production</a>
-                @endif
-            </div>
-        </div>
+    <h2>Production {{ $production->production_number }}</h2>
+    <div>
+        <!-- Add this button -->
+        <a href="{{ route('production.inventory-history', $production->id) }}" class="btn btn-info mr-2">
+            <i class="fas fa-history"></i> Inventory History
+        </a>
+        
+        @if($production->status === 'pending')
+            <a href="{{ route('production.start', $production->id) }}" class="btn btn-primary" onclick="return confirm('Start production?')">Start Production</a>
+        @elseif($production->status === 'in_progress')
+            <a href="{{ route('production.complete', $production->id) }}" class="btn btn-success" onclick="return confirm('Complete production?')">Complete Production</a>
+        @endif
+    </div>
+</div>
 
         <div class="card-body">
             @if(session('success'))

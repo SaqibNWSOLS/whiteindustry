@@ -54,4 +54,16 @@ class Production extends Model
         }
         return round(($this->getTotalQuantityProduced() / $planned) * 100, 2);
     }
+
+    public function inventoryTransactions()
+{
+    return $this->hasManyThrough(
+        InventoryTransaction::class,
+        ProductionItem::class,
+        'production_id', // Foreign key on production_items table
+        'production_item_id', // Foreign key on inventory_transactions table
+        'id', // Local key on productions table
+        'id' // Local key on production_items table
+    );
+}
 }

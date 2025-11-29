@@ -1,0 +1,142 @@
+<?php
+
+return [
+    'title' => 'Quotes',
+    'page_title' => 'Quotes',
+    'new_quote' => 'New Quote',
+    'quotes_list' => 'Quotes List',
+    
+    'stats' => [
+        'total_quotes' => 'Total Quotes',
+        'draft' => 'Draft',
+        'sent' => 'Sent',
+        'accepted' => 'Accepted',
+        'rejected' => 'Rejected',
+        'completed' => 'Completed',
+        'all_quotes' => 'All quotes',
+        'in_draft_status' => 'In draft status',
+        'sent_to_customers' => 'Sent to customers',
+        'accepted_by_customers' => 'Accepted by customers',
+        'rejected_by_customers' => 'Rejected by customers',
+        'completed_quotes' => 'Completed quotes',
+    ],
+    
+    'table' => [
+        'quotation_number' => 'Quotation #',
+        'customer' => 'Customer',
+        'total_amount' => 'Total Amount',
+        'status' => 'Status',
+        'actions' => 'Actions',
+        'search_quotes' => 'Search quotes:',
+        'show_entries' => 'Show _MENU_ entries',
+    ],
+    
+    'status' => [
+        'draft' => 'Draft',
+        'sent' => 'Sent',
+        'accepted' => 'Accepted',
+        'rejected' => 'Rejected',
+        'completed' => 'Completed',
+        'expired' => 'Expired',
+    ],
+    
+    'actions' => [
+        'view' => 'View',
+        'edit' => 'Edit',
+        'delete' => 'Delete',
+        'send_to_rnd' => 'Send to R&D',
+        'confirm_delete' => 'Are you sure you want to delete this quote?',
+    ],
+    
+    'messages' => [
+        'success' => 'Success',
+        'no_quotes' => 'No quotes found',
+        'customer_not_found' => 'N/A',
+    ],
+    
+    'buttons' => [
+        'create' => 'Create Quote',
+        'edit' => 'Edit Quote',
+        'update' => 'Update Quote',
+        'cancel' => 'Cancel',
+        'save' => 'Save Quote',
+        'send' => 'Send Quote',
+    ],
+
+    // ADD THESE NEW SECTIONS FOR THE FORM
+    'form' => [
+        'create_title' => 'Create Quotation',
+        'edit_title' => 'Edit Quotation',
+        'steps' => [
+            'basic' => 'Basic Information',
+            'products' => 'Add Products',
+            'raw_materials' => 'Raw Materials Selection',
+            'blend' => 'Blend Selection',
+            'packaging' => 'Packaging Selection',
+            'calculation' => 'Quotation Calculation',
+        ],
+        'step_labels' => [
+            'basic' => 'Basic Info',
+            'products' => 'Products',
+            'raw_materials' => 'Raw Materials & Blend',
+            'packaging' => 'Packaging',
+            'calculation' => 'Calculation',
+        ],
+        'customer' => 'Customer',
+        'select_customer' => 'Select Customer',
+        'notes' => 'Notes',
+        'add_notes' => 'Add any additional notes...',
+        'product_name' => 'Product Name',
+        'product_type' => 'Product Type',
+        'quantity' => 'Quantity',
+        'enter_product_name' => 'Enter product name',
+        'enter_quantity' => 'Enter product quantity',
+        'add_another_product' => 'Add Another Product',
+        'remove' => 'Remove',
+        'raw_material' => 'Raw Material',
+        'percentage' => 'Percentage (%)',
+        'select_material' => 'Select Material',
+        'blend' => 'Blend',
+        'select_blend' => 'Select Blend',
+        'packaging' => 'Packaging',
+        'select_packaging' => 'Select Packaging',
+        'total_percentage' => 'Total Percentage',
+        'remaining' => 'Remaining',
+        'cost_parameters' => 'Cost Parameters',
+        'manufacturing_cost' => 'Manufacturing Cost %',
+        'risk_cost' => 'Risk Cost %',
+        'profit_margin' => 'Profit Margin %',
+        'tax_rate' => 'Tax Rate %',
+        'summary' => 'Summary',
+        'number_of_products' => 'Number of Products',
+        'total_raw_materials' => 'Total Raw Materials',
+        'total_packaging_items' => 'Total Packaging Items',
+        'current_calculation' => 'Current Calculation',
+        'total_price' => 'Total Price',
+        'last_updated' => 'Last Updated',
+    ],
+    
+    'product_types' => [
+        'cosmetic' => 'Cosmetic',
+        'food_supplement' => 'Food Supplement',
+    ],
+    
+    'navigation' => [
+        'next' => 'Next',
+        'back' => 'Back',
+        'update_continue' => 'Update & Continue',
+        'next_add_products' => 'Next: Add Products',
+        'next_raw_materials' => 'Next: Add Raw Materials',
+        'next_packaging' => 'Next: Add Packaging',
+        'next_calculation' => 'Next: Calculate Quotation',
+        'recalculate_update' => 'Recalculate & Update Quotation',
+        'calculate_save' => 'Calculate & Save Quotation',
+        'view_final_quotation' => 'View Final Quotation',
+    ],
+    
+    'alerts' => [
+        'success' => 'Success',
+        'error' => 'Error',
+        'warning' => 'Warning',
+    ],
+];

@@ -42,7 +42,9 @@ class OrderController extends Controller
             'order_number' => 'ORD-' . Str::random(8),
             'customer_id' => $request->customer_id,
             'order_notes' => $request->notes,
-            'status' => 'confirmed'
+            'order_date'=> date('Y-m-d'),
+            'delivery_date'=> $request->delivery_date,
+            'status' => 'draft'
         ]);
 
         // Store quote ID in session for next steps
@@ -66,7 +68,8 @@ class OrderController extends Controller
         // Create the main quote
         $order = $order->update([
             'customer_id' => $request->customer_id,
-            'notes' => $request->notes,
+            'order_notes' => $request->notes,
+            'delivery_date'=> $request->delivery_date,
             'status' => 'confirmed'
         ]);
 
@@ -128,58 +131,12 @@ class OrderController extends Controller
  public function addRawMaterialsAndBlends(Request $request, $id)
 {
 
-
-// First, check what data we actually have
-$hasItemId = false;
-$hasBlendId = false;
-
-// Check for valid item_id in raw_materials
-if (!empty($request->raw_materials)) {
-    foreach ($request->raw_materials as $rawMaterial) {
-        if (!empty($rawMaterial['materials']) && is_array($rawMaterial['materials'])) {
-            foreach ($rawMaterial['materials'] as $material) {
-                if (!empty($material['item_id'])) {
-                    $hasItemId = true;
-                    break 2;
-                }
-            }
-        }
-    }
-}
-
-// Check for valid blend_id in blends
-if (!empty($request->blends)) {
-    foreach ($request->blends as $blend) {
-        if (!empty($blend['blend_id'])) {
-            $hasBlendId = true;
-            break;
-        }
-    }
-}
-
-// Validate mutual exclusion
-if ($hasItemId && $hasBlendId) {
-    return redirect()->back()->withErrors(['base' => 'Cannot provide both raw materials and blends.'])->withInput();
-}
-
-if (!$hasItemId && !$hasBlendId) {
-    return redirect()->back()->withErrors(['base' => 'Either raw materials (with item_id) or blends (with blend_id) must be provided.'])->withInput();
-}
-
-// Now do the actual validation based on what we have
-if ($hasItemId) {
     $request->validate([
         'raw_materials' => 'required|array',
         'raw_materials.*.materials' => 'required|array|min:1',
         'raw_materials.*.materials.*.item_id' => 'required|exists:products,id',
         'raw_materials.*.materials.*.percentage' => 'required|numeric|min:0.01|max:100',
     ]);
-} elseif ($hasBlendId) {
-    $request->validate([
-        'blends' => 'required|array|min:1',
-        'blends.*.blend_id' => 'required|exists:products,id',
-    ]);
-}
 
 
     $quote = Order::findOrFail($id);
@@ -246,64 +203,7 @@ if ($hasItemId) {
         }
     }
 
-    // Process Blends (if provided)
-    if (!empty($request->blends)) {
-        foreach ($request->blends as $quoteProductId => $blendData) {
-            $orderProduct = OrderProduct::find($quoteProductId);
-            if (!$orderProduct) {
-                continue;
-            }
-
-            $existingBlendIds = $orderProduct->items()
-                ->where('item_type', 'blend')
-                ->pluck('id')
-                ->toArray();
-            $newBlendIds = [];
-
-          if (!empty($blendData['blend_id'])) {
-           
-            // If blend_id exists in request, check for existing and update/create
-            $blend = Product::find($blendData['blend_id']);
-
-            // Check if blend already exists for this product
-            $existingItem = $orderProduct->items()
-                ->where('item_type', 'blend')
-                ->where('item_id', $blend->id)
-                ->first();
-
-            if ($existingItem) {
-                // Update existing blend
-                $existingItem->update([
-                    'item_name' => $blend->name,
-                    'unit' => $blend->unit_of_measure,
-                    'unit_cost' => $blend->unit_price,
-                    'quantity' => 0,
-                    'total_cost' => 0
-                ]);
-                $newBlendIds[] = $existingItem->id;
-            } else {
-                // Create new blend
-                $newItem = $orderProduct->items()->create([
-                    'item_type' => 'blend',
-                    'item_id' => $blend->id,
-                    'item_name' => $blend->name,
-                    'quantity' => 0,
-                    'unit' => $blend->unit_of_measure,
-                    'unit_cost' => $blend->unit_price,
-                    'total_cost' => 0
-                ]);
-                $newBlendIds[] = $newItem->id;
-            }
-
-            // Remove any blend items not in the current request
-            $orderProduct->items()
-                ->where('item_type', 'blend')
-                ->whereNotIn('id', $newBlendIds)
-                ->delete();
-            }
-        }
-    }
-
+    
     return redirect()->route('orders.create', ['step' => 'packaging']);
 }
 
@@ -426,23 +326,6 @@ public function calculate(Request $request, Order $order)
                 $rawMaterialCost += $cost;
             }
         }
-        // ----- Calculate blend -----
-        $blendItem = $orderProduct->items()->where('item_type', 'blend')->first();
-        if ($blendItem) {
-            // Convert blend to packaging unit
-            $convertedBlendVolume = $this->convertUnit(
-                $productVolume,
-                $blendItem->itemDetail->unit_of_measure ?? 'kg',
-                $packagingUnit
-            );
-            
-            $blendCost = $blendItem->itemDetail->unit_price * $convertedBlendVolume;
-            $blendItem->update([
-                'quantity' => $convertedBlendVolume,
-                'total_cost' => $blendCost
-            ]);
-            $rawMaterialCost = $blendCost; // Override raw material if blend exists
-        }
 
         // ----- Packaging cost -----
         $packagingCost = $orderProduct->packagingItems()->sum('total_cost');
@@ -501,7 +384,8 @@ public function calculate(Request $request, Order $order)
         'total_profit' => round($quoteTotals['subtotal'] * ($profitPercent / 100),2),
         'subtotal' => round($quoteTotals['subtotal'],2),
         'tax_amount' => round($quoteTotals['tax'],2),
-        'total_amount' => round($quoteTotals['total'],2)
+        'total_amount' => round($quoteTotals['total'],2),
+        'status'=>'confirmed'
     ]);
 
     session()->forget('current_order_id');
@@ -551,26 +435,24 @@ private function convertUnit($quantity, $fromUnit, $toUnit)
         $order = Order::with(['products'])->findOrFail($id);
                 $step = $request->step ?? 'basic';
 
-                $rawMaterials = Product::where('category', 'raw_material')->get();
+                $rawMaterials = Product::whereIn('category', ['raw_material','blend'])->get();
         $packagingMaterials = Product::where('category', 'packaging')->get();
-        $blends = Product::where('category', 'blend')->get();
 
-        return view('orders.edit', compact('customers', 'order','step','rawMaterials','packagingMaterials','blends'));
+        return view('orders.edit', compact('customers', 'order','step','rawMaterials','packagingMaterials'));
     }
 
     public function create(Request $request)
     {
         
       $customers = Customer::all();
-        $rawMaterials = Product::where('category', 'raw_material')->get();
+        $rawMaterials = Product::where('category', ['raw_material','blend'])->get();
         $packagingMaterials = Product::where('category', 'packaging')->get();
-        $blends = Product::where('category', 'blend')->get();
 /*        Session::put('current_quote_id',null);
 */        
         $orderId = session('current_order_id');
         $order = $orderId ? Order::with(['products.items'])->find($orderId) : null;
         $step = $request->step ?? 'basic';
-        return view('orders.create', compact('step', 'customers', 'rawMaterials', 'packagingMaterials', 'blends', 'order'));
+        return view('orders.create', compact('step', 'customers', 'rawMaterials', 'packagingMaterials', 'order'));
     }
 
     public function store(Request $request)

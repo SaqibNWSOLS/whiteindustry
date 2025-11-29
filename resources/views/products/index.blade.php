@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Products')
-@section('page_title', 'Products')
+@section('title', __('products.title'))
+@section('page_title', __('products.page_title'))
 
 @section('content')
     <div class="content">
@@ -26,61 +26,58 @@
 
         <div class="tabs">
             <div class="tab-nav">
-                <button class="tab-button active" data-tab="raw">Raw Materials</button>
-                <button class="tab-button" data-tab="packaging">Packaging</button>
-                <button class="tab-button" data-tab="blend">Blend</button>
-                <button class="tab-button" data-tab="final">Final Products</button>
+                <button class="tab-button active" data-tab="raw">@lang('products.tabs.raw_materials')</button>
+                <button class="tab-button" data-tab="packaging">@lang('products.tabs.packaging')</button>
+                <button class="tab-button" data-tab="final">@lang('products.tabs.final_products')</button>
             </div>
         </div>
 
         <!-- Raw Materials Tab -->
         <div id="products-raw" class="tab-content active">
             <div class="module-header">
-              
-
-                <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=raw_material" data-ajax-popup="true"  data-title="{{__('Add Raw Product')}}" class="btn btn-primary"><i class="ti ti-package"></i>Add Raw Product</a>
+                <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=raw_material" data-ajax-popup="true"  data-title="@lang('products.actions.add_raw_product')" class="btn btn-primary"><i class="ti ti-package"></i>@lang('products.actions.add_raw_product')</a>
                 <a href="{{ route('products.export', ['category' => 'raw_material']) }}" class="btn btn-secondary" style="margin-left:8px">
-                    <i class="ti ti-download"></i> Export
+                    <i class="ti ti-download"></i> @lang('products.actions.export')
                 </a>
             </div>
             
             <div class="dashboard-grid" style="margin-bottom: 20px;">
                 <div class="card">
-                    <h3><span class="wi-highlight">Total Products</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.total_products')</span></h3>
                     <div id="stat-raw-total" style="font-size: 2rem; font-weight: bold; color: #000;">
                         {{ $stats['raw_material']['total'] ?? 0 }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Raw material products</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.raw_material_products')</div>
                 </div>
                 <div class="card">
-                    <h3><span class="wi-highlight">Active Ingredients</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.active_ingredients')</span></h3>
                     <div id="stat-raw-active" style="font-size: 1.2rem; font-weight: bold; color: #000; margin-top: 10px;">
                         {{ $stats['raw_material']['active'] ?? 0 }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Premium ingredients</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.premium_ingredients')</div>
                 </div>
                 <div class="card">
-                    <h3><span class="wi-highlight">Avg Price</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.avg_price')</span></h3>
                     <div id="stat-raw-avg" style="font-size: 2rem; font-weight: bold; color: #000;">
                         DZD {{ number_format($stats['raw_material']['avg_price'] ?? 0, 2) }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Per unit</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.per_unit')</div>
                 </div>
             </div>
             
             <div class="table-container">
                 <div class="table-header">
-                    <h3>Raw Materials Catalog</h3>
+                    <h3>@lang('products.table.raw_materials_catalog')</h3>
                 </div>
                 <table id="products-raw-table" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Product Code</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Unit Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>@lang('products.table.product_code')</th>
+                            <th>@lang('products.table.name')</th>
+                            <th>@lang('products.table.category')</th>
+                            <th>@lang('products.table.unit_price')</th>
+                            <th>@lang('products.table.status')</th>
+                            <th>@lang('products.table.actions')</th>
                         </tr>
                     </thead>
                 </table>
@@ -90,50 +87,50 @@
         <!-- Final Products Tab -->
         <div id="products-final" class="tab-content">
             <div class="module-header">
-                 <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=final_product" data-ajax-popup="true"  data-title="{{__('Add Final Product')}}" class="btn btn-primary"><i class="ti ti-package"></i>Add Final Product</a>
+                 <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=final_product" data-ajax-popup="true"  data-title="@lang('products.actions.add_final_product')" class="btn btn-primary"><i class="ti ti-package"></i>@lang('products.actions.add_final_product')</a>
                
                 <a href="{{ route('products.export', ['category' => 'final_product']) }}" class="btn btn-secondary" style="margin-left:8px">
-                    <i class="ti ti-download"></i> Export
+                    <i class="ti ti-download"></i> @lang('products.actions.export')
                 </a>
             </div>
             
             <div class="dashboard-grid" style="margin-bottom: 20px;">
                 <div class="card">
-                    <h3><span class="wi-highlight">Total Products</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.total_products')</span></h3>
                     <div id="stat-final-total" style="font-size: 2rem; font-weight: bold; color: #000;">
                         {{ $stats['final_product']['total'] ?? 0 }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Final products</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.final_products')</div>
                 </div>
                 <div class="card">
-                    <h3><span class="wi-highlight">Active Products</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.active_products')</span></h3>
                     <div id="stat-final-active" style="font-size: 1.2rem; font-weight: bold; color: #000; margin-top: 10px;">
                         {{ $stats['final_product']['active'] ?? 0 }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Active products</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.active_products_count')</div>
                 </div>
                 <div class="card">
-                    <h3><span class="wi-highlight">Avg Price</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.avg_price')</span></h3>
                     <div id="stat-final-avg" style="font-size: 2rem; font-weight: bold; color: #000;">
                         DZD {{ number_format($stats['final_product']['avg_price'] ?? 0, 2) }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Per unit</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.per_unit')</div>
                 </div>
             </div>
             
             <div class="table-container">
                 <div class="table-header">
-                    <h3>Final Products Catalog</h3>
+                    <h3>@lang('products.table.final_products_catalog')</h3>
                 </div>
                 <table id="products-final-table" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Product Code</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Unit Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>@lang('products.table.product_code')</th>
+                            <th>@lang('products.table.name')</th>
+                            <th>@lang('products.table.category')</th>
+                            <th>@lang('products.table.unit_price')</th>
+                            <th>@lang('products.table.status')</th>
+                            <th>@lang('products.table.actions')</th>
                         </tr>
                     </thead>
                 </table>
@@ -143,110 +140,56 @@
         <!-- Packaging Tab -->
         <div id="products-packaging" class="tab-content">
             <div class="module-header">
-            
-                <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=packaging" data-ajax-popup="true"  data-title="{{__('Add Packaging Product')}}" class="btn btn-primary"><i class="ti ti-package"></i>Add Packaging Product</a>
+                <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=packaging" data-ajax-popup="true"  data-title="@lang('products.actions.add_packaging_product')" class="btn btn-primary"><i class="ti ti-package"></i>@lang('products.actions.add_packaging_product')</a>
 
                 <a href="{{ route('products.export', ['category' => 'packaging']) }}" class="btn btn-secondary" style="margin-left:8px">
-                    <i class="ti ti-download"></i> Export
+                    <i class="ti ti-download"></i> @lang('products.actions.export')
                 </a>
             </div>
             
             <div class="dashboard-grid" style="margin-bottom: 20px;">
                 <div class="card">
-                    <h3><span class="wi-highlight">Total Products</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.total_products')</span></h3>
                     <div id="stat-packaging-total" style="font-size: 2rem; font-weight: bold; color: #000;">
                         {{ $stats['packaging']['total'] ?? 0 }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Packaging products</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.packaging_products')</div>
                 </div>
                 <div class="card">
-                    <h3><span class="wi-highlight">Container Types</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.container_types')</span></h3>
                     <div id="stat-packaging-types" style="font-size: 1.2rem; font-weight: bold; color: #000; margin-top: 10px;">
                         {{ $stats['packaging']['total'] ?? 0 }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Different types</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.different_types')</div>
                 </div>
                 <div class="card">
-                    <h3><span class="wi-highlight">Avg Price</span></h3>
+                    <h3><span class="wi-highlight">@lang('products.stats.avg_price')</span></h3>
                     <div id="stat-packaging-avg" style="font-size: 2rem; font-weight: bold; color: #000;">
                         DZD {{ number_format($stats['packaging']['avg_price'] ?? 0, 2) }}
                     </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Per unit</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">@lang('products.stats.per_unit')</div>
                 </div>
             </div>
             
             <div class="table-container">
                 <div class="table-header">
-                    <h3>Packaging Products</h3>
+                    <h3>@lang('products.table.packaging_products')</h3>
                 </div>
                 <table id="products-packaging-table" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Product Code</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Unit Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>@lang('products.table.product_code')</th>
+                            <th>@lang('products.table.name')</th>
+                            <th>@lang('products.table.category')</th>
+                            <th>@lang('products.table.unit_price')</th>
+                            <th>@lang('products.table.status')</th>
+                            <th>@lang('products.table.actions')</th>
                         </tr>
                     </thead>
                 </table>
             </div>
         </div>
 
-        <!-- Blend Tab -->
-        <div id="products-blend" class="tab-content">
-            <div class="module-header">
-               
-                  <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=blend" data-ajax-popup="true"  data-title="{{__('Add Blend Product')}}" class="btn btn-primary"><i class="ti ti-package"></i>Add Blend Product</a>
-
-                <a href="{{ route('products.export', ['category' => 'blend']) }}" class="btn btn-secondary" style="margin-left:8px">
-                    <i class="ti ti-download"></i> Export
-                </a>
-            </div>
-            
-            <div class="dashboard-grid" style="margin-bottom: 20px;">
-                <div class="card">
-                    <h3><span class="wi-highlight">Total Blends</span></h3>
-                    <div id="stat-blend-total" style="font-size: 2rem; font-weight: bold; color: #000;">
-                        {{ $stats['blend']['total'] ?? 0 }}
-                    </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Blend products</div>
-                </div>
-                <div class="card">
-                    <h3><span class="wi-highlight">Active Blends</span></h3>
-                    <div id="stat-blend-active" style="font-size: 1.2rem; font-weight: bold; color: #000; margin-top: 10px;">
-                        {{ $stats['blend']['active'] ?? 0 }}
-                    </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Active blends</div>
-                </div>
-                <div class="card">
-                    <h3><span class="wi-highlight">Avg Price</span></h3>
-                    <div id="stat-blend-avg" style="font-size: 2rem; font-weight: bold; color: #000;">
-                        DZD {{ number_format($stats['blend']['avg_price'] ?? 0, 2) }}
-                    </div>
-                    <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">Per unit</div>
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <div class="table-header">
-                    <h3>Blend Products Catalog</h3>
-                </div>
-                <table id="products-blend-table" class="table table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Product Code</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Unit Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
     </div>
 
     <style>
@@ -345,7 +288,10 @@
                             render: function(data, type, row) {
                                 const badgeClass = data === 'active' ? 'badge-success' : 
                                                  data === 'inactive' ? 'badge-warning' : 'badge-secondary';
-                                return `<span class="${badgeClass}">${data}</span>`;
+                                const statusText = data === 'active' ? '@lang("products.status.active")' : 
+                                                 data === 'inactive' ? '@lang("products.status.inactive")' : 
+                                                 data === 'archived' ? '@lang("products.status.archived")' : data;
+                                return `<span class="${badgeClass}">${statusText}</span>`;
                             }
                         },
                         {

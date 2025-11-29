@@ -40,4 +40,9 @@ class ProductionItem extends Model
         }
         return round(($this->quantity_produced / $this->quantity_planned) * 100, 2);
     }
+
+    public function inventoryTransactions()
+{
+    return $this->hasMany(InventoryTransaction::class, 'production_item_id');
+}
 }

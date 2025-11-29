@@ -21,6 +21,13 @@ return new class extends Migration
     $table->date('delivery_date')->nullable();
     $table->decimal('total_amount', 15, 2)->nullable();
     $table->text('order_notes')->nullable();
+        $table->decimal('total_raw_material_cost', 15, 2)->default(0);
+                $table->decimal('total_packaging_cost', 15, 2)->default(0);
+                $table->decimal('manufacturing_cost', 15, 2)->default(0);
+                $table->decimal('risk_cost', 15, 2)->default(0);
+                $table->decimal('total_profit', 15, 2)->default(0);
+                $table->decimal('subtotal', 15, 2)->default(0);
+                $table->decimal('tax_amount', 15, 2)->default(0);
     $table->enum('status', ['pending', 'confirmed', 'production', 'completed', 'cancelled'])->default('pending');
     $table->timestamps();
     $table->softDeletes();

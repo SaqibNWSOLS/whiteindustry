@@ -1,9 +1,8 @@
-
 {{-- resources/views/crm/create.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Create ' . ucfirst($type))
-@section('page_title', 'Create ' . ucfirst($type))
+@section('title', __('crm.create.title', ['type' => __("crm.types.$type")]))
+@section('page_title', __('crm.create.page_title', ['type' => __("crm.types.$type")]))
 
 @section('content')
 <div class="content">
@@ -14,107 +13,102 @@
             <input type="hidden" name="type" value="{{ $type }}">
 
             <div class="form-group">
-                <label class="form-label">Company Name</label>
+                <label class="form-label">{{ __('crm.form.company_name') }}</label>
                 <input type="text" name="company_name" class="form-input @error('company_name') is-invalid @enderror" required value="{{ old('company_name') }}">
                 @error('company_name') <span class="error-text">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
-                <label class="form-label">Contact Person</label>
+                <label class="form-label">{{ __('crm.form.contact_person') }}</label>
                 <input type="text" name="contact_person" class="form-input @error('contact_person') is-invalid @enderror" required value="{{ old('contact_person') }}">
                 @error('contact_person') <span class="error-text">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
-                <label class="form-label">Email</label>
+                <label class="form-label">{{ __('crm.form.email') }}</label>
                 <input type="email" name="email" class="form-input @error('email') is-invalid @enderror" required value="{{ old('email') }}">
                 @error('email') <span class="error-text">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
-                <label class="form-label">Phone</label>
+                <label class="form-label">{{ __('crm.form.phone') }}</label>
                 <input type="text" name="phone" class="form-input @error('phone') is-invalid @enderror" required value="{{ old('phone') }}">
                 @error('phone') <span class="error-text">{{ $message }}</span> @enderror
             </div>
 
             @if($type === 'customer')
                 <div class="form-group">
-                    <label class="form-label">Address</label>
+                    <label class="form-label">{{ __('crm.form.address') }}</label>
                     <input type="text" name="address" class="form-input" value="{{ old('address') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">City</label>
+                    <label class="form-label">{{ __('crm.form.city') }}</label>
                     <input type="text" name="city" class="form-input" value="{{ old('city') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Postal Code</label>
+                    <label class="form-label">{{ __('crm.form.postal_code') }}</label>
                     <input type="text" name="postal_code" class="form-input" value="{{ old('postal_code') }}">
                     @error('postal_code') <span class="error-text">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Industry Type</label>
+                    <label class="form-label">{{ __('crm.form.industry_type') }}</label>
                     <select name="industry_type" class="form-input">
-                        <option value="">Select industry</option>
-                        <option value="Cosmetics & Beauty" {{ old('industry_type') === 'Cosmetics & Beauty' ? 'selected' : '' }}>Cosmetics & Beauty</option>
-                        <option value="Pharmaceuticals" {{ old('industry_type') === 'Pharmaceuticals' ? 'selected' : '' }}>Pharmaceuticals</option>
-                        <option value="Dietary Supplements" {{ old('industry_type') === 'Dietary Supplements' ? 'selected' : '' }}>Dietary Supplements</option>
-                        <option value="Other" {{ old('industry_type') === 'Other' ? 'selected' : '' }}>Other</option>
+                        <option value="">{{ __('crm.form.select_industry') }}</option>
+                        @foreach(__('crm.industry_types') as $key => $value)
+                            <option value="{{ $key }}" {{ old('industry_type') === $key ? 'selected' : '' }}>{{ $value }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Tax ID</label>
+                    <label class="form-label">{{ __('crm.form.tax_id') }}</label>
                     <input type="text" name="tax_id" class="form-input" value="{{ old('tax_id') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">{{ __('crm.form.status') }}</label>
                     <select name="status" class="form-input">
-                        <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>{{ __('crm.status.active') }}</option>
+                        <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>{{ __('crm.status.inactive') }}</option>
                     </select>
                 </div>
             @else
                 <div class="form-group">
-                    <label class="form-label">Source</label>
+                    <label class="form-label">{{ __('crm.form.source') }}</label>
                     <select name="source" class="form-input">
-                        <option value="">Select source</option>
-                        <option value="website" {{ old('source') === 'website' ? 'selected' : '' }}>Website</option>
-                        <option value="referral" {{ old('source') === 'referral' ? 'selected' : '' }}>Referral</option>
-                        <option value="trade_show" {{ old('source') === 'trade_show' ? 'selected' : '' }}>Trade Show</option>
-                        <option value="cold_call" {{ old('source') === 'cold_call' ? 'selected' : '' }}>Cold Call</option>
-                        <option value="social_media" {{ old('source') === 'social_media' ? 'selected' : '' }}>Social Media</option>
+                        <option value="">{{ __('crm.form.select_source') }}</option>
+                        @foreach(__('crm.sources') as $key => $value)
+                            <option value="{{ $key }}" {{ old('source') === $key ? 'selected' : '' }}>{{ $value }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">{{ __('crm.form.status') }}</label>
                     <select name="status" class="form-input">
-                        <option value="new" {{ old('status') === 'new' ? 'selected' : '' }}>New</option>
-                        <option value="contacted" {{ old('status') === 'contacted' ? 'selected' : '' }}>Contacted</option>
-                        <option value="qualified" {{ old('status') === 'qualified' ? 'selected' : '' }}>Qualified</option>
-                        <option value="proposal" {{ old('status') === 'proposal' ? 'selected' : '' }}>Proposal</option>
-                        <option value="lost" {{ old('status') === 'lost' ? 'selected' : '' }}>Lost</option>
+                        @foreach(__('crm.lead_status') as $key => $value)
+                            <option value="{{ $key }}" {{ old('status') === $key ? 'selected' : '' }}>{{ $value }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Estimated Value</label>
+                    <label class="form-label">{{ __('crm.form.estimated_value') }}</label>
                     <input type="number" name="estimated_value" class="form-input" step="0.01" min="0" value="{{ old('estimated_value') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Notes</label>
+                    <label class="form-label">{{ __('crm.form.notes') }}</label>
                     <textarea name="notes" class="form-input" rows="4">{{ old('notes') }}</textarea>
                 </div>
             @endif
 
             <div style="display: flex; gap: 12px; margin-top: 24px; border-top: 1px solid #e5e5e5; padding-top: 20px;">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a href="{{ route('customers.index', ['type' => $type]) }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">{{ __('crm.buttons.create') }}</button>
+                <a href="{{ route('customers.index', ['type' => $type]) }}" class="btn btn-secondary">{{ __('crm.buttons.cancel') }}</a>
             </div>
         </form>
     </div>

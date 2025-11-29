@@ -2,30 +2,30 @@
     @csrf
     <div id="modal-body">
         <div class="form-group">
-            <label>Product Code</label>
+            <label>@lang('products.form.product_code')</label>
             <input id="p_code" name="product_code" class="form-input" value="">
         </div>
 
         <div class="form-group">
-            <label>Name</label>
+            <label>@lang('products.form.name')</label>
             <input id="p_name" name="name" class="form-input" value="">
         </div>
 
         <div class="form-group">
-            <label>Category</label>
+            <label>@lang('products.form.category')</label>
             <select id="p_category" name="category" class="form-select">
-                <option value="">Select category</option>
-                <option value="raw_material">Raw Material</option>
-                <option value="packaging">Packaging</option>
-                <option value="blend">Blend</option>
-                <option value="final_product">Final Product</option>
+                <option value="">@lang('products.form.select_category')</option>
+                <option value="raw_material">@lang('products.categories.raw_material')</option>
+                <option value="packaging">@lang('products.categories.packaging')</option>
+                <option value="blend">@lang('products.categories.blend')</option>
+                <option value="final_product">@lang('products.categories.final_product')</option>
             </select>
         </div>
 
         {{-- Hidden Volume Field (Shown only if category = packaging) --}}
         <div class="form-group" id="volume_field" style="display: none;">
-            <label>Volume</label>
-            <input type="text" name="volume" id="p_volume" class="form-input" placeholder="Enter volume (e.g., 500ml)">
+            <label>@lang('products.form.volume')</label>
+            <input type="text" name="volume" id="p_volume" class="form-input" placeholder="@lang('products.form.enter_volume')">
         </div>
 
         @php
@@ -33,24 +33,24 @@
         @endphp
 
         <div class="form-group">
-            <label>Type</label>
+            <label>@lang('products.form.type')</label>
             <select id="p_type" name="product_type" class="form-select">
-                <option value="">Select Type</option>
-                <option value="raw">Raw</option>
-                <option value="final">Final</option>
+                <option value="">@lang('products.form.select_type')</option>
+                <option value="raw">@lang('products.form.raw')</option>
+                <option value="final">@lang('products.form.final')</option>
             </select>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <div class="form-group">
-                <label>Unit Price</label>
+                <label>@lang('products.form.unit_price')</label>
                 <input id="p_price" type="number" name="unit_price" step="0.01" class="form-input" value="">
             </div>
 
             <div class="form-group">
-                <label>Unit</label>
+                <label>@lang('products.form.unit')</label>
                 <select name="unit_of_measure" class="form-input">
-                    <option value="">Select Unit</option>
+                    <option value="">@lang('products.form.select_unit')</option>
                     @foreach($units as $key => $label)
                         <option value="{{ $key }}">{{ $label }}</option>
                     @endforeach
@@ -59,22 +59,22 @@
         </div>
 
         <div class="form-group">
-            <label>Description</label>
+            <label>@lang('products.form.description')</label>
             <textarea id="p_description" name="description" class="form-input"></textarea>
         </div>
 
         <div class="form-group">
-            <label>Status</label>
+            <label>@lang('products.form.status')</label>
             <select id="p_status" name="status" class="form-select">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="archived">Archived</option>
+                <option value="active">@lang('products.form.active')</option>
+                <option value="inactive">@lang('products.form.inactive')</option>
+                <option value="archived">@lang('products.form.archived')</option>
             </select>
         </div>
 
         <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
-            <button type="submit" class="btn btn-primary">Create Product</button>
-            <button class="btn" type="button" onclick="hideModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">@lang('products.actions.create_product')</button>
+            <button class="btn" type="button" onclick="hideModal()">@lang('products.actions.cancel')</button>
         </div>
     </div>
 </form>

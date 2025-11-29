@@ -281,39 +281,6 @@
                 <form method="POST" action="{{ route('orders.update-raw-materials', $order->id) }}">
                     @csrf
                     @method('PUT')
-
-                    @foreach($order->products as $product)
-                    <div class="product-section">
-                        <div class="product-header">
-                            <h3 class="product-title">{{ $product->product_name }}</h3>
-                                                    </div>
-
-                        @php
-                            $existingBlend = $product->items()->where('item_type', 'blend')->first();
-                        @endphp
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Blend *</label>
-                                <select name="blends[{{ $product->id }}][blend_id]" class="form-control" >
-                                    <option value="">Select Blend</option>
-                                    @foreach($blends as $blend)
-                                        <option value="{{ $blend->id }}" 
-                                            {{ $existingBlend && $existingBlend->item_id == $blend->id ? 'selected' : '' }}
-                                            data-price="{{ $blend->unit_price }}"
-                                            data-unit="{{ $blend->unit_of_measure }}">
-                                            {{ $blend->name }} /{{ $blend->unit_of_measure }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if($existingBlend)
-                                    <input type="hidden" name="blends[{{ $product->id }}][id]" value="{{ $existingBlend->id }}">
-                                @endif
-                            </div>
-                            
-                        </div>
-                    </div>
-                    @endforeach
                     
                     @foreach($order->products as $product)
                     <div class="product-section">
@@ -535,52 +502,7 @@
                 </script>
                 @endif
 
-                <!-- Step 4: Blend -->
-                @if($step == 'blend' && isset($order))
-                <form method="POST" action="{{ route('orders.update-blend', $order->id) }}">
-                    @csrf
-                    @method('PUT')
-                    
-                    @foreach($order->products as $product)
-                    <div class="product-section">
-                        <div class="product-header">
-                            <h3 class="product-title">{{ $product->product_name }}</h3>
-                                                    </div>
-
-                        @php
-                            $existingBlend = $product->items()->where('item_type', 'blend')->first();
-                        @endphp
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Blend *</label>
-                                <select name="blends[{{ $product->id }}][blend_id]" class="form-control" required>
-                                    <option value="">Select Blend</option>
-                                    @foreach($blends as $blend)
-                                        <option value="{{ $blend->id }}" 
-                                            {{ $existingBlend && $existingBlend->item_id == $blend->id ? 'selected' : '' }}
-                                            data-price="{{ $blend->unit_price }}"
-                                            data-unit="{{ $blend->unit_of_measure }}">
-                                            {{ $blend->name }} (€{{ $blend->unit_price }}/{{ $blend->unit_of_measure }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if($existingBlend)
-                                    <input type="hidden" name="blends[{{ $product->id }}][id]" value="{{ $existingBlend->id }}">
-                                @endif
-                            </div>
-                            
-                        </div>
-                    </div>
-                    @endforeach
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Next: Add Packaging</button>
-                        <a href="{{ route('orders.edit', ['order' => $order->id, 'step' => 'raw_materials']) }}" class="btn btn-secondary">Back</a>
-                    </div>
-                </form>
-                @endif
-
+                
                 <!-- Step 5: Packaging -->
                 @if($step == 'packaging' && isset($order))
                 <form method="POST" action="{{ route('orders.update-packaging', $order->id) }}">

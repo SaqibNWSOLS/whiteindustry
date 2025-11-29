@@ -15,6 +15,9 @@
    
 <div class="col-12" style="margin-bottom: 10px;">
     <div class="invoice-actions">
+        <a href="{{  route('quotes.index')}}" class="">
+                <i class="bi bi-back"></i> Back to Quotes
+            </a>
             <a href="javascript:window.print()" class="btn btn-print">
                 <i class="bi bi-printer"></i> Print
             </a>
