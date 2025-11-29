@@ -25,19 +25,22 @@ Route::get('/', [AuthWebController::class, 'showLogin']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthWebController::class, 'login']);
 Route::post('/logout', [AuthWebController::class, 'logout']);
-    Route::get('/dashboard', [DashboardController::class,'index']);
 
 
+Route::middleware('auth')->group(function () {
+
+    
 Route::resource('products',ProductController::class);
 Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
 Route::put('/products/{product}/status', [ProductController::class, 'updateStatus'])->name('products.status');
-Route::middleware('auth')->group(function () {
     // Web routes for CRM
     Route::resource('customers', App\Http\Controllers\CustomerController::class);
     Route::get('customers/export/{type}', [App\Http\Controllers\CustomerController::class, 'export'])->name('customers.export');
 });
 // Protected pages
 Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [DashboardController::class,'index']);
+
 Route::resource('roles', RoleController::class);
 Route::post('roles/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
 Route::delete('roles/{role}/revoke-permission/{permission}', [RoleController::class, 'revokePermission'])->name('roles.revoke-permission');
