@@ -90,8 +90,8 @@ class ProductController extends Controller
 
         $product->update($data);
         
-        return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully.');
+         return handleResponse($request, 'Product updated successfully.', 'products.index');
+
     }
 
     public function destroy(Product $product)
