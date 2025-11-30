@@ -113,7 +113,7 @@ public function approve(Request $request, $id)
       
 
         // Generate order number
-        $orderNumber = 'ORD-' . date('Ymd') . '-' . str_pad(Order::withTrashed()->count() + 1, 4, '0', STR_PAD_LEFT);
+/*        $orderNumber = 'ORD-' . date('Ymd') . '-' . str_pad(Order::withTrashed()->count() + 1, 4, '0', STR_PAD_LEFT);
         $quote = $rnd->quote;
 
         // Create the main order
@@ -172,7 +172,7 @@ public function approve(Request $request, $id)
                 ]);
             }
         }
-
+*/
         // Update quote status
         $rnd->quote->update(['status' => 'rnd_approved']);
 

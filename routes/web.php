@@ -51,6 +51,7 @@ Route::get('/production/{productionId}/item/{itemId}/inventory-history', [Produc
 
 // Quotation Routes
 Route::prefix('quotes')->group(function () {
+    Route::get('convert-to-order/{id}',[QuotationController::class,'convertToOrder'])->name('quotes.convert-to-order');
     Route::get('/quotes/{id}/download-pdf', [QuotationController::class, 'downloadPDF'])->name('quotes.download-pdf');
     // Multi-step quotation creation
     Route::get('/create/{step?}', [QuotationController::class, 'create'])->name('quotes.create');

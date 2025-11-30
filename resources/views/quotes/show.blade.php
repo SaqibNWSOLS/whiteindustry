@@ -25,7 +25,9 @@
         </a>
     </div>
 </div>
-
+<div class="row">
+    <div class="col-md-9">
+        
 <div class="invoice-container" id="invoice-content">
     <style>
 {!! file_get_contents(public_path('css/invoice.css')) !!}
@@ -162,6 +164,54 @@
         <div>
             <p class="mb-0">{{ __('quotes.invoice.thank_you') }}</p>
         </div>
+    </div>
+</div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+                <div class="section">
+                    <h4>@lang('production.details.documents.rnd_title')</h4>
+<h6>Status: {{ $quote->rndQuote->status ?? '' }}</h6>
+
+@if(isset($quote->rndQuote->status) && strtolower($quote->rndQuote->status) === 'approved' && empty($quote->orders))
+    <a href="{{ route('quotes.convert-to-order', $quote->id) }}" 
+       class="btn btn-success convert-to-order">
+        <i class="fas fa-shopping-cart"></i> Convert to Order
+    </a>
+@endif
+                    @forelse($rndDocuments as $doc)
+                        <div class="document-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>{{ $doc->document_name }}</strong>
+                                <a href="{{ asset(Storage::url($doc->file_path)) }}" class="btn btn-sm btn-secondary" download>
+                                    @lang('production.details.buttons.download')
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <p>@lang('production.details.documents.no_rnd_documents')</p>
+                    @endforelse
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="section">
+                    <h4>@lang('production.details.documents.qa_title')</h4>
+
+
+                    @forelse($qaDocuments as $doc)
+                        <div class="document-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>{{ $doc->document_name }}</strong>
+                                <a href="{{ asset(Storage::url($doc->file_path)) }}" class="btn btn-sm btn-secondary" download>
+                                    @lang('production.details.buttons.download')
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <p>@lang('production.details.documents.no_qa_documents')</p>
+                    @endforelse
+                </div>
+            </div>
     </div>
 </div>
 <script>

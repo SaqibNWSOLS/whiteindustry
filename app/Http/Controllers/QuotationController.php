@@ -11,9 +11,12 @@ use App\Models\Product;
 use App\Models\Customer;
 use Session;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use App\Models\Order;
 use App\Models\RndQuote;
  use Illuminate\Support\Facades\Validator;
+ use App\Models\QaQuote;
+ use App\Models\OrderProduct;
+ use App\Models\OrderItem;
 
 class QuotationController extends Controller
 {
@@ -461,8 +464,10 @@ public function show(Quote $quote)
         'products.packagingItems.item',
         'products.blendItems.item'
     ]);
+    $rndDocuments=$quote->rndQuote->documents??[];
+    $qaDocuments=$quote->orders->qaQuote->qaDocuments??[];
 
-    return view('quotes.show', compact('quote'));
+    return view('quotes.show', compact('quote','rndDocuments','qaDocuments'));
 }
     public function update(Request $request, Quote $quote)
     {
@@ -558,6 +563,78 @@ public function show(Quote $quote)
         $filename = 'quotation-' . ($quote->quote_number ?? $quote->id) . '.pdf';
         
         return $pdf->download($filename);
+    }
+
+    public function convertToOrder($id){
+
+        $orderNumber = 'ORD-' . date('Ymd') . '-' . str_pad(Order::withTrashed()->count() + 1, 4, '0', STR_PAD_LEFT);
+        $quote = Quote::where('id',$id)->first();
+
+        // Create the main order
+        $order = Order::create([
+            'order_number' => $orderNumber,
+            'quote_id' => $quote->id,
+            'customer_id'=>$quote->customer_id,
+            'rnd_quotes_id' => $quote->rndQuote->id ? $quote->rndQuote->id : null,
+            'order_date' => now(),
+            'delivery_date' => now()->addDays(30),
+            'total_amount' => $quote->total_amount,
+            'order_notes' => $quote->notes,
+            'status' => 'pending'
+        ]);
+
+          QaQuote::create([
+            'orders_id' => $order->id,
+            'rnd_quotes_id' => $quote->rndQuote->id??''
+        ]);
+
+          // Create QA quote record
+        
+
+        // Copy quote products to order products
+        foreach ($quote->products as $quoteProduct) {
+            $orderProduct = OrderProduct::create([
+                'quote_id' => $quote->id,
+                'orders_id' => $order->id,
+                'quote_product_id' => $quoteProduct->id,
+                'product_name' => $quoteProduct->product_name,
+                'product_type' => $quoteProduct->product_type,
+                'raw_material_cost_unit' => $quoteProduct->raw_material_cost_unit,
+                'packaging_cost_unit' => $quoteProduct->packaging_cost_unit,
+                'manufacturing_cost_unit' => $quoteProduct->manufacturing_cost_unit,
+                'risk_cost_unit' => $quoteProduct->risk_cost_unit,
+                'profit_margin_unit' => $quoteProduct->profit_margin_unit,
+                'price_unit_tax' => $quoteProduct->price_unit_tax,
+                'quantity' => $quoteProduct->quantity,
+                'tax_rate' => $quoteProduct->tax_rate,
+                'tax_amount_unit' => $quoteProduct->tax_amount_unit,
+                'total_amount' => $quoteProduct->total_amount,
+                'price_unit' => $quoteProduct->price_unit,
+                'final_product_volume' => $quoteProduct->final_product_volume,
+                'volume_unit' => $quoteProduct->volume_unit,
+            ]);
+
+            // Copy quote items to order items
+            foreach ($quoteProduct->items as $quoteItem) {
+                OrderItem::create([
+                    'order_products_id' => $orderProduct->id,
+                    'quote_product_id' => $quoteProduct->id,
+                    'quote_item_id' => $quoteItem->id,
+                    'item_type' => $quoteItem->item_type,
+                    'item_id' => $quoteItem->item_id,
+                    'item_name' => $quoteItem->item_name,
+                    'quantity' => $quoteItem->quantity,
+                    'unit' => $quoteItem->unit,
+                    'percentage' => $quoteItem->percentage,
+                    'unit_cost' => $quoteItem->unit_cost,
+                    'total_cost' => $quoteItem->total_cost,
+                ]);
+            }
+        }
+       
+
+       return back()->with('success','Order has been placed successfully!');
+
     }
 
 
