@@ -226,7 +226,7 @@
                         <div class="document-box">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <strong>{{ $doc->document_name }}</strong>
-                                <a href="{{ asset($doc->file_path) }}" class="btn btn-sm btn-secondary" download>
+                                <a href="{{ asset(Storage::url($doc->file_path)) }}" class="btn btn-sm btn-secondary" download>
                                     @lang('production.details.buttons.download')
                                 </a>
                             </div>
@@ -244,7 +244,7 @@
                         <div class="document-box">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <strong>{{ $doc->document_name }}</strong>
-                                <a href="{{ asset($doc->file_path) }}" class="btn btn-sm btn-secondary" download>
+                                <a href="{{ asset(Storage::url($doc->file_path)) }}" class="btn btn-sm btn-secondary" download>
                                     @lang('production.details.buttons.download')
                                 </a>
                             </div>

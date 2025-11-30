@@ -173,7 +173,7 @@
                                 <small>{{ $doc->file_type }} • @lang('r_d.document_info.file_size', ['size' => number_format($doc->file_size / 1024, 2)]) • @lang('r_d.document_info.uploaded_by', ['name' => $doc->uploadedBy->name])</small>
                             </div>
                             <div class="document-actions">
-                                <a href="{{ asset($doc->file_path) }}" download class="btn btn-sm btn-secondary">
+                                <a href="{{ asset(Storage::url($doc->file_path)) }}" download class="btn btn-sm btn-secondary">
                                     @lang('r_d.review_page.download')
                                 </a>
                                 @if($rnd->status !== 'approved')
