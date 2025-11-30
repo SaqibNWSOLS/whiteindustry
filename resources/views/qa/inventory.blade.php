@@ -46,7 +46,7 @@
 
                         <!-- Action Buttons -->
                         @if($pendingTransactions->count() > 0 && auth()->user()->can('Approve Inventory'))
-                        <div class="row mb-4">
+                        {{-- <div class="row mb-4">
                             <div class="col-md-12">
                                 <div class="alert alert-warning">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -65,7 +65,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         @endif
 
                         <!-- Inventory Transactions Table -->
