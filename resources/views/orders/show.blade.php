@@ -148,7 +148,7 @@
         
         @if($order->status === 'pending')
             <div class="action-buttons">
-                <form action="{{ route('orders_show.confirm', $order->id) }}" method="POST">
+                <form action="{{ route('orders.confirm', $order->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-success" onclick="return confirm('{{ __('orders_show.messages.confirm_order') }}')">
                         <i class="bi bi-check-circle"></i> {{ __('orders_show.buttons.confirm_order') }}
