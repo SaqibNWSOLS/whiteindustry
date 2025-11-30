@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\OrderProduct;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -530,5 +531,16 @@ private function convertUnit($quantity, $fromUnit, $toUnit)
         ]);
 
         return redirect()->back()->with('success', 'Order confirmed');
+    }
+
+    public function downloadPDF($id)
+    {
+        $order = Order::with(['customer', 'products', 'quote'])->findOrFail($id);
+        
+        $pdf = Pdf::loadView('orders.pdf', compact('order'));
+        
+        $filename = 'order-' . $order->order_number . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

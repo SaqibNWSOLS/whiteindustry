@@ -106,6 +106,7 @@ Route::prefix('qa')->group(function () {
 });
 
 Route::resource('orders',OrderController::class);
+Route::get('/orders/{id}/download-pdf', [OrderController::class, 'downloadPDF'])->name('orders.download-pdf');
 Route::get('/productions/{production}/details', [InvoiceController::class, 'getProductionDetails'])->name('productions.details');
 // Orders Routes
 Route::prefix('orders')->group(function () {
