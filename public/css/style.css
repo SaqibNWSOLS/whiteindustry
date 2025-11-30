@@ -19,7 +19,16 @@
         .swal2-backdrop-show{
             z-index: 100000;
         }
-
+.close{
+    right: 0;
+    margin-right: 0;
+    position: absolute;
+    top: 0;
+    font-size: 28px;
+    color: #ffffff;
+    background: #0a1b0c;
+    width: 48px;
+}
 .select2-container .select2-selection--single{
     height: 36px !important;
 }
