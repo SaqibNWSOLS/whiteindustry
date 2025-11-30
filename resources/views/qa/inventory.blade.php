@@ -345,7 +345,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                alert('@lang('production.inventory_history.messages.approve_error')');
+                alert('Approve Error');
             }
         });
     }
@@ -371,7 +371,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                alert('@lang('production.inventory_history.messages.reject_error')');
+                alert('Approve Error');
             }
         });
     }
@@ -392,7 +392,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                alert('@lang('production.inventory_history.messages.approve_all_error')');
+                alert('Approce Error');
             }
         });
     }
