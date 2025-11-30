@@ -54,8 +54,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'View R&D',   'group' => 'Manage R&D'],
             ['name' => 'Approve R&D',   'group' => 'Manage R&D'],
             ['name' => 'View Quality & Control',   'group' => 'Manage Quality & Control'],
-            ['name' => 'Approve Quality & Control',   'group' => 'Manage Quality & Control']
+            ['name' => 'Approve Quality & Control',   'group' => 'Manage Quality & Control'],
+            ['name' => 'Approve Inventory',   'group' => 'Manage Quality & Control']
         ];
+
 
         foreach ($permissions as $permission) {
             Permission::create(['name'=>$permission['name'],'group'=>$permission['group'],'guard_name'=>'web']);

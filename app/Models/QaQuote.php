@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class QaQuote extends Model
 {
 
-    protected $fillable = ['orders_id', 'rnd_quotes_id', 'sent_at', 'approved_at', 'qa_notes', 'status'];
+    protected $fillable = ['orders_id', 'rnd_quotes_id','production_id', 'sent_at', 'approved_at', 'qa_notes', 'status'];
     protected $dates = ['sent_at', 'approved_at'];
 
     public function order() {

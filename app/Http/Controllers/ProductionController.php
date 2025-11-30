@@ -123,7 +123,6 @@ class ProductionController extends Controller
             ['minimum_stock' => 0, 'current_stock' => 0,'category'=>'final_product','product_code'=>Str::random(5),'unit_price'=>$productionItem->orderProduct->price_unit,'unit_of_measure'=>$productionItem->orderProduct->volume_unit]
         );
 
-        $product->increment('current_stock', $request->quantity_to_add);
         $productionItem->update(['products_id'=>$product->id]);
 
 
@@ -135,7 +134,7 @@ class ProductionController extends Controller
             'quantity_change' => $request->quantity_to_add,
             'reference_type' => 'production_item',
             'reference_id' => $productionItem->id,
-            'status' => 'completed',
+            'status' => 'pending',
             'notes' => $request->notes,
             'created_by' => auth()->id(),
             'transaction_date' => now()

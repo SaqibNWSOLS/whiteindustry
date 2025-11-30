@@ -126,14 +126,11 @@ public function approve(Request $request, $id)
             'delivery_date' => now()->addDays(30),
             'total_amount' => $quote->total_amount,
             'order_notes' => $quote->notes,
-            'status' => 'confirmed'
+            'status' => 'pending'
         ]);
 
           // Create QA quote record
-        QaQuote::create([
-            'orders_id' => $order->id,
-            'rnd_quotes_id' => $rnd->id
-        ]);
+        
 
         // Copy quote products to order products
         foreach ($quote->products as $quoteProduct) {

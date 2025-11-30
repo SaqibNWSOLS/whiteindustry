@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use App\Models\Product;
 use App\Models\Customer;
 use Session;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Models\RndQuote;
  use Illuminate\Support\Facades\Validator;
 
@@ -545,6 +547,17 @@ public function show(Quote $quote)
 
         return redirect()->route('quotes.index')
             ->with('success', 'Quotation sent to R&D department successfully');
+    }
+
+    public function downloadPDF($id)
+    {
+        $quote = Quote::with(['customer', 'products.packaging'])->findOrFail($id);
+        
+        $pdf = Pdf::loadView('quotes.pdf', compact('quote'));
+        
+        $filename = 'quotation-' . ($quote->quote_number ?? $quote->id) . '.pdf';
+        
+        return $pdf->download($filename);
     }
 
 

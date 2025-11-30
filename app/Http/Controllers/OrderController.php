@@ -524,6 +524,10 @@ private function convertUnit($quantity, $fromUnit, $toUnit)
     {
         $order = Order::findOrFail($id);
         $order->update(['status' => 'confirmed']);
+        QaQuote::create([
+            'orders_id' => $order->id,
+            'rnd_quotes_id' => $order->rnd_quotes_id
+        ]);
 
         return redirect()->back()->with('success', 'Order confirmed');
     }

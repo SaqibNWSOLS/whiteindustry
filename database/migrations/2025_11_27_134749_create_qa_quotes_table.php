@@ -15,6 +15,7 @@ return new class extends Migration
     $table->id();
     $table->foreignId('orders_id')->constrained('orders')->onDelete('cascade');
     $table->foreignId('rnd_quotes_id')->nullable()->constrained('rnd_quotes')->onDelete('cascade');
+    $table->foreignId('production_id')->nullable()->constrained('productions')->onDelete('cascade');
     $table->timestamp('sent_at')->nullable();
     $table->timestamp('approved_at')->nullable();
     $table->text('qa_notes')->nullable();

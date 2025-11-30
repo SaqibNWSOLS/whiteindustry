@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Order;
 use App\Models\Production;
 use App\Models\ProductionItem;
+use App\Models\InventoryTransaction;
+use DB;
 
 class QaQuoteController extends Controller
 {
@@ -28,6 +30,22 @@ class QaQuoteController extends Controller
         ];
 
         return view('qa.index', compact('qaDepartments', 'stats'));
+    }
+
+    public function production($id){
+
+         $production = Production::with([
+            'inventoryTransactions.product',
+            'inventoryTransactions.productionItem.orderProduct',
+            'inventoryTransactions.createdBy'
+        ])->findOrFail($id);
+          $pendingTransactions = $production->inventoryTransactions()
+        ->where('inventory_transactions.status', 'pending')
+        ->get();
+        
+
+        return view('qa.inventory',compact('production','pendingTransactions'));
+
     }
 
     public function show($id)
@@ -123,6 +141,7 @@ class QaQuoteController extends Controller
                 'status' => 'pending'
             ]);
         }
+        $qa->update(['production_id'=>$production->id]);
 
         $order->update(['status' => 'production']);
 
@@ -145,4 +164,124 @@ class QaQuoteController extends Controller
 
         return redirect()->back()->with('success', 'QA rejected');
     }
+
+    public function approveInventory(InventoryTransaction $transaction)
+{
+    try {
+        DB::transaction(function() use ($transaction) {
+            $transaction->update([
+                'status' => 'completed',
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+            ]);
+
+            // If it's a pending transaction, actually update the stock
+                $product = $transaction->product;
+                if ($product) {
+                    $product->current_stock += $transaction->quantity_change;
+                    $product->save();
+                }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => __('production.inventory_history.messages.transaction_approved')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function rejectInventory(InventoryTransaction $transaction, Request $request)
+{
+    $request->validate([
+        'reject_reason' => 'required|string|max:500'
+    ]);
+
+    try {
+        $transaction->update([
+            'status' => 'rejected',
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+            'reject_reason' => $request->reject_reason
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('production.inventory_history.messages.transaction_rejected')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function approveAll(Production $production)
+{
+    try {
+        DB::transaction(function() use ($production) {
+            $pendingTransactions = $production->inventoryTransactions()
+                ->where('status', 'pending')
+                ->get();
+
+            foreach ($pendingTransactions as $transaction) {
+                $transaction->update([
+                    'status' => 'completed',
+                    'approved_by' => auth()->id(),
+                    'approved_at' => now(),
+                ]);
+
+                // Update stock for each transaction
+                $product = $transaction->product;
+                if ($product) {
+                    $product->current_stock += $transaction->quantity_change;
+                    $product->save();
+                }
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => __('production.inventory_history.messages.all_transactions_approved')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function rejectAll(Production $production, Request $request)
+{
+    $request->validate([
+        'reject_reason' => 'required|string|max:500'
+    ]);
+
+    try {
+        $production->inventoryTransactions()
+            ->where('status', 'pending')
+            ->update([
+                'status' => 'rejected',
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+                'reject_reason' => $request->reject_reason
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('production.inventory_history.messages.all_transactions_rejected')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 }

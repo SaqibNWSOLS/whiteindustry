@@ -157,9 +157,15 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
+                                        @if(!empty($qa->production_id))
+                                         <a href="{{ route('qa-production.show', $qa->production_id) }}" class="btn btn-sm btn-outline-secondary" title="@lang('quality_control.actions.view_order')">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @endif
                                         <a href="{{ route('orders.show', $qa->orders_id) }}" class="btn btn-sm btn-outline-secondary" title="@lang('quality_control.actions.view_order')">
                                             <i class="fas fa-eye"></i>
                                         </a>
+
                                         <a href="{{ route('qa.show', $qa->id) }}" class="btn btn-sm btn-outline-primary" title="@lang('quality_control.actions.qa_review')">
                                             <i class="fas fa-clipboard-check"></i>
                                         </a>

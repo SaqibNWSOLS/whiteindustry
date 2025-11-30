@@ -34,7 +34,7 @@ class InventoryTransaction extends Model
     // Relationships
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class,'product_id');
     }
 
     public function productionItem()
@@ -46,6 +46,16 @@ class InventoryTransaction extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function getStatusBadgeClass()
+{
+    return match($this->status) {
+        'completed' => 'success',
+        'rejected' => 'danger',
+        'pending' => 'warning',
+        default => 'secondary'
+    };
+}
 
     // Helper methods
     public static function recordProduction($productionItem, $quantityChange, $status, $notes = null)

@@ -29,7 +29,7 @@ Route::post('/logout', [AuthWebController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
 
-    
+
 Route::resource('products',ProductController::class);
 Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
 Route::put('/products/{product}/status', [ProductController::class, 'updateStatus'])->name('products.status');
@@ -51,6 +51,7 @@ Route::get('/production/{productionId}/item/{itemId}/inventory-history', [Produc
 
 // Quotation Routes
 Route::prefix('quotes')->group(function () {
+    Route::get('/quotes/{id}/download-pdf', [QuotationController::class, 'downloadPDF'])->name('quotes.download-pdf');
     // Multi-step quotation creation
     Route::get('/create/{step?}', [QuotationController::class, 'create'])->name('quotes.create');
     Route::post('/store-basic', [QuotationController::class, 'storeBasic'])->name('quotes.store-basic');
@@ -91,11 +92,17 @@ Route::prefix('rnd')->group(function () {
 
 // QA Department Routes
 Route::prefix('qa')->group(function () {
+    Route::get('qa-production/{id}',[QaQuoteController::class,'production'])->name('qa-production.show');
     Route::get('/', [QaQuoteController::class, 'index'])->name('qa.index');
     Route::get('{id}', [QaQuoteController::class, 'show'])->name('qa.show');
     Route::post('{id}/upload', [QaQuoteController::class, 'uploadDocuments'])->name('qa.upload');
     Route::post('{id}/approve', [QaQuoteController::class, 'approve'])->name('qa.approve');
     Route::post('{id}/reject', [QaQuoteController::class, 'reject'])->name('qa.reject');
+
+     Route::patch('approve-inventory/{transaction}', [QaQuoteController::class, 'approveInventory'])->name('inventory-transactions.approve');
+    Route::patch('reject-inventory/{transaction}', [QaQuoteController::class, 'rejectInventory'])->name('inventory-transactions.reject');
+    Route::patch('/production/{production}/approve-all', [QaQuoteController::class, 'approveAll'])->name('inventory-transactions.approve-all');
+    Route::patch('/production/{production}/reject-all', [QaQuoteController::class, 'rejectAll'])->name('inventory-transactions.reject-all');
 });
 
 Route::resource('orders',OrderController::class);
