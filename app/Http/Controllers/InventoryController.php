@@ -14,7 +14,7 @@ class InventoryController extends Controller
         if ($request->ajax()) {
             $query = Product::query();
             
-            if ($request->has('category') && $request->category) {
+            if ($request->has('category')) {
                 $query->where('category', $request->category);
             }
             

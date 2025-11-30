@@ -16,7 +16,7 @@ class ProductController extends Controller
             $query = Product::query();
             
             if ($request->has('category') && $request->category) {
-                if ($request->has('category')=='raw_material') {
+                if ($request->category=='raw_material') {
                     $query->whereIn('category', ['blend',$request->category]);
                 } else {
                     $query->where('category', $request->category);
