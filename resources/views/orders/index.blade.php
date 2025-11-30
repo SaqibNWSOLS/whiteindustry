@@ -102,9 +102,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>{{ __('orders.list.title') }}</h2>
+        @if(Auth::user()->can('Create Orders'))
         <a href="{{ route('orders.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> {{ __('orders.buttons.create') }}
         </a>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -139,14 +141,18 @@
                             </span>
                         </td>
                         <td>
+                            @if(Auth::user()->can('Edit Orders'))
                             @if($order->status=='pending' || $order->status=='confirmed')
                             <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-sm btn-secondary" title="{{ __('orders.buttons.edit') }}">
                                 <i class="fas fa-edit"></i>
                             </a>
                             @endif
+                            @endif
+                            @if(Auth::user()->can('Delete Orders'))
                             <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-secondary" title="{{ __('orders.buttons.view') }}">
                                 <i class="fas fa-eye"></i>
                             </a>
+                            @endif
                         </td>
                     </tr>
                 @empty

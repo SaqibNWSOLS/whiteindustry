@@ -102,9 +102,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">@lang('production.headers.production_jobs')</h2>
+        @if(Auth::user()->can('Create Production'))
         <a href="{{ route('production.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i>@lang('production.buttons.create')
         </a>
+        @endif
     </div>
 
     <div class="card">

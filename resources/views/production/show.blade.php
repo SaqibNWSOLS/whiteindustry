@@ -13,6 +13,7 @@
                         <a href="{{ route('production.inventory-history', $production->id) }}" class="btn btn-info mr-2">
                             <i class="fas fa-history"></i> @lang('production.details.buttons.inventory_history')
                         </a>
+                        @if(Auth::user()->can('Edit Production'))
                         
                         @if($production->status === 'pending')
                             <a href="{{ route('production.start', $production->id) }}" class="btn btn-primary" onclick="return confirm('@lang('production.details.confirmations.start_production')')">
@@ -22,6 +23,7 @@
                             <a href="{{ route('production.complete', $production->id) }}" class="btn btn-success" onclick="return confirm('@lang('production.details.confirmations.complete_production')')">
                                 @lang('production.details.buttons.complete_production')
                             </a>
+                        @endif
                         @endif
                     </div>
                 </div>
@@ -95,7 +97,9 @@
                                     <th>@lang('production.details.items.produced_quantity')</th>
                                     <th>@lang('production.details.items.progress')</th>
                                     <th>@lang('production.details.items.status')</th>
+                                    @if(Auth::user()->can('Edit Production'))
                                     <th>@lang('production.details.items.action')</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -117,11 +121,13 @@
                                                 @lang('production.status.' . $item->status)
                                             </span>
                                         </td>
+                                        @if(Auth::user()->can('Edit Production'))
                                         <td>
                                             <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#updateModal{{ $item->id }}">
                                                 @lang('production.details.buttons.update')
                                             </button>
                                         </td>
+                                        @endif
                                     </tr>
 
                                     <!-- Update Modal -->
