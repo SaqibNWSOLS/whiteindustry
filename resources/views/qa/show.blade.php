@@ -154,7 +154,7 @@
                     <div class="document-box">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <strong>{{ $doc->document_name }}</strong>
-                            <a href="{{ Storage::url($doc->file_path) }}" class="btn btn-sm btn-secondary" download>
+                            <a href="{{ asset($doc->file_path) }}" class="btn btn-sm btn-secondary" download>
                                 @lang('quality_control.review_page.download')
                             </a>
                         </div>
@@ -192,7 +192,7 @@
                                 <small>{{ $doc->file_type }} • @lang('quality_control.document_info.file_size', ['size' => number_format($doc->file_size / 1024, 2)])</small>
                             </div>
                             <div class="document-actions">
-                                <a href="{{ Storage::url($doc->file_path) }}" download class="btn btn-sm btn-secondary">
+                                <a href="{{ asset($doc->file_path) }}" download class="btn btn-sm btn-secondary">
                                     @lang('quality_control.review_page.download')
                                 </a>
                                 @if($qa->status !== 'approved')
