@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('tax_amount', 15, 2)->default(0);
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->text('notes')->nullable();
+            $table->text('payment_terms')->nullable();
+            $table->date('deadline')->nullable();
             $table->enum('status', ['draft', 'sent', 'accepted', 'rejected', 'sent_to_rnd', 'rnd_approved', 'qa_approved', 'completed'])->default('draft');
             $table->timestamps();
             $table->softDeletes();

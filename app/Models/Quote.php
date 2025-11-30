@@ -21,6 +21,8 @@ class Quote extends Model
         'tax_amount',
         'total_amount',
         'notes',
+        'payment_terms',
+        'deadline',
         'status'
     ];
 

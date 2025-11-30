@@ -95,10 +95,20 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">{{ __('quotes.form.deadline') }}</label>
+                        <input type="deadline" class="form-control" value="{{ old('deadline', isset($order) ? $order->deadline : '') }}" name="deadline">
+                      
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">{{ __('quotes.form.notes') }}</label>
                         <textarea name="notes" class="form-control" rows="4" placeholder="{{ __('quotes.form.add_notes') }}">{{ old('notes', isset($quote) ? $quote->notes : '') }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ __('quotes.form.payment_terms') }}</label>
+                        <textarea name="payment_terms" class="form-control" rows="4" placeholder="{{ __('quotes.form.add_payment_terms') }}">{{ old('payment_terms', isset($quote) ? $quote->payment_terms : '') }}</textarea>
                     </div>
                     
                     <div class="form-actions">

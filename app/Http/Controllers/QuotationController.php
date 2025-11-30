@@ -43,6 +43,8 @@ class QuotationController extends Controller
         $quote = Quote::create([
             'quotation_number' => 'QT-' . Str::random(8),
             'customer_id' => $request->customer_id,
+            'payment_terms'=>$request->payment_terms,
+            'deadline'=>$request->deadline,
             'notes' => $request->notes,
             'status' => 'draft'
         ]);
@@ -75,6 +77,8 @@ class QuotationController extends Controller
             'quotation_number' => 'QT-' . Str::random(8),
             'customer_id' => $request->customer_id,
             'notes' => $request->notes,
+            'payment_terms'=>$request->payment_terms,
+            'deadline'=>$request->deadline,
             'status' => 'draft'
         ]);
 
