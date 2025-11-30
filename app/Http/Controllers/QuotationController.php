@@ -580,7 +580,7 @@ public function show(Quote $quote)
             'delivery_date' => now()->addDays(30),
             'total_amount' => $quote->total_amount,
             'order_notes' => $quote->notes,
-            'status' => 'pending'
+            'status' => 'confirmed'
         ]);
 
           QaQuote::create([
