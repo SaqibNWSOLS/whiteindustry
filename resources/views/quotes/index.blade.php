@@ -111,9 +111,12 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">{{ __('quotes.quotes_list') }}</h2>
+        @if(Auth::user()->can('Create Quotes'))
+
         <a href="{{ route('quotes.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i>{{ __('quotes.new_quote') }}
         </a>
+        @endif
     </div>
 
     @if(session('success'))
@@ -164,11 +167,13 @@
                                         <a href="{{ route('quotes.show', $quote->id) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('quotes.actions.view') }}">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @if(Auth::user()->can('Edit Quotes'))
                                         @if($quote->status === 'draft')
                                             <a href="{{ route('quotes.edit', $quote->id) }}" class="btn btn-sm btn-outline-primary" title="{{ __('quotes.actions.edit') }}">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         @endif
+                                        
                                         
                                         @if(!$quote->rndQuote)
                                             <form action="{{ route('rnd.send', $quote->id) }}" method="POST" class="d-inline">
@@ -178,6 +183,8 @@
                                                 </button>
                                             </form>
                                         @endif
+                                        @endif
+                                         @if(Auth::user()->can('Delete Quotes'))
                                         <form action="{{ route('quotes.destroy', $quote->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('quotes.actions.confirm_delete') }}')">
                                             @csrf
                                             @method('DELETE')
@@ -185,6 +192,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

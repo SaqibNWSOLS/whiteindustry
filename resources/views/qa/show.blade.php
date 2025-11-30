@@ -214,7 +214,7 @@
             </div>
 
             <!-- Approve / Reject -->
-            @if($qa->status !== 'approved' && $qa->documents->count() > 0)
+            @if($qa->status !== 'approved')
             <div class="section">
                 <h4>@lang('quality_control.review_page.approve_reject')</h4>
 

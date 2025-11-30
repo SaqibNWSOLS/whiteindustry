@@ -195,7 +195,7 @@
             </div>
 
             <!-- Approve / Reject -->
-            @if($rnd->status !== 'approved' && $rnd->documents->count() > 0)
+            @if($rnd->status !== 'approved')
             <div class="section">
                 <h4>@lang('r_d.review_page.approve_reject')</h4>
 
