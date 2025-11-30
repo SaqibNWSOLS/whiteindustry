@@ -78,6 +78,8 @@ class UserController extends Controller
                 $user->roles()->sync([$role->id]);
             }
         }
+                       notify()->title('New User')->message('A  user has been created named as'.$user->first_name)->sendToRole(['Administrator','Manager']);
+
 
         activity()
             ->causedBy($request->user())
@@ -138,6 +140,8 @@ class UserController extends Controller
             }
         }
 
+         notify()->title('Edit User')->message('A  user has been updated named as'.$user->first_name)->sendToRole(['Administrator','Manager']);
+
         activity()
             ->causedBy($request->user())
             ->performedOn($user)
@@ -150,9 +154,7 @@ class UserController extends Controller
     {
         
 
-        if ($user->isAdmin()) {
-            return redirect()->back()->with('error', 'Cannot delete administrator user');
-        }
+        notify()->title('Delete User')->message('A  user has been deleted named as'.$user->first_name)->sendToRole(['Administrator','Manager']);
 
         activity()
             ->causedBy($request->user())

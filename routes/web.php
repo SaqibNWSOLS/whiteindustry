@@ -18,7 +18,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RoleController;
-
+use App\Http\Controllers\NotificationController;
 
 // Show login on first load
 Route::get('/', [AuthWebController::class, 'showLogin']);
@@ -165,6 +165,13 @@ Route::get('api/qa/{id}/products', function($id) {
     return response()->json(['products' => $qa->quote->products]);
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::post('/notifications/delete-all', [NotificationController::class, 'deleteAll'])->name('notifications.delete-all');
+    Route::post('/notifications/{id}/toggle-read', [NotificationController::class, 'toggleRead'])->name('notifications.toggle-read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
+});
 
     Route::resource('/users', UserController::class);
     Route::get('/inventory', [InventoryController::class,'index']);
@@ -177,7 +184,6 @@ Route::get('api/qa/{id}/products', function($id) {
     Route::match(['put','patch'], '/tasks/{task}', [\App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [\App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::view('/documents', 'modules.documents');
-    Route::view('/notifications', 'modules.notifications');
     Route::get('/admin', [AdminController::class,'index']);
     // Admin update endpoints (AJAX-friendly) - accept POST and PUT so forms with _method work and AJAX can POST
      Route::put('/profile', [App\Http\Controllers\AdminController::class, 'updateProfile'])->name('admin.profile.update');

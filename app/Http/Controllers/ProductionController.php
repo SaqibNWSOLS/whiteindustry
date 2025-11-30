@@ -69,6 +69,10 @@ class ProductionController extends Controller
                 'status' => 'pending'
             ]);
         }
+        notify()
+    ->title(__('notifications.titles.production_created'))
+    ->message(__('notifications.production.created', ['number' => $production->production_number]))
+    ->sendToRole(['Administrator','Manager','Production User']);
 
         $order = Order::find($request->order_id);
         $order->update(['status' => 'production']);
@@ -140,6 +144,11 @@ class ProductionController extends Controller
             'transaction_date' => now()
         ]);
 
+        notify()
+    ->title(__('notifications.titles.stock_updated'))
+    ->message(__('notifications.production.quantity_added', ['number' => $productionItem->production->production_number]))
+    ->sendToRole(['Administrator','Manager','Warehouse User']);
+
         // Update or create inventory balance
        
         DB::commit();
@@ -155,6 +164,11 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production->update(['status' => 'in_progress']);
+        notify()
+    ->title(__('notifications.titles.production_started'))
+    ->message(__('notifications.production.started', ['number' => $production->production_number]))
+    ->sendToRole(['Administrator','Manager','Production User']);
+
         return redirect()->back()->with('success', 'Production started');
     }
 
@@ -175,6 +189,11 @@ class ProductionController extends Controller
     // Update production and order status
     $production->update(['status' => 'completed']);
     $production->order->update(['status' => 'completed']);
+
+    notify()
+    ->title(__('notifications.titles.production_completed'))
+    ->message(__('notifications.production.completed', ['number' => $production->production_number]))
+    ->sendToRole(['Administrator','Manager','Quality Control']);
     
     return redirect()->back()->with('success', 'Production completed successfully.');
 }

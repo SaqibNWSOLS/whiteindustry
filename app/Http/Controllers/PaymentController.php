@@ -51,6 +51,10 @@ class PaymentController extends Controller
         if ($invoice->paid_amount >= $invoice->total_amount) {
             $invoice->update(['status' => 'paid']);
         }
+        notify()
+    ->title(__('notifications.titles.payment_received'))
+    ->message(__('notifications.payment.received', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
 
         return redirect()->route('invoices.show', $invoice->id)
             ->with('success', 'Payment recorded successfully');
@@ -93,6 +97,11 @@ class PaymentController extends Controller
             'notes' => $request->notes
         ]);
 
+        notify()
+    ->title(__('notifications.titles.payment_updated'))
+    ->message(__('notifications.payment.updated', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
+
         return redirect()->route('invoices.show', $invoice->id)
             ->with('success', 'Payment updated successfully');
     }
@@ -101,6 +110,12 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
         $invoice = $payment->invoice;
+
+
+        notify()
+    ->title(__('notifications.titles.payment_deleted'))
+    ->message(__('notifications.payment.deleted', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
 
         $payment->delete();
 

@@ -78,6 +78,11 @@ class QaQuoteController extends Controller
             }
         }
 
+        notify()
+    ->title(__('notifications.titles.qa_documents'))
+    ->message(__('notifications.qa.documents_uploaded', ['number' => $qa->order->order_number]))
+    ->sendToRole(['Administrator','Manager','Quality Control']);
+
         $qa->update(['status' => 'in_review']);
 
         return redirect()->back()->with('success', 'Documents uploaded successfully');
@@ -141,6 +146,12 @@ class QaQuoteController extends Controller
                 'status' => 'pending'
             ]);
         }
+
+        notify()
+    ->title(__('notifications.titles.qa_approved'))
+    ->message(__('notifications.qa.approved', ['number' => $qa->order->order_number]))
+    ->sendToRole(['Administrator','Manager','Production User']);
+
         $qa->update(['production_id'=>$production->id]);
 
         $order->update(['status' => 'production']);
@@ -157,10 +168,18 @@ class QaQuoteController extends Controller
         ]);
 
         $qa = QaQuote::findOrFail($id);
+
+
         $qa->update([
             'status' => 'rejected',
             'qa_notes' => $request->qa_notes
         ]);
+
+        notify()
+    ->title(__('notifications.titles.qa_rejected'))
+    ->message(__('notifications.qa.rejected', ['number' => $qa->order->order_number]))
+    ->sendToRole(['Administrator','Manager','Production User']);
+
 
         return redirect()->back()->with('success', 'QA rejected');
     }
@@ -182,6 +201,11 @@ class QaQuoteController extends Controller
                     $product->save();
                 }
         });
+
+        notify()
+    ->title(__('notifications.titles.inventory_approved'))
+    ->message(__('notifications.inventory.transaction_approved'))
+    ->sendToRole(['Administrator','Manager','Warehouse User']);
 
         return response()->json([
             'success' => true,
@@ -208,6 +232,15 @@ public function rejectInventory(InventoryTransaction $transaction, Request $requ
             'approved_at' => now(),
             'reject_reason' => $request->reject_reason
         ]);
+        $productionItem=$transaction->productionItem;
+
+        $productionItem->decrement('quantity_produced',$transaction->quantity_change);
+        $productionItem->increment('quantity_rejected',$transaction->quantity_change);
+
+        notify()
+    ->title(__('notifications.titles.inventory_rejected'))
+    ->message(__('notifications.inventory.transaction_rejected'))
+    ->sendToRole(['Administrator','Manager','Warehouse User']);
 
         return response()->json([
             'success' => true,

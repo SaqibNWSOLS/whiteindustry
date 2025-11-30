@@ -4,6 +4,93 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Setting;
+use App\Models\User;
+use App\Models\Notification;
+
+
+if (!function_exists('sendNotificationToRole')) {
+    /**
+     * Send notification to all users with specific role
+     *
+     * @param string|array $roles Single role or array of roles
+     * @param string $type
+     * @param string $title
+     * @param string $message
+     * @param string $priority
+     * @param array $additionalData
+     * @return int Number of notifications sent
+     */
+    function sendNotificationToRole($roles, $type, $title, $message, $priority = 'normal', $additionalData = [])
+    {
+        // Convert single role to array
+        $roles = (array) $roles;
+        
+        // Get all users with the specified roles
+        $users = User::role($roles)->get();
+        
+        $notifications = [];
+        $now = now();
+        
+        foreach ($users as $user) {
+            $notificationData = [
+                'type' => $type,
+                'title' => $title,
+                'message' => $message,
+                'priority' => $priority,
+                'user_id' => $user->id,
+                'is_read' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+            
+            // Add additional data if provided
+            if (!empty($additionalData)) {
+                $notificationData = array_merge($notificationData, $additionalData);
+            }
+            
+            $notifications[] = $notificationData;
+        }
+        
+        // Bulk insert for better performance
+        if (!empty($notifications)) {
+            Notification::insert($notifications);
+        }
+        
+        return count($notifications);
+    }
+}
+
+if (!function_exists('sendNotificationToUser')) {
+    /**
+     * Send notification to specific user
+     *
+     * @param User $user
+     * @param string $type
+     * @param string $title
+     * @param string $message
+     * @param string $priority
+     * @param array $additionalData
+     * @return Notification
+     */
+    function sendNotificationToUser($user, $type, $title, $message, $priority = 'normal', $additionalData = [])
+    {
+        $notificationData = [
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+            'priority' => $priority,
+            'user_id' => $user->id,
+            'is_read' => false,
+        ];
+        
+        // Add additional data if provided
+        if (!empty($additionalData)) {
+            $notificationData = array_merge($notificationData, $additionalData);
+        }
+        
+        return Notification::create($notificationData);
+    }
+}
 
 if (! function_exists('handleResponse')) {
     function handleResponse($request, string $message, string $redirectRoute, $statusCode = 200, array $extra = []): JsonResponse|RedirectResponse
@@ -67,6 +154,13 @@ if (!function_exists('activity')) {
     function activity()
     {
         return app(\App\Services\ActivityLogger::class);
+    }
+}
+
+if (!function_exists('notify')) {
+    function notify()
+    {
+        return app(\App\Services\NotificationService::class);
     }
 }
 

@@ -48,6 +48,11 @@ class OrderController extends Controller
             'status' => 'pending'
         ]);
 
+        notify()
+    ->title(__('notifications.titles.new_order'))
+    ->message(__('notifications.order.created', ['number' => $order->order_number]))
+    ->sendToRole(['Administrator','Manager','Sales User']);
+
         // Store quote ID in session for next steps
         session(['current_order_id' => $order->id]);
 

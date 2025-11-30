@@ -168,6 +168,11 @@ class InvoiceController extends Controller
             }
         }
 
+        notify()
+    ->title(__('notifications.titles.new_invoice'))
+    ->message(__('notifications.invoice.created', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
+
         DB::commit();
 
         return redirect()->route('invoices.show', $invoice->id)
@@ -289,6 +294,11 @@ class InvoiceController extends Controller
 
         $invoice->markAsIssued();
 
+        notify()
+    ->title(__('notifications.titles.invoice_issued'))
+    ->message(__('notifications.invoice.issued', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
+
         return redirect()->back()->with('success', 'Invoice issued successfully');
     }
 
@@ -302,6 +312,11 @@ class InvoiceController extends Controller
 
         $invoice->markAsPaid();
 
+        notify()
+    ->title(__('notifications.titles.invoice_paid'))
+    ->message(__('notifications.invoice.paid', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
+
         return redirect()->back()->with('success', 'Invoice marked as paid');
     }
 
@@ -310,6 +325,11 @@ class InvoiceController extends Controller
         $invoice = Invoice::findOrFail($id);
 
         $invoice->update(['status' => 'cancelled']);
+
+        notify()
+    ->title(__('notifications.titles.invoice_cancelled'))
+    ->message(__('notifications.invoice.cancelled', ['number' => $invoice->invoice_number]))
+    ->sendToRole(['Administrator','Manager','Accountant']);
 
         return redirect()->back()->with('success', 'Invoice cancelled');
     }

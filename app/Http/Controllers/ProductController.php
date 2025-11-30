@@ -58,7 +58,13 @@ class ProductController extends Controller
             'status' => ['nullable', Rule::in(['active','inactive','archived'])],
         ]);
 
-        Product::create($data);
+        $product=Product::create($data);
+        
+           notify()
+    ->title(__('notifications.titles.new_product'))
+    ->message(__('notifications.product.created', ['name' => $product->name]))
+    ->sendToRole(['Administrator','Manager','Sales User']);
+
 
          return handleResponse($request, 'Product created successfully.', 'products.index');
 
@@ -89,6 +95,13 @@ class ProductController extends Controller
         ]);
 
         $product->update($data);
+        $product->refresh();
+
+// In update method:
+notify()
+    ->title(__('notifications.titles.edit_product'))
+    ->message(__('notifications.product.updated', ['name' => $product->name])) // Fixed: mame → name
+    ->sendToRole(['Administrator','Manager','Sales User']);
         
          return handleResponse($request, 'Product updated successfully.', 'products.index');
 
@@ -96,6 +109,11 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+             
+           notify()
+    ->title(__('notifications.titles.delete_product'))
+    ->message(__('notifications.product.deleted', ['name' => $product->name]))
+    ->sendToRole(['Administrator','Manager','Sales User']);
         $product->delete();
         
         return redirect()->route('products.index')

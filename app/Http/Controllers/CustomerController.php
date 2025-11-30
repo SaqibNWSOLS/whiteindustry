@@ -65,6 +65,8 @@ class CustomerController extends Controller
         }
 
         $customer = Customer::create($validated);
+        notify()->title('New Customer')->message('A new customer has been created named as'.$customer->company_name)->sendToRole(['Administrator','Manager']);
+
 
         return redirect()->route('customers.index', ['type' => $type])
                        ->with('success', ucfirst($type) . ' created successfully');
@@ -100,6 +102,7 @@ class CustomerController extends Controller
             return redirect()->route('customers.index', ['type' => 'customer'])
                            ->with('success', 'Lead converted to customer successfully');
         }
+        notify()->title('Edit Customer')->message('A new customer has been updated named as'.$customer->company_name)->sendToRole(['Administrator','Manager']);
 
         $customer->update($validated);
 
@@ -110,6 +113,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $type = $customer->type;
+        notify()->title('Delete Customer')->message('A customer has been deleted named as'.$customer->company_name)->sendToRole(['Administrator','Manager']);
         $customer->delete();
 
         return redirect()->route('customers.index', ['type' => $type])

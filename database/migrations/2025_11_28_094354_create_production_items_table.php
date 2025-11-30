@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('quantity_planned')->default(0);
             $table->integer('quantity_produced')->default(0);
             $table->integer('quantity_deliverd')->default(0);
+            $table->integer('quantity_rejected')->default(0);
             $table->text('notes')->nullable();
             $table->enum('status', ['pending', 'in_progress', 'completed', 'quality_check'])->default('pending');
             $table->timestamps();

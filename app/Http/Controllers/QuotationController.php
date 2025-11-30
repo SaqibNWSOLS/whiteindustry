@@ -50,6 +50,11 @@ class QuotationController extends Controller
         // Store quote ID in session for next steps
         session(['current_quote_id' => $quote->id]);
 
+        notify()
+    ->title(__('notifications.titles.new_quotation'))
+    ->message(__('notifications.quotation.created', ['number' => $quote->quotation_number]))
+    ->sendToRole(['Administrator','Manager','Sales User']);
+
         return redirect()->route('quotes.create', ['step' => 'products'])
             ->with('success', 'Basic information saved successfully');
     }
@@ -546,6 +551,10 @@ public function show(Quote $quote)
             'sent_at' => now(),
             'status' => 'pending'
         ]);
+        notify()
+    ->title(__('notifications.titles.quotation_sent_rnd'))
+    ->message(__('notifications.quotation.sent_to_rnd', ['number' => $quote->quotation_number]))
+    ->sendToRole(['Administrator','Manager','R&D User']);
 
         // Update quote status
         $quote->update(['status' => 'sent_to_rnd']);
@@ -631,7 +640,11 @@ public function show(Quote $quote)
                 ]);
             }
         }
-       
+
+notify()
+    ->title(__('notifications.titles.quotation_accepted'))
+    ->message(__('notifications.quotation.accepted', ['number' => $quote->quotation_number]))
+    ->sendToRole(['Administrator','Manager','Sales User']);       
 
        return back()->with('success','Order has been placed successfully!');
 

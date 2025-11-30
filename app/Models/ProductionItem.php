@@ -16,6 +16,7 @@ class ProductionItem extends Model
         'quantity_planned',
         'quantity_produced',
         'quantity_deliverd',
+        'quantity_rejected',
         'notes',
         'status'
     ];
