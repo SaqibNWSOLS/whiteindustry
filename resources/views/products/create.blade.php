@@ -68,7 +68,6 @@
             <select id="p_status" name="status" class="form-select">
                 <option value="active">@lang('products.form.active')</option>
                 <option value="inactive">@lang('products.form.inactive')</option>
-                <option value="archived">@lang('products.form.archived')</option>
             </select>
         </div>
 

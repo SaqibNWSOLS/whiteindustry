@@ -77,7 +77,7 @@
             <select id="p_status" name="status" class="form-select">
                 <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>@lang('products.form.active')</option>
                 <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>@lang('products.form.inactive')</option>
-                <option value="archived" {{ old('status', $product->status) == 'archived' ? 'selected' : '' }}>@lang('products.form.archived')</option>
+               
             </select>
         </div>
 

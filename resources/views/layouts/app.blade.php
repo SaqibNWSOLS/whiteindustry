@@ -150,7 +150,7 @@
 <script>
     $(document).ready(function () {
         $('.select2').select2({
-            placeholder: "Select Customer",
+            placeholder: "Select Below",
             allowClear: true,
             width: '100%'
         });

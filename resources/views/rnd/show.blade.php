@@ -141,7 +141,7 @@
                 <h4>@lang('r_d.review_page.quotation_details')</h4>
 
                 <p><strong>@lang('r_d.review_page.customer'):</strong> {{ $rnd->quote->customer->company_name }}</p>
-                <p><strong>@lang('r_d.review_page.total_amount'):</strong> ${{ number_format($rnd->quote->total_amount, 2) }}</p>
+                <p><strong>@lang('r_d.review_page.total_amount'):</strong> {{ priceFormat($rnd->quote->total_amount, 2) }}</p>
                 <p><strong>@lang('r_d.review_page.products_count'):</strong> {{ $rnd->quote->products->count() }}</p>
             </div>
 
