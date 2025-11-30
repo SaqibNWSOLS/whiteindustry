@@ -1,11 +1,13 @@
 <div style="display:inline-flex;gap:6px;white-space:nowrap;align-items:center;">
     <!-- Edit Button -->
+    @if(Auth::user()->can('Edit Products'))
     <a href="#" data-size="lg" data-url="{{ route('products.edit', $product->id) }}"   data-ajax-popup="true"  data-title="{{__('Edit Product')}}" class="btn btn-secondary" style="padding: 3px 6px; font-size: 0.6rem;">
         <i class="ti ti-edit"></i> Edit
     </a>
+    @endif
 
 
-
+@if(Auth::user()->can('Delete Products'))
     <!-- Delete Form -->
     <form method="POST" action="{{ route('products.destroy', $product->id) }}" style="display:inline" 
           onsubmit="return confirm('Are you sure you want to delete this product?')">
@@ -15,6 +17,7 @@
             <i class="ti ti-trash"></i> Delete
         </button>
     </form>
+    @endif
 
     <!-- Status Dropdown -->
   {{--   <div class="dropdown" style="display:inline">

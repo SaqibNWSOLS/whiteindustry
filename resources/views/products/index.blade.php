@@ -35,7 +35,9 @@
         <!-- Raw Materials Tab -->
         <div id="products-raw" class="tab-content active">
             <div class="module-header">
+                @if(Auth::user()->can('Create Products'))
                 <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=raw_material" data-ajax-popup="true"  data-title="@lang('products.actions.add_raw_product')" class="btn btn-primary"><i class="ti ti-package"></i>@lang('products.actions.add_raw_product')</a>
+                @endif
                 <a href="{{ route('products.export', ['category' => 'raw_material']) }}" class="btn btn-secondary" style="margin-left:8px">
                     <i class="ti ti-download"></i> @lang('products.actions.export')
                 </a>
@@ -87,7 +89,9 @@
         <!-- Final Products Tab -->
         <div id="products-final" class="tab-content">
             <div class="module-header">
+                @if(Auth::user()->can('Create Products'))
                  <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=final_product" data-ajax-popup="true"  data-title="@lang('products.actions.add_final_product')" class="btn btn-primary"><i class="ti ti-package"></i>@lang('products.actions.add_final_product')</a>
+                 @endif
                
                 <a href="{{ route('products.export', ['category' => 'final_product']) }}" class="btn btn-secondary" style="margin-left:8px">
                     <i class="ti ti-download"></i> @lang('products.actions.export')
@@ -140,8 +144,10 @@
         <!-- Packaging Tab -->
         <div id="products-packaging" class="tab-content">
             <div class="module-header">
+                @if(Auth::user()->can('Create Products'))
                 <a href="#" data-size="lg" data-url="{{ route('products.create') }}?category=packaging" data-ajax-popup="true"  data-title="@lang('products.actions.add_packaging_product')" class="btn btn-primary"><i class="ti ti-package"></i>@lang('products.actions.add_packaging_product')</a>
 
+                @endif
                 <a href="{{ route('products.export', ['category' => 'packaging']) }}" class="btn btn-secondary" style="margin-left:8px">
                     <i class="ti ti-download"></i> @lang('products.actions.export')
                 </a>
