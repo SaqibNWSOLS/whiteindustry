@@ -22,6 +22,9 @@
         .btn-print, .btn-download, .invoice-actions {
             display: none;
         }
+        th{
+            color:black !important;
+        }
         
         @page {
             margin: 20px;
@@ -39,8 +42,8 @@
                     </td>
                     <td style="text-align: right">
                         @if(file_exists(public_path('logo.png')))
-                            <img src="{{ base64_encode(file_get_contents(public_path('logo.png'))) }}" style="max-width: 100px; height: auto;">
-                        @endif
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('logo.png'))) }}" style="max-width: 80px; height: auto;">
+@endif
                     </td>
                 </tr>
             </table>

@@ -24,6 +24,9 @@
         .btn-print, .btn-download, .invoice-actions, .action-buttons {
             display: none !important;
         }
+        th{
+            color:black !important;
+        }
         
         .company-name {
             font-size: 16px;
@@ -62,9 +65,9 @@
                         </div>
                     </td>
                     <td style="text-align: right">
-                        @if(file_exists(public_path('logo.png')))
-                            <img src="{{ base64_encode(file_get_contents(public_path('logo.png'))) }}" style="max-width: 80px; height: auto;">
-                        @endif
+                       @if(file_exists(public_path('logo.png')))
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('logo.png'))) }}" style="max-width: 80px; height: auto;">
+@endif
                     </td>
                 </tr>
             </table>

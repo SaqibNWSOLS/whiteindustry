@@ -11,7 +11,6 @@
     <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/invoice.css') }}">
 
 <div class="col-12" style="margin-bottom: 10px;">
     <div class="invoice-actions">
@@ -28,6 +27,25 @@
 </div>
 
 <div class="invoice-container" id="invoice-content">
+    <style>
+{!! file_get_contents(public_path('css/invoice.css')) !!}
+
+/* Additional print styles */
+@media print {
+    body {
+        margin: 0 !important;
+        padding: 20px !important;
+    }
+    .invoice-actions, .action-buttons {
+        display: none !important;
+    }
+    .invoice-container {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 auto !important;
+    }
+}
+</style>
     <div class="invoice-header">
         <table style="width:100%">
             <tr>
@@ -146,14 +164,25 @@
         </div>
     </div>
 </div>
-
 <script>
 document.querySelector('.btn-print').addEventListener('click', function() {
+    // Get the head content with all CSS
+    const headContent = document.head.innerHTML;
     const invoiceContent = document.querySelector('.invoice-container').innerHTML;
     const originalContent = document.body.innerHTML;
-    document.body.innerHTML = invoiceContent;
+    
+    // Replace entire document with print version
+    document.documentElement.innerHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>${headContent}</head>
+        <body>${invoiceContent}</body>
+        </html>
+    `;
+    
     window.print();
-    document.body.innerHTML = originalContent;
+    
+    // Restore original content
     location.reload();
 });
 </script>

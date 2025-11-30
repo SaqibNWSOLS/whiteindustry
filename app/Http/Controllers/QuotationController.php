@@ -553,7 +553,7 @@ public function show(Quote $quote)
     {
         $quote = Quote::with(['customer', 'products.packaging'])->findOrFail($id);
         
-        $pdf = Pdf::loadView('quotes.pdf', compact('quote'));
+        $pdf = Pdf::loadView('quotes.pdf', compact('quote'))->setPaper('a4', 'portrait');
         
         $filename = 'quotation-' . ($quote->quote_number ?? $quote->id) . '.pdf';
         

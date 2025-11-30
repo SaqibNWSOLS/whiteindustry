@@ -534,13 +534,14 @@ private function convertUnit($quantity, $fromUnit, $toUnit)
     }
 
     public function downloadPDF($id)
-    {
-        $order = Order::with(['customer', 'products', 'quote'])->findOrFail($id);
-        
-        $pdf = Pdf::loadView('orders.pdf', compact('order'));
-        
-        $filename = 'order-' . $order->order_number . '.pdf';
-        
-        return $pdf->download($filename);
-    }
+{
+    $order = Order::with(['customer', 'products', 'quote'])->findOrFail($id);
+    
+    $pdf = Pdf::loadView('orders.pdf', compact('order'))
+              ->setPaper('a4', 'portrait'); // A5 size, portrait orientation
+    
+    $filename = 'order-' . $order->order_number . '.pdf';
+    
+    return $pdf->download($filename);
+}
 }
